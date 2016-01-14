@@ -1,0 +1,22 @@
+{
+  "name": "sajari-sdk-js",
+  "version": "0.0.1",
+  "description": "JavaScript SDK for access to the Sajari search API",
+  "author": "Sajari <support@sajari.com>",
+  "repository": "sajari/sajari-sdk-js",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.3.4",
+    "gulp-jshint": "^2.0.0",
+    "gulp-uglify": "^0.3.1",
+    "gulp-shell": "^0.5.1",
+    "jshint": "^2.8.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "dot": "1.0.1",
+    "pubsub-js": "^1.5.3"
+  },
+  "license": "MIT"
+}
