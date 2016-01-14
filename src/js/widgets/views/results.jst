@@ -1,0 +1,61 @@
+
+{{##def.result:
+<div class="sj-result-item">
+	{{? it.showThumb}}
+		{{? res.meta.image}}
+		<div class="sj-thumb-wrapper">
+			<div class="sj-result-thumb" style="background-image:url({{=res.meta.image}}"></div>
+		</div>
+		{{?? true}}
+
+		{{?}}
+	{{?}}
+	<div class="sj-result-wrapper">
+		<div class="sj-result-title" data-docid="{{=res.docId}}"> 
+			<a class="sj-result-link" href="{{=res.trackingUrl}}" onmousedown="{{=res.onmousedown}}">
+				{{=res.meta.title}}
+			</a>
+		</div>
+		{{? it.showDesc}}
+			<p class="sj-result-meta">	
+				<span class="sj-result-meta-desc">{{=res.meta.description}}</span>
+			</p>	
+		{{?}}
+		{{? it.showMeta.length}}
+			{{~ it.showMeta :m}}
+				<p class="sj-result-meta">	
+					<span class="sj-result-meta-wrapper" data-sj-meta-key="{{=m}}">
+						<span class="sj-result-meta-name">{{=m}}</span> <span class="sj-result-meta-value">{{=res.meta[m]}}</span>
+					</span>
+				</p>
+			{{~}}
+		{{?}}
+		{{? it.showUrl}}
+			<p class="sj-result-meta">	
+				<span class="sj-result-meta-url">{{=res.meta.url}}</span>
+			</p>	
+		{{?}}
+	</div>
+</div>
+#}}
+
+{{? it.results.length}}
+	{{? it.renderSearch}}
+		<p class="sj-search-info">Showing 1-{{=it.results.length}} of {{=it.totalmatches}} results {{=it.formattedMsecs}} seconds)</p>
+		{{? it.fuzzy }}
+			<p class="sj-search-info sj-search-fuzzy">Showing results for <strong>{{=it.fuzzy}}</strong></p>
+		{{?? true }}
+			
+		{{?}}
+	{{?}}	
+	{{~ it.results :res }}
+		{{#def.result}}
+	{{~}}
+{{?? true }}
+{{? it.renderSearch}}
+	<p class="sj-noresults">No results found.</p>
+	{{?}}
+	{{? it.errors }}
+	<p class="sj-error">Oops! An error occured while searching. Please try again.</p>
+	{{?}}
+{{?}}	
