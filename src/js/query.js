@@ -16,11 +16,11 @@ function stringGen(len) {
  */
 function query(options) {
 	this.options = options;
-	if (this.options["q.se"] === undefined) {
-		this.options["q.se"] = 0;
+	if (this.se === undefined) {
+		this.se = 0;
 	}
-	if (this.options["q.id"] === undefined) {
-		this.options["q.id"] = stringGen(16);
+	if (this.id === undefined) {
+		this.id = stringGen(16);
 	}
 }
 
@@ -48,10 +48,12 @@ query.prototype = {
 			'facet.date.start',
 			'facet.date.end',
 			'facet.date.gap',
-			'page',
-			'q.id',
-			'q.se'
+			'page'
 		];
+
+		argOptions['q.id'] = this.id;
+		argOptions['q.se'] = this.se;
+
 		for (var i = 0; i < argOptions.length; i++) {
 	        if (this.options[argOptions[i]] !== undefined) {
 	            args[argOptions[i]] = this.options[argOptions[i]];
@@ -89,8 +91,8 @@ query.prototype = {
 	/**
 	 * Define a unique query ID for the query
 	 */
-	qid : function (qid) {
-		this.options["q.id"] = qid;
+	setQueryId : function (qid) {
+		this.id = qid;
 		return this;
 	},
 
@@ -99,9 +101,9 @@ query.prototype = {
 	 */
 	sequence : function (seq) {
 		if (seq !== undefined) {
-			this.options["q.se"] = seq;
+			this.se = seq;
 		} else {
-			this.options["q.se"]++;
+			this.se++;
 		}
 		return this;
 	},
