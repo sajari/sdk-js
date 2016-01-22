@@ -9,14 +9,19 @@
     "gulp": "^3.9.0",
     "gulp-concat": "^2.3.4",
     "gulp-jshint": "^2.0.0",
-    "gulp-uglify": "^0.3.1",
     "gulp-shell": "^0.5.1",
+    "gulp-uglify": "^0.3.1",
     "jshint": "^2.8.0",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
+    "debug": "^2.2.0",
     "dot": "1.0.1",
-    "pubsub-js": "^1.5.3"
+    "lodash.isarray": "^4.0.0",
+    "pubsub-js": "^1.5.3",
+    "superagent": "^1.6.1",
+    "superagent-jsonp": "0.0.6"
   },
   "license": "MIT"
 }

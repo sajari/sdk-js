@@ -6,9 +6,10 @@ var exec = require('child_process').exec;
 
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 function handleErrors(errors) {
-
+	console.log(errors);
 }
 
 
@@ -30,7 +31,7 @@ gulp.task('javascript', function(callback) {
 });
 
 gulp.task('compile-templates', function (cb) {
-  exec('./node_modules/.bin/dottojs  -s src/js/widgets/views/ -d src/js/widgets/views/', function (err, stdout, stderr) {
+  exec('./node_modules/.bin/dottojs  -s src/js/website/views/ -d src/js/website/views/', function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
     cb(err);
@@ -40,20 +41,24 @@ gulp.task('compile-templates', function (cb) {
 gulp.task('browserify', function() {
     return browserify('./src/js/api.js')
         .bundle()
-        //Pass desired output filename to vinyl-source-stream
         .pipe(source('sj.js'))
-        // Start piping stream to tasks!
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('widgets', function() {
-
-    return browserify('./src/js/widgets/widgets.js')
+gulp.task('widgets', ['compile-templates'], function() {
+    return browserify('./src/js/website/main.js')
         .bundle()
-        //Pass desired output filename to vinyl-source-stream
         .pipe(source('widgets.js'))
-        // Start piping stream to tasks!
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('default', ['compile-templates', 'widgets']);
+gulp.task('compress-widgets', ['compile-templates'], function() {
+    return browserify('./src/js/website/main.js')
+        .bundle()
+        .pipe(source('widgets.min.js'))
+        .pipe(buffer()) 
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('default', ['compile-templates', 'widgets', 'compress-widgets']);
