@@ -1,7 +1,7 @@
 /*
  * profile.js - Handles Sajari profile information
  */
-var cookie = require("./cookie");
+var cookie = require("./utils/cookie");
 
 /**
  * Profile constructor
