@@ -40,10 +40,10 @@
 #}}
 
 {{? it.results.length}}
-	{{? it.renderSearch}}
+	{{? it.renderType == "search"}}
 		<p class="sj-search-info">Showing 1-{{=it.results.length}} of {{=it.totalmatches}} results {{=it.formattedMsecs}} seconds)</p>
-		{{? it.fuzzy }}
-			<p class="sj-search-info sj-search-fuzzy">Showing results for <strong>{{=it.fuzzy}}</strong></p>
+		{{? it.fuzzyStr }}
+			<p class="sj-search-info sj-search-fuzzy">Showing results for <strong>{{=it.fuzzyStr}}</strong></p>
 		{{?? true }}
 			
 		{{?}}
@@ -52,7 +52,7 @@
 		{{#def.result}}
 	{{~}}
 {{?? true }}
-{{? it.renderSearch}}
+{{? it.renderType == "search"}}
 	<p class="sj-noresults">No results found.</p>
 	{{?}}
 	{{? it.errors }}
