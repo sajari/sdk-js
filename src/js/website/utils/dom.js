@@ -67,12 +67,31 @@ dom.prototype = {
     },
 
     /**
+     * Propagates data parameters from the 'from' node to the 'to' node
+     */
+    copyDynamicProperties : function(from, to) {
+        if (!this.dynPropCopied) {    
+            if ((this.firstNode(from) !== undefined) && (this.hasNode(to))) {
+                var res = this.firstNode(to);
+                var attrs = this.dynamicAttrs(this);
+                if (typeof attrs === 'object') {
+                    for (var key in attrs) {
+                        if (attrs.hasOwnProperty(key)) {
+                            // Propagate relevant data parameters from the query input to the results div
+                            res.setAttribute(this.prefix+key, attrs[key]);
+                        }
+                    }
+                }
+            }
+            this.dynPropCopied = true;
+        }
+    },
+
+    /**
      * Try to get all the target elements from the DOM
      * Polyfill for browsers that don't have getElementsByAttribute
      */
     scanShim : function(scope) {
-        // Reset the shadow DOM
-        dom.domNodes = {}; 
         // Try to use the built in if it is supported
         if (document.getElementsByAttribute !== undefined) {
             for (var i = 0; i < this.domTargets.length; i++) {
@@ -90,8 +109,7 @@ dom.prototype = {
                     if (this.domNodes[this.domTargets[i]] === undefined) {
                         this.domNodes[this.domTargets[i]] = [];
                     }
-                    this.domNodes[this.domTargets[i]].push(scope);
-                }
+                    this.domNodes[this.domTargets[i]].push(scope);                }
             }
             if (scope.childNodes !== undefined) {
                 for (var j = 0; j < scope.childNodes.length; j++) {
