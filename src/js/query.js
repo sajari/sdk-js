@@ -1,3 +1,4 @@
+var isArray = require('lodash.isarray');
 
 /**
  * Query constructor
@@ -21,12 +22,12 @@ query.prototype = {
 	 * Encode the query into a set of params
 	 */ 
 	encode : function () {
-		var args = {};
+		var args = {
+			'q.id' : this.id,
+			'q.se' : this.se
+		};
 
-		if (this.options.cols !== undefined) {
-			args['cols'] = this.options.cols.join(',');
-		}
-
+		// Pass through specific args
 		var argOptions = [
 			'q',
 			'url',
@@ -41,16 +42,18 @@ query.prototype = {
 			'facet.date.gap',
 			'page'
 		];
-
-		argOptions['q.id'] = this.id;
-		argOptions['q.se'] = this.se;
-
 		for (var i = 0; i < argOptions.length; i++) {
 	        if (this.options[argOptions[i]] !== undefined) {
 	            args[argOptions[i]] = this.options[argOptions[i]];
 	        }
 		}
 
+		// Set the cols variable if applicable
+		if (this.options.cols !== undefined) {
+			args['cols'] = this.options.cols.join(',');
+		}
+
+		// Encode the filters
 		if (this.options.filters !== undefined) {
 			var filterArgs = [];
 			for (var i = 0; i < this.options.filters.length; i++) {
@@ -61,6 +64,7 @@ query.prototype = {
 			}
 		}
 
+		// Encode the scales
 		if (this.options.scales !== undefined) {
 			var scaleArgs = [];
 			for (var i = 0; i < this.options.scales.length; i++) {
@@ -71,6 +75,18 @@ query.prototype = {
 			}
 		}
 
+		// Encode the meta
+		if (this.options.meta !== undefined) {
+	        for (var i = 0; i < this.options.meta.length; i++) {
+	        	if (isArray(this.options.meta[i].value)) {
+	        		args['meta['+this.options.meta[i].key+']'] = this.options.meta[i].value.join(';');
+	        	} else {
+	        		args['meta['+this.options.meta[i].key+']'] = this.options.meta[i].value;
+	        	}
+	        }
+	    }
+
+		// Encode the other attributes
 	    if (this.options.attrs !== undefined) {
 	        for (var i = 0; i < this.options.attrs.length; i++) {
 	            args[this.options.attrs[i].key] = this.options.attrs[i].value;
@@ -172,6 +188,17 @@ query.prototype = {
 			this.options.scales = [];
 		}
 		this.options.scales.push({ key: key, centre: centre, radius: radius, start: start, finish: finish });
+		return this;
+	},
+
+	/**
+	 * Define a meta parameter for the query
+	 */
+	meta : function (key, value) {
+		if (this.options.meta === undefined) {
+			this.options.meta = [];
+		}
+		this.options.meta.push({ key: key, value: value });
 		return this;
 	},
 
