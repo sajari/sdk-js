@@ -61,6 +61,7 @@ var url = {
 	 * Append a query parameter to an existing URL string.
 	 * Optionally put it at the start with "atStart"
 	 */
+	/* 
 	addParameter : function(url, parameterName, parameterValue, atStart){
 	    var replaceDuplicates = true;
 	    var urlhash = '';
@@ -104,6 +105,7 @@ var url = {
 	    }
 	    return urlParts[0] + newQueryString + urlhash;
 	},
+	*/
 
 	/**
 	 * Get a parameter from the URL
