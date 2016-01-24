@@ -62,6 +62,7 @@ API.prototype = {
       success: success,
       failure: failure,
     }
+    this.query.se++;
     return this.send("search", opts, data);
   },
 
@@ -163,8 +164,6 @@ API.prototype = {
    * Sends the API request and handles the response
    */
   send: function(path, opts, data) {
-    this.query.se++;
-
     // Merge in company and collection
     data = this.mergeArgs(data, {"company": this.company, "collection": this.collection, 'q.se': this.query.se});
 
