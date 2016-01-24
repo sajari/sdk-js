@@ -5,6 +5,7 @@ var loaded = require("./utils/loaded");
 var url = require("./utils/url");
 var profile = new (require("./profile"))();
 var API = require("./../api");
+var query = require("./../query");
 var renderResults = require("./views/results");
 
 
@@ -136,6 +137,12 @@ function showResults(response, renderNode, renderType) {
 
     // Add the renderType so we can differentiate search and recommendations
     res.renderType = renderType;
+
+    // Add tracking information to each result so clicks are handled:
+    // TODO
+    // .onmousedown
+    // TODO
+    // .trackingUrl
 
     // Render it
     renderNode.innerHTML = renderResults(res);
@@ -344,6 +351,36 @@ function installSearchGo(node, queryInput) {
         builtInSearch.apply(queryInput ? queryInput : dom.firstNode('search-query'));
     });
     return node;
+}
+
+/**
+ * Extend the query object to support running it
+ */
+query.prototype.run = function(success, failure) {
+    if (this.options.func !== undefined) {
+        
+        if (this.options.q === undefined) {
+            this.options.q = "";
+        }
+
+        switch(this.options.func) {
+            case "search":
+                SJ.Search(this.options.q, success, failure, this.encode());
+                break;
+            case "best":
+                SJ.Best(success, failure, this.encode());
+                break;
+            case "popular":
+                SJ.Popular(success, failure, this.encode());
+                break; 
+            case "recent":
+                SJ.Recent(success, failure, this.encode());
+                break; 
+            case "related":
+                SJ.Related(success, failure, this.encode());
+                break; 
+        }
+    }
 }
 
 /**

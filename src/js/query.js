@@ -1,20 +1,9 @@
 
 /**
- * Return a random string of length "len"
- */
-function stringGen(len) {
-    var text = "";
-    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < len; i++ )
-        text += charset.charAt(Math.floor(Math.random() * charset.length));
-    return text;
-}
-
-
-/**
  * Query constructor
  */
 function query(options) {
+	options = options || {};
 	this.options = options;
 	if (this.se === undefined) {
 		this.se = 0;
@@ -28,9 +17,10 @@ function query(options) {
  * Add prototype methods so queries can compile themselves
  */
 query.prototype = {
+	/**
+	 * Encode the query into a set of params
+	 */ 
 	encode : function () {
-		var input = (typeof this.options.q === 'string' ? this.options.q : '');
-		
 		var args = {};
 
 		if (this.options.cols !== undefined) {
@@ -38,6 +28,7 @@ query.prototype = {
 		}
 
 		var argOptions = [
+			'q',
 			'url',
 			'facet.fields',
 			'facet.limit',
@@ -194,6 +185,103 @@ query.prototype = {
 		this.options.attrs.push({ key: key, value: value });
 		return this;
 	}
+}
+
+/**
+ * Compile a filter argument for a query
+ */
+function queryFilterArg(filter) {
+	switch (filter.op) {
+		case '>':
+		case '<':
+		case '<=':
+		case '>=':
+		case '^':
+		case '$':
+		case '!=':
+		case '~':
+			break;
+		case 'starts-with':
+			filter.op = '^';
+			break;
+		case 'ends-with':
+			filter.op = '$';
+			break;
+		case 'contains':
+			filter.op = '~';
+			break;
+		default:
+			filter.op = '';
+	}
+	if (typeof filter.key != 'string') {
+		throw 'Invalid Sajari filter key: ('+(typeof filter.key)+') '+filter.key;
+	}
+	if (filter.op === '') {
+		return filter.key+','+queryValue(filter.value);
+	} else {
+		return filter.op+filter.key+','+queryValue(filter.value);
+	}
+}
+
+/**
+ * Compile a scale argument for a query
+ */
+function queryScaleArg(scale) {
+	if (typeof scale.key != 'string') {
+		throw 'Invalid Sajari scale key: ('+(typeof scale.key)+') '+scale.key;
+	}
+	if (scale.center !== undefined) {
+		scale.centre = scale.center;
+	}
+	return scale.key
+	       +','+queryNumericValue(scale.centre)
+	       +','+queryNumericValue(scale.radius)
+	       +','+queryNumericValue(scale.start)
+	       +','+queryNumericValue(scale.finish);
+}
+
+/**
+ * Returns the numeric UTC unix timestamp for a javascript date
+ */
+function timestamp(date) {
+	return Math.round( (date.valueOf() + (new Date().getTimezoneOffset()) )  / 1000);
+}
+
+/**
+ * Returns a value suitable for a query, or throws an error
+ */
+function queryValue(value) {
+	if (Object.prototype.toString.call(value) === '[object Date]') {
+		return timestamp(value);
+	} else if (typeof value != 'string' && typeof value != 'number') {
+		throw 'Invalid Sajari query value: ('+(typeof value)+') '+value;
+	} else {
+		return ''+value;
+	}
+}
+
+/**
+ * Returns a numeric value suitable for a query, or throws an error
+ */
+function queryNumericValue(value) {
+	if (Object.prototype.toString.call(value) === '[object Date]') {
+		return timestamp(value);
+	} else if (typeof value != 'number') {
+		throw 'Invalid Sajari query numeric value: ('+(typeof value)+') '+value;
+	} else {
+		return value;
+	}
+}
+
+/**
+ * Return a random string of length "len"
+ */
+function stringGen(len) {
+    var text = "";
+    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < len; i++ )
+        text += charset.charAt(Math.floor(Math.random() * charset.length));
+    return text;
 }
 
 module.exports = query;
