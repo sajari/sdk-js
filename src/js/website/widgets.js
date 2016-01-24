@@ -3,26 +3,26 @@ require("./utils/polyfills")
 
 var loaded = require("./utils/loaded");
 var url = require("./utils/url");
-var profile = new (require("./profile"))();
 var API = require("./../api");
 var query = require("./../query");
 var renderResults = require("./views/results");
 
 
 var opts = {
-    cssUrl : 'https://www.sajari.com/css/sj.css', // Default styling if desired
-    prefix : 'data-sj-',        // Elements with Sajari data parameters all use this as a prefix
+    cssUrl: 'https://www.sajari.com/css/sj.css', // Default styling if desired
+    prefix: 'data-sj-',         // Elements with Sajari data parameters all use this as a prefix
     autoFlush: 100,             // Flush the stack array queue automatically X msecs. 0 is no auto-flush
-    debug : false,               // If true, debug information will be logged to the console
-    company : undefined,
+    debug: false,               // If true, debug information will be logged to the console
+    company: undefined,
     collection: undefined,
     cssIncluded: false,         // If false, the Sajari CSS will be loaded. This can be overridden by setting to true
-    indexed : false,            // Whether or not the index call has already been sent
-    scanOnLoad : true,          // Scans the DOM and builds a list of nodes with domTargets related tags
-    autoQuery : false,          // If true, "q" in the URL will automatically trigger a query
-    autoQueryParam : "q",       // If autoQuery is true, this is the search query parameter to look for in the URL
-    currentQuery : "",
-    domTargets : [
+    index: true,                // Whether to index the page or not
+    indexed: false,             // Whether or not the index call has already been sent
+    scanOnLoad: true,           // Scans the DOM and builds a list of nodes with domTargets related tags
+    autoQuery: false,           // If true, "q" in the URL will automatically trigger a query
+    autoQueryParam: "q",        // If autoQuery is true, this is the search query parameter to look for in the URL
+    currentQuery: "",
+    domTargets: [
         'company', 'collection', 'profile-id', 'noindex', 'noprofile', 'profile-delay', 'conv-type',
         'search-query', 'search-query-word', 'search-query-go', 'search-results', 'recent', 'popular',
         'related', 'best', 'search-recent', 'search-noresults', 'search-error', 'personalization'
@@ -30,6 +30,13 @@ var opts = {
 }
 // Initialize DOM functionality
 var dom = new (require("./utils/dom"))(opts);
+
+// Initialize the users profile
+var profile = new (require("./profile"))({
+    send: true,             // Only send profile data if this is true
+    sent: false,            // Switch when the automatic profile is sent
+    delay: 120000    // Default profile sends if the user browses longer than this time in msecs.
+});
 
 // Keep information on the current webpage
 var page = {
@@ -358,7 +365,7 @@ function installSearchGo(node, queryInput) {
  */
 query.prototype.run = function(success, failure) {
     if (this.options.func !== undefined) {
-        
+
         if (this.options.q === undefined) {
             this.options.q = "";
         }
@@ -438,6 +445,10 @@ var methods = {
 
     // Index the page
     index: function() {
+        if (!opts.index) {
+            log('Noindex flag is set');
+            return;
+        }
         if (opts.indexed) {
             log('Already indexed');
             return;
@@ -457,7 +468,7 @@ var methods = {
 
     // Prevent page indexing
     noindex: function() {
-        opts.indexed = true;
+        opts.index = false;
     },
 
     // Automatic query from url support
@@ -472,7 +483,7 @@ var methods = {
 
     // Prevent profiling
     noprofile: function() {
-        profile.sent = true;
+        profile.send = false;
     },
 
     // Set the collection
@@ -621,15 +632,21 @@ sj.prototype = {
         // We have a company and a domain so we can install the API
         api = new API(opts.company, opts.collection, { jsonp : true});
 
-		// Profile user unless we specify not to
-        // To do: This should set the opts var accordingly
-		if (!dom.hasNode('noprofile')) {
-			// Send the document title to profile
+		// Profile user automatically unless we specify not to
+		if (dom.hasNode('noprofile')) {
+            profile.send = false;
+        }
+
+        // Set up the profiling functions if allowed
+        if (!profile.send) {
+
+			// Send the document title as profile text
 	        if (!profile.sent) {
 	            setTimeout(function() {
 	                stack.push(['profile', document.title]);
 	                flush();
-	            }, dom.firstNodeVal('profile-delay', profile.defaultDelay));
+                    profile.sent = true;
+	            }, dom.firstNodeVal('profile-delay', profile.delay));
 	        }
 			
 
@@ -646,6 +663,8 @@ sj.prototype = {
 				}
 			}
 		}
+
+        log(profile);
 
 		// Send page for indexing
 		if (!dom.hasNode('noindex')) {

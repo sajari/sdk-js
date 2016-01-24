@@ -8,6 +8,9 @@ var cookie = require("./utils/cookie");
  */
 function profile(options) {
 	options = options || {};
+	for (var o in options) {
+		this[o] = options[o];
+	}
 	if (options.meta === undefined) {
 		this.meta = {};
 	}
@@ -20,11 +23,14 @@ function profile(options) {
         }
         cookie.set('sjID', this.visitorId, 365);
     }
-
-	this.options = options;
 }
 
 profile.prototype = {
+
+	encode: function() {
+
+	},
+
 	/**
 	 * Sets a hardcoded visitor identifier
 	 */
