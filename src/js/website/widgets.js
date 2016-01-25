@@ -174,13 +174,14 @@ function overlay(attrs) {
     log(attrs);
 
     vars = {
-        themeColor: "blue"
+        themeColor: "blue",
+        resultsExtra: ""
     };
     if (typeof attrs === 'object') {
         for (var key in attrs) {
             if (attrs.hasOwnProperty(key)) {
                 // Pass any relevant parameters to the modal results
-                //vars.resultsExtra += " " + opts.prefix + key + "=" + attrs[key];
+                vars.resultsExtra += " " + opts.prefix + key + "=" + attrs[key];
 
                 // If the theme color is different, change it
                 if (key == "theme") {
@@ -207,6 +208,10 @@ function overlay(attrs) {
     dom.bind(document.getElementById("sj-o-shade"), 'click', function() {
         div.style.display = 'none';
     });
+
+    // Transfer dynamic props
+    dom.copyDynamicProperties(dom.firstNode('search-query'), dom.lastNode('search-query'));
+    dom.copyDynamicProperties(dom.firstNode('search-query'), dom.lastNode('search-results'));
 
     return div
 /*
@@ -280,7 +285,7 @@ function builtInSearch() {
     // Propagate dynamic attributes from one set of elements to another
     // In this case people tend to configure the search query element, but
     // some properties need to enact on the results element.
-    dom.copyDynamicProperties('search-query', 'search-results');
+    dom.copyDynamicProperties(dom.firstNode('search-query'), dom.firstNode('search-results'));
 
     // If we're already waiting on a search, exit here, no point starting another
 	if (opts.searchInProgress) {
@@ -672,9 +677,7 @@ sj.prototype = {
         // Find and Install the Search Results DIV. If it does not exist, create an overlay block to handle results instead
         if (!dom.hasNode('search-results')) {
             // No results node. Need an overlay installed
-            // Also install functions to the new HTML we just added
             dom.scanShim(overlay(dom.dynamicAttrs(this)));
-            dom.copyDynamicProperties('search-query', 'search-results');
         } 
 
         dom.resultsNode = dom.firstNode('search-results');
