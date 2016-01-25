@@ -69,22 +69,18 @@ dom.prototype = {
     /**
      * Propagates data parameters from the 'from' node to the 'to' node
      */
-    copyDynamicProperties : function(from, to) {
-        if (!this.dynPropCopied) {    
-            if ((this.firstNode(from) !== undefined) && (this.hasNode(to))) {
-                var res = this.firstNode(to);
-                var attrs = this.dynamicAttrs(this.firstNode(from));
-                if (typeof attrs === 'object') {
-                    for (var key in attrs) {
-                        if (attrs.hasOwnProperty(key)) {
-                            console.log(key + " " + attrs[key])
-                            // Propagate relevant data parameters from the query input to the results div
-                            res.setAttribute(this.prefix+key, attrs[key]);
-                        }
+    copyDynamicProperties : function(from, to) { 
+        if ((from !== undefined) && (to !== undefined)) {
+            var attrs = this.dynamicAttrs(from);
+            if (typeof attrs === 'object') {
+                for (var key in attrs) {
+                    if (attrs.hasOwnProperty(key)) {
+                        console.log(key + " " + attrs[key])
+                        // Propagate relevant data parameters from the query input to the results div
+                        to.setAttribute(this.prefix+key, attrs[key]);
                     }
                 }
             }
-            this.dynPropCopied = true;
         }
     },
 
@@ -189,6 +185,16 @@ dom.prototype = {
             return undefined;
         }
         return this.nodes[attr][0];
+    },
+
+    /**
+     * Return the last node for the given attribute, or undefined if there isn't one.
+     */
+    lastNode : function(attr) {
+        if (!this.hasNode(attr)) {
+            return undefined;
+        }
+        return this.nodes[attr][this.nodes[attr].length];
     },
 
     /**
