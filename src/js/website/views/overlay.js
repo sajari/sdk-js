@@ -1,0 +1,4 @@
+(function(){function overlay(it
+/**/) {
+var out='<div class="sj-search"> <div id="sj-o-shade" class="sj-shade"></div> <div class="sj-search-modal sj-cf"> <div id="sj-o-close" class="sj-close"> &times; </div> <form class="sj-search-form"> <div id="sj-search-bar"> <span id="sj-icon-search"></span> <input data-sj-search-query type="search" placeholder="search this site" /> <button data-sj-search-query-go type="submit" class="sj-search-go '+(it.themeColor)+'">Search</button> </div> </form> <div data-sj-search-results class="sj-results"></div> </div></div>';return out;
+}var itself=overlay;if(typeof module!=='undefined' && module.exports) module.exports=itself;else if(typeof define==='function')define(function(){return itself;});else {window.render=window.render||{};window.render['overlay']=itself;}}());
