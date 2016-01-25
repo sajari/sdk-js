@@ -6,6 +6,7 @@ var url = require("./utils/url");
 var API = require("./../api");
 var query = require("./../query");
 var renderResults = require("./views/results");
+var renderOverlay = require("./views/overlay");
 
 
 var opts = {
@@ -18,14 +19,16 @@ var opts = {
     cssIncluded: false,         // If false, the Sajari CSS will be loaded. This can be overridden by setting to true
     index: true,                // Whether to index the page or not
     indexed: false,             // Whether or not the index call has already been sent
-    scanOnLoad: true,           // Scans the DOM and builds a list of nodes with domTargets related tags
+    scanOnLoad: true,           // Scans the DOM and builds a list of nodes with dom.targets related tags
     autoQuery: false,           // If true, "q" in the URL will automatically trigger a query
     autoQueryParam: "q",        // If autoQuery is true, this is the search query parameter to look for in the URL
-    currentQuery: "",
-    domTargets: [
+    currentQuery: "",           // Holds the current query text
+    searchInProgress: false,    // Goes to true when a search is in process
+    targets: [
         'company', 'collection', 'profile-id', 'noindex', 'noprofile', 'profile-delay', 'conv-type',
         'search-query', 'search-query-word', 'search-query-go', 'search-results', 'recent', 'popular',
-        'related', 'best', 'search-recent', 'search-noresults', 'search-error', 'personalization'
+        'related', 'best', 'search-recent', 'search-noresults', 'search-error', 'personalization', 'overlay',
+        'local'
     ]
 }
 // Initialize DOM functionality
@@ -169,19 +172,45 @@ function showError(renderNode) {
  */
 function overlay(attrs) {
     log(attrs);
-    var resultsextra = "";
-    var themecolor = "blue";
+
+    vars = {
+        themeColor: "blue"
+    };
     if (typeof attrs === 'object') {
         for (var key in attrs) {
             if (attrs.hasOwnProperty(key)) {
                 // Pass any relevant parameters to the modal results
-                resultsextra += " " + opts.prefix + key + "=" + attrs[key];
+                //vars.resultsExtra += " " + opts.prefix + key + "=" + attrs[key];
+
+                // If the theme color is different, change it
                 if (key == "theme") {
-                    themecolor = attrs[key];
+                    vars.themeColor = attrs[key];
                 }
             }
         }
     }
+
+    // Render and inject at the end of the DOM
+    var overlayHTML = renderOverlay(vars);
+    var div = document.createElement('div');
+    div.style.display = 'none';
+    div.setAttribute(opts.prefix+'overlay', '');
+    div.innerHTML = overlayHTML;
+    document.body.appendChild(div);
+
+    // Bind close event to the close cross
+    dom.bind(document.getElementById("sj-o-close"), 'click', function() {
+        div.style.display = 'none';
+    });
+
+    // Bind close event to the shaded background
+    dom.bind(document.getElementById("sj-o-shade"), 'click', function() {
+        div.style.display = 'none';
+    });
+
+    return div
+/*
+
     if (overlayDom === undefined) {
         overlayDom = document.createElement('div');
         overlayDom.style.display = 'none';
@@ -236,6 +265,8 @@ function overlay(attrs) {
 
     overlayDom.style.display = 'block';
     return overlayDom.lastChild.lastChild;
+
+    */
 }
 
 /**
@@ -243,7 +274,6 @@ function overlay(attrs) {
  * if no elements with attributes exist.
  */
 function builtInSearch() {
-    var searchInProgress = false;
     var node = this,
         last = this.value;
 
@@ -252,27 +282,30 @@ function builtInSearch() {
     // some properties need to enact on the results element.
     dom.copyDynamicProperties('search-query', 'search-results');
 
-    // Find and Install the Search Results DIV. If it does not exist, create an overlay block to handle results instead
-    dom.resultsNode = (dom.hasNode('search-results') ? dom.firstNode('search-results') : overlay(dom.dynamicAttrs(this)));
-
     // If we're already waiting on a search, exit here, no point starting another
-	if (searchInProgress) {
+	if (opts.searchInProgress) {
 		return;
 	}
 
+    // Show the overlay if there is one
+    if (dom.hasNode('overlay')) {
+        log("Launching overlay...")
+        dom.firstNode('overlay').style.display = 'block';
+    }
+
     // Start the search process
-	searchInProgress = true;
+	opts.searchInProgress = true;
     SJ.Search(
         this.value.replace(/(^ *| *$)/, ''),
         function (response) {
-			searchInProgress = false;
+			opts.searchInProgress = false;
             showResults(response, dom.resultsNode, "search");
             if (node.value !== last && hasInstantSearch(node)) {
             	builtInSearch.apply(node);
             }
         },
         function () {
-			searchInProgress = false;
+			opts.searchInProgress = false;
             showError(dom.resultsNode);
         },
         dom.dynamicAttrsUri(this)
@@ -441,6 +474,10 @@ var methods = {
             injected = '';
         }
         SJ.SendClick(qid, slot, injected, undefined);
+
+        // Reset the query sequence
+        api.resetSequence();
+        log("reset query sequence...");
     },
 
     // Index the page
@@ -454,7 +491,7 @@ var methods = {
             return;
         }
         opts.indexed = true;
-        api.pixel({
+        data = {
             'ec.ti': document.title,
             'ec.de': dom.getMeta("description"),
             'ec.ke': dom.getMeta("keywords"),
@@ -463,7 +500,9 @@ var methods = {
             'cc.pr': opts.collection,
             'p.ga': profile.gaId,
             'p.id': profile.visitorId
-        }, '');
+        };
+        api.pixel(data, '');
+        log(data);
     },
 
     // Prevent page indexing
@@ -613,9 +652,7 @@ sj.prototype = {
 
         // Reset and re-scan our components in the DOM
         // Because we are scanning, we need to reset our current shadow DOM
-        // That means dynamic props will possibly need to be recopied...
-        this.dynPropCopied = false;
-        dom.Nodes = {}; // We reset externally as the scanShim function is recursive
+        dom.nodes = {}; // We reset externally as the scanShim function is recursive
         dom.scanShim(document.body);
 
 		processOptions(options);
@@ -632,6 +669,22 @@ sj.prototype = {
         // We have a company and a domain so we can install the API
         api = new API(opts.company, opts.collection, { jsonp : true});
 
+        // Find and Install the Search Results DIV. If it does not exist, create an overlay block to handle results instead
+        if (!dom.hasNode('search-results')) {
+            // No results node. Need an overlay installed
+            // Also install functions to the new HTML we just added
+            dom.scanShim(overlay(dom.dynamicAttrs(this)));
+            dom.copyDynamicProperties('search-query', 'search-results');
+        } 
+
+        dom.resultsNode = dom.firstNode('search-results');
+
+
+        // Grab page meta and add it to the page object
+        // TODO
+        // log(dom.dynamicAttrs("meta"));
+
+
 		// Profile user automatically unless we specify not to
 		if (dom.hasNode('noprofile')) {
             profile.send = false;
@@ -639,8 +692,9 @@ sj.prototype = {
 
         // Set up the profiling functions if allowed
         if (!profile.send) {
-
-			// Send the document title as profile text
+            log(profile);
+			
+            // Send the document title as profile text
 	        if (!profile.sent) {
 	            setTimeout(function() {
 	                stack.push(['profile', document.title]);
@@ -664,7 +718,6 @@ sj.prototype = {
 			}
 		}
 
-        log(profile);
 
 		// Send page for indexing
 		if (!dom.hasNode('noindex')) {
@@ -677,6 +730,7 @@ sj.prototype = {
 		});
 
 		// Send click throughs. We push onto the stack as the API is still initializing
+        // TODO - Remove once click through URL tracking is added.
 		var qid = url.getURLParameter("q.id");
 		if (qid) {
 			stack.push(['click', qid, url.getURLParameter("q.sl"), url.getURLParameter("q.in")]);
@@ -737,9 +791,6 @@ sj.prototype = {
 
         // SETUP SEARCH
 		// Setup the search query process based on the options available.
-        // We need to check the scanned DOM nodes to see what is required.
-		dom.resultsNode = undefined; // Reset the results node.
-		dynPropCopied = false;
 		if (!dom.hasNode('search-query')) {
             return
         }

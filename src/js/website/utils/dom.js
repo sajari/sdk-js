@@ -10,13 +10,13 @@ function dom(opts) {
     if (opts.prefix) {
         this.prefix = opts.prefix;
     }
-    this.domNodes = {};
-    if (opts.domNodes) {
-        this.domNodes = opts.domNodes;
+    this.nodes = {};
+    if (opts.nodes) {
+        this.nodes = opts.nodes;
     }
-    this.domTargets = {};
-    if (opts.domTargets) {
-        this.domTargets = opts.domTargets;
+    this.targets = {};
+    if (opts.targets) {
+        this.targets = opts.targets;
     }
 }
 
@@ -73,10 +73,11 @@ dom.prototype = {
         if (!this.dynPropCopied) {    
             if ((this.firstNode(from) !== undefined) && (this.hasNode(to))) {
                 var res = this.firstNode(to);
-                var attrs = this.dynamicAttrs(this);
+                var attrs = this.dynamicAttrs(this.firstNode(from));
                 if (typeof attrs === 'object') {
                     for (var key in attrs) {
                         if (attrs.hasOwnProperty(key)) {
+                            console.log(key + " " + attrs[key])
                             // Propagate relevant data parameters from the query input to the results div
                             res.setAttribute(this.prefix+key, attrs[key]);
                         }
@@ -94,26 +95,26 @@ dom.prototype = {
     scanShim : function(scope) {
         // Try to use the built in if it is supported
         if (document.getElementsByAttribute !== undefined) {
-            for (var i = 0; i < this.domTargets.length; i++) {
-                elements = document.getElementsByAttribute(this.prefix + this.domTargets[i], '*');
+            for (var i = 0; i < this.targets.length; i++) {
+                elements = document.getElementsByAttribute(this.prefix + this.targets[i], '*');
                 if (elements.length > 0) {
-                    dom.domNodes[this.domTargets[i]] = elements;
+                    dom.nodes[this.targets[i]] = elements;
                 }
             }
             return
         }
         // Not supported, run the polyfill instead
         if (scope.nodeType === 1) {
-            for (var i = 0; i < this.domTargets.length; i++) {
-                if (scope.hasAttribute(this.prefix + this.domTargets[i])) {
-                    if (this.domNodes[this.domTargets[i]] === undefined) {
-                        this.domNodes[this.domTargets[i]] = [];
+            for (var i = 0; i < this.targets.length; i++) {
+                if (scope.hasAttribute(this.prefix + this.targets[i])) {
+                    if (this.nodes[this.targets[i]] === undefined) {
+                        this.nodes[this.targets[i]] = [];
                     }
-                    this.domNodes[this.domTargets[i]].push(scope);                }
+                    this.nodes[this.targets[i]].push(scope);                }
             }
             if (scope.childNodes !== undefined) {
                 for (var j = 0; j < scope.childNodes.length; j++) {
-                    this.scanShim(scope.childNodes[j], this.domTargets, this.domNodes);
+                    this.scanShim(scope.childNodes[j], this.targets, this.nodes);
                 }
             }
         }
@@ -139,8 +140,9 @@ dom.prototype = {
         for (var i in node.attributes) {
             var attrib = node.attributes[i];
             if (attrib.specified) {
-                m = /^data\-sj\-(.+)$/.exec(attrib.name);
-                if (m && this.domTargets.indexOf(m[1]) === -1) {
+                var reg = new RegExp(this.prefix + "(.+)$", "g");
+                m = reg.exec(attrib.name);
+                if (m && this.targets.indexOf(m[1]) === -1) {
                     attrs[m[1]] = attrib.value;
                 }
             }
@@ -166,8 +168,8 @@ dom.prototype = {
      */
     eachNode : function(attr, callback) {
         if (this.hasNode(attr)) {
-            for (var i = 0; i < this.domNodes[attr].length; i++) {
-                callback(this.domNodes[attr][i], this.prefix + attr);
+            for (var i = 0; i < this.nodes[attr].length; i++) {
+                callback(this.nodes[attr][i], this.prefix + attr);
             }
         }
     },
@@ -176,7 +178,7 @@ dom.prototype = {
      * Return the first node for the given attribute, or undefined if there isn't one.
      */
     hasNode : function(attr) {
-        return (this.domNodes[attr] !== undefined && this.domNodes[attr].length > 0);
+        return (this.nodes[attr] !== undefined && this.nodes[attr].length > 0);
     },
 
     /**
@@ -186,7 +188,7 @@ dom.prototype = {
         if (!this.hasNode(attr)) {
             return undefined;
         }
-        return this.domNodes[attr][0];
+        return this.nodes[attr][0];
     },
 
     /**
