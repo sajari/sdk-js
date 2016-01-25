@@ -118,7 +118,13 @@ API.prototype = {
     return this.send("best", opts, data);
   },
 
-
+  /*
+   * Reset the query sequence (indicates a new query sequence is beginning)
+   *
+   */
+  resetSequence: function() {
+    this.query.sequence(1);
+  },
 
   /**
    * Send tracking data to a URL via an image request. Automatically adds extra arguments for identity, company, and collection.
