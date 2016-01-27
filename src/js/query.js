@@ -1,4 +1,4 @@
-var isArray = require('lodash.isarray');
+var isArray = require('./utils/isArray');
 
 /**
  * Query constructor

@@ -3,7 +3,7 @@
  */
 
 var query = require("./query");
-var url = require("./website/utils/url");
+var url = require("./utils/url");
 
 var request = require('superagent');
 var jsonp = require('superagent-jsonp'); // To use jsonp chain: .use(jsonp)
@@ -17,7 +17,7 @@ var log = debug('app:log');
  *
  * @param {string} company - Your company ID, see your dashboard
  * @param {string} collection - Your collection, see your dashboard
- * @param {Object} [opts]
+ * @param {Object} [opts] - Setup options, such as basicauth, jsonp, etc
  */
 function API(company, collection, opts) {
   var usage = 'Usage: API(company, collection, opts)';
@@ -53,8 +53,7 @@ function API(company, collection, opts) {
 
 API.prototype = {
   /*
-   * Search 
-   *
+   * Search an index
    */
   search: function(data, success, failure) {
     opts = {
@@ -68,7 +67,6 @@ API.prototype = {
 
   /*
    * Popular recommendations
-   *
    */
   popular: function(data, success, failure) {
     opts = {
@@ -81,7 +79,6 @@ API.prototype = {
 
   /*
    * Related recommendations
-   *
    */
   related: function(data, success, failure) {
     opts = {
@@ -94,7 +91,6 @@ API.prototype = {
 
   /*
    * Recent recommendations
-   *
    */
   recent: function(data, success, failure) {
     opts = {
@@ -107,7 +103,6 @@ API.prototype = {
 
   /*
    * Best recommendations
-   *
    */
   best: function(data, success, failure) {
     opts = {
@@ -120,7 +115,6 @@ API.prototype = {
 
   /*
    * Reset the query sequence (indicates a new query sequence is beginning)
-   *
    */
   resetSequence: function() {
     this.query.sequence(1);
@@ -185,7 +179,12 @@ API.prototype = {
       case "GET":
           var req = request.get(path);
           break;
-      // TODO - What else? 
+      case "PATCH":
+          var req = request.patch(path);
+          break;
+      case "DELETE":
+          var req = request.delete(path);
+          break;    
       default:
           return opts.failure();   
     }

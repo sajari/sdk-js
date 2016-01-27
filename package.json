@@ -1,6 +1,6 @@
 {
   "name": "sajari-sdk-js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "JavaScript SDK for access to the Sajari search API",
   "author": "Sajari <support@sajari.com>",
   "repository": "sajari/sajari-sdk-js",
@@ -17,9 +17,6 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "dot": "1.0.1",
-    "lodash.isarray": "^4.0.0",
-    "pubsub-js": "^1.5.3",
     "superagent": "^1.6.1",
     "superagent-jsonp": "0.0.6"
   },

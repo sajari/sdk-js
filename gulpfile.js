@@ -12,32 +12,6 @@ function handleErrors(errors) {
 	console.log(errors);
 }
 
-
-gulp.task('default', function() {
-  
-});
-
-// WORKS FINE, NO LIBS
-gulp.task('javascript', function(callback) {
-  return gulp.src([
-      './src/js/*.js'
-    ])
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(concat("sj.js"))
-    .pipe(uglify())
-    .pipe(gulp.dest('./dist/'))
-    .on('error', handleErrors);
-});
-
-gulp.task('compile-templates', function (cb) {
-  exec('./node_modules/.bin/dottojs  -s src/js/website/views/ -d src/js/website/views/', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-  });
-})
-
 gulp.task('browserify', function() {
     return browserify('./src/js/api.js')
         .bundle()
@@ -45,20 +19,14 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('widgets', ['compile-templates'], function() {
-    return browserify('./src/js/website/main.js')
+gulp.task('uglify', function() {
+    return browserify('./src/js/api.js')
         .bundle()
-        .pipe(source('widgets.js'))
-        .pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('compress-widgets', ['compile-templates'], function() {
-    return browserify('./src/js/website/main.js')
-        .bundle()
-        .pipe(source('widgets.min.js'))
+        .pipe(source('sj.min.js'))
         .pipe(buffer()) 
         .pipe(uglify())
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('default', ['compile-templates', 'widgets', 'compress-widgets']);
+gulp.task('default', ['browserify', 'uglify']);
+
