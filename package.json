@@ -1,9 +1,33 @@
 {
-  "name": "sajari-sdk-js",
+  "name": "sajari",
   "version": "0.1.0",
   "description": "JavaScript SDK for access to the Sajari search API",
-  "author": "Sajari <support@sajari.com>",
-  "repository": "sajari/sajari-sdk-js",
+  "author": "mish15",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sajari/sajari-sdk-js.git"
+  },
+  "keywords": [
+    "sajari",
+    "search",
+    "search api",
+    "match",
+    "recommend",
+    "realtime",
+    "autocomplete"
+  ],
+  "homepage": "https://github.com/sajari/sajari-sdk-js",
+  "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
+  "author": {
+    "name": "mish15",
+    "url": "https://www.sajari.com"
+  },
+  "contributors": [
+    {
+      "name": "Sajari Support <support@sajari.com>",
+      "url": "https://www.sajari.com"
+    }
+  ],
   "devDependencies": {
     "browserify": "^13.0.0",
     "gulp": "^3.9.0",
