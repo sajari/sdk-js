@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "JavaScript SDK for access to the Sajari search API",
   "author": "mish15",
+  "main": "src/js/api.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/sajari/sajari-sdk-js.git"
