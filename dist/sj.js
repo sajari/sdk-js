@@ -1939,7 +1939,7 @@ module.exports = request;
  * api.js - The Sajari JavaScript API SDK
  */
 
-var query = require("./query");
+var newquery = require("./query");
 var url = require("./utils/url");
 
 var request = require('superagent');
@@ -1974,11 +1974,12 @@ function API(company, collection, opts) {
   for (var o in opts) {
     this[o] = opts[o];
   }
+
   if (this.jsonp === undefined) {
     this.jsonp = false;
   }
 
-  this.query = new query();
+  this.se = 1;
   
   this.hosts = {
     api : "https://www.sajari.com/api/",
@@ -1998,7 +1999,12 @@ API.prototype = {
       success: success,
       failure: failure,
     }
-    this.query.se++;
+    if (typeof data === 'string') {
+      if (data.indexOf('=') === -1) {
+        // Data is a keyword query, change it accordingly
+        data = {q: data};
+      }
+    }
     return this.send("search", opts, data);
   },
 
@@ -2051,10 +2057,17 @@ API.prototype = {
   },
 
   /*
+   * Return a new query object
+   */
+  query: function(opts) {
+    return new newquery(opts);
+  },
+
+  /*
    * Reset the query sequence (indicates a new query sequence is beginning)
    */
   resetSequence: function() {
-    this.query.sequence(1);
+    this.se = 1;
   },
 
   /**
@@ -2102,7 +2115,12 @@ API.prototype = {
    */
   send: function(path, opts, data) {
     // Merge in company and collection
-    data = this.mergeArgs(data, {"company": this.company, "collection": this.collection, 'q.se': this.query.se});
+    data = this.mergeArgs(toArgs(data), {"company": this.company, "collection": this.collection});
+    if (!data.hasOwnProperty('q.se') && path == 'search') {
+      // There is no query sequence, so use the internal one an then increment
+      data['q.se'] = this.se;
+      this.se++;
+    }
 
     var path = this.hosts.api + path;
     if (this.jsonp) {
@@ -2120,8 +2138,11 @@ API.prototype = {
           var req = request.patch(path);
           break;
       case "DELETE":
-          var req = request.delete(path);
-          break;    
+          var req = request.del(path);
+          break;
+      case "PUT":
+          var req = request.put(path);
+          break;        
       default:
           return opts.failure();   
     }
@@ -2150,6 +2171,16 @@ API.prototype = {
   }
 };
 
+/**
+ * Convert various objects into args for sending
+ */
+function toArgs(data) {
+  if (data instanceof newquery) {
+    data.sequence();
+    data = data.encode();
+  }
+  return data
+}
 
 module.exports = API; 
 
