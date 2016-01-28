@@ -20,11 +20,11 @@ function query(options) {
 query.prototype = {
 	/**
 	 * Encode the query into a set of params
-	 */ 
-	encode : function () {
+	 */
+	encode: function() {
 		var args = {
-			'q.id' : this.id,
-			'q.se' : this.se
+			'q.id': this.id,
+			'q.se': this.se
 		};
 
 		// Pass through specific args
@@ -43,9 +43,9 @@ query.prototype = {
 			'page'
 		];
 		for (var i = 0; i < argOptions.length; i++) {
-	        if (this.options[argOptions[i]] !== undefined) {
-	            args[argOptions[i]] = this.options[argOptions[i]];
-	        }
+			if (this.options[argOptions[i]] !== undefined) {
+				args[argOptions[i]] = this.options[argOptions[i]];
+			}
 		}
 
 		// Set the cols variable if applicable
@@ -77,28 +77,28 @@ query.prototype = {
 
 		// Encode the meta
 		if (this.options.meta !== undefined) {
-	        for (var i = 0; i < this.options.meta.length; i++) {
-	        	if (isArray(this.options.meta[i].value)) {
-	        		args['meta['+this.options.meta[i].key+']'] = this.options.meta[i].value.join(';');
-	        	} else {
-	        		args['meta['+this.options.meta[i].key+']'] = this.options.meta[i].value;
-	        	}
-	        }
-	    }
+			for (var i = 0; i < this.options.meta.length; i++) {
+				if (isArray(this.options.meta[i].value)) {
+					args['meta[' + this.options.meta[i].key + ']'] = this.options.meta[i].value.join(';');
+				} else {
+					args['meta[' + this.options.meta[i].key + ']'] = this.options.meta[i].value;
+				}
+			}
+		}
 
 		// Encode the other attributes
-	    if (this.options.attrs !== undefined) {
-	        for (var i = 0; i < this.options.attrs.length; i++) {
-	            args[this.options.attrs[i].key] = this.options.attrs[i].value;
-	        }
-	    }
-	    return args;
+		if (this.options.attrs !== undefined) {
+			for (var i = 0; i < this.options.attrs.length; i++) {
+				args[this.options.attrs[i].key] = this.options.attrs[i].value;
+			}
+		}
+		return args;
 	},
 
 	/**
 	 * Define a unique query ID for the query
 	 */
-	setQueryId : function (qid) {
+	setQueryId: function(qid) {
 		this.id = qid;
 		return this;
 	},
@@ -106,7 +106,7 @@ query.prototype = {
 	/**
 	 * Increment or set the query sequence
 	 */
-	sequence : function (seq) {
+	sequence: function(seq) {
 		if (seq !== undefined) {
 			this.se = seq;
 		} else {
@@ -118,7 +118,7 @@ query.prototype = {
 	/**
 	 * Define an array columns to return in the query
 	 */
-	cols : function (cols) {
+	cols: function(cols) {
 		this.options.cols = cols;
 		return this;
 	},
@@ -126,90 +126,106 @@ query.prototype = {
 	/**
 	 * Add a URL to the query data (overrides when doing related)
 	 */
-	url : function (url) {
-	    this.options.url = url;
-	    return this;
+	url: function(url) {
+		this.options.url = url;
+		return this;
 	},
 
 	/**
 	 * Add a results page number to the query data
 	 */
-	page : function (num) {
-	    this.options.page = num;
-	    return this;
+	page: function(num) {
+		this.options.page = num;
+		return this;
 	},
 
 	/**
 	 * Define facet.fields and limit to return in the query
 	 */
-	facetfields : function (fields, limit) {
-	    this.options["facet.fields"] = fields;
-	    this.options["facet.limit"] = limit;
-	    return this;
+	facetfields: function(fields, limit) {
+		this.options["facet.fields"] = fields;
+		this.options["facet.limit"] = limit;
+		return this;
 	},
 
 	/**
 	 * Define a metric facet to return in the query (only support one currently)
 	 */
-	metricfacet : function (field, start, end, gap) {
-	    this.options["facet.metric.field"] = field;
-	    this.options["facet.metric.start"] = start;
-	    this.options["facet.metric.end"] = end;
-	    this.options["facet.metric.gap"] = gap;
-	    return this;
+	metricfacet: function(field, start, end, gap) {
+		this.options["facet.metric.field"] = field;
+		this.options["facet.metric.start"] = start;
+		this.options["facet.metric.end"] = end;
+		this.options["facet.metric.gap"] = gap;
+		return this;
 	},
 
 	/**
 	 * Define a date facet to return in the query (only support one currently)
 	 */
-	datefacet : function (start, end, gap) {
-	    this.options["facet.date.start"] = start;
-	    this.options["facet.date.end"] = end;
-	    this.options["facet.date.gap"] = gap;
-	    return this;
+	datefacet: function(start, end, gap) {
+		this.options["facet.date.start"] = start;
+		this.options["facet.date.end"] = end;
+		this.options["facet.date.gap"] = gap;
+		return this;
 	},
 
 	/**
 	 * Define a filter for the query
 	 */
-	filter : function (key, op, value) {
+	filter: function(key, op, value) {
 		if (this.options.filters === undefined) {
 			this.options.filters = [];
 		}
-		this.options.filters.push({ key: key, op: op, value: value });
+		this.options.filters.push({
+			key: key,
+			op: op,
+			value: value
+		});
 		return this;
 	},
 
 	/**
 	 * Define a scale for the query
 	 */
-	scale : function (key, centre, radius, start, finish) {
+	scale: function(key, centre, radius, start, finish) {
 		if (this.options.scales === undefined) {
 			this.options.scales = [];
 		}
-		this.options.scales.push({ key: key, centre: centre, radius: radius, start: start, finish: finish });
+		this.options.scales.push({
+			key: key,
+			centre: centre,
+			radius: radius,
+			start: start,
+			finish: finish
+		});
 		return this;
 	},
 
 	/**
 	 * Define a meta parameter for the query
 	 */
-	meta : function (key, value) {
+	meta: function(key, value) {
 		if (this.options.meta === undefined) {
 			this.options.meta = [];
 		}
-		this.options.meta.push({ key: key, value: value });
+		this.options.meta.push({
+			key: key,
+			value: value
+		});
 		return this;
 	},
 
 	/**
 	 * Define an arbitrary attribute for the query
 	 */
-	attr : function (key, value) {
+	attr: function(key, value) {
 		if (this.options.attrs === undefined) {
 			this.options.attrs = [];
 		}
-		this.options.attrs.push({ key: key, value: value });
+		this.options.attrs.push({
+			key: key,
+			value: value
+		});
 		return this;
 	}
 }
@@ -241,12 +257,12 @@ function queryFilterArg(filter) {
 			filter.op = '';
 	}
 	if (typeof filter.key != 'string') {
-		throw 'Invalid Sajari filter key: ('+(typeof filter.key)+') '+filter.key;
+		throw 'Invalid Sajari filter key: (' + (typeof filter.key) + ') ' + filter.key;
 	}
 	if (filter.op === '') {
-		return filter.key+','+queryValue(filter.value);
+		return filter.key + ',' + queryValue(filter.value);
 	} else {
-		return filter.op+filter.key+','+queryValue(filter.value);
+		return filter.op + filter.key + ',' + queryValue(filter.value);
 	}
 }
 
@@ -255,23 +271,19 @@ function queryFilterArg(filter) {
  */
 function queryScaleArg(scale) {
 	if (typeof scale.key != 'string') {
-		throw 'Invalid Sajari scale key: ('+(typeof scale.key)+') '+scale.key;
+		throw 'Invalid Sajari scale key: (' + (typeof scale.key) + ') ' + scale.key;
 	}
 	if (scale.center !== undefined) {
 		scale.centre = scale.center;
 	}
-	return scale.key
-	       +','+queryNumericValue(scale.centre)
-	       +','+queryNumericValue(scale.radius)
-	       +','+queryNumericValue(scale.start)
-	       +','+queryNumericValue(scale.finish);
+	return scale.key + ',' + queryNumericValue(scale.centre) + ',' + queryNumericValue(scale.radius) + ',' + queryNumericValue(scale.start) + ',' + queryNumericValue(scale.finish);
 }
 
 /**
  * Returns the numeric UTC unix timestamp for a javascript date
  */
 function timestamp(date) {
-	return Math.round( (date.valueOf() + (new Date().getTimezoneOffset()) )  / 1000);
+	return Math.round((date.valueOf() + (new Date().getTimezoneOffset())) / 1000);
 }
 
 /**
@@ -281,9 +293,9 @@ function queryValue(value) {
 	if (Object.prototype.toString.call(value) === '[object Date]') {
 		return timestamp(value);
 	} else if (typeof value != 'string' && typeof value != 'number') {
-		throw 'Invalid Sajari query value: ('+(typeof value)+') '+value;
+		throw 'Invalid Sajari query value: (' + (typeof value) + ') ' + value;
 	} else {
-		return ''+value;
+		return '' + value;
 	}
 }
 
@@ -294,7 +306,7 @@ function queryNumericValue(value) {
 	if (Object.prototype.toString.call(value) === '[object Date]') {
 		return timestamp(value);
 	} else if (typeof value != 'number') {
-		throw 'Invalid Sajari query numeric value: ('+(typeof value)+') '+value;
+		throw 'Invalid Sajari query numeric value: (' + (typeof value) + ') ' + value;
 	} else {
 		return value;
 	}
@@ -304,11 +316,11 @@ function queryNumericValue(value) {
  * Return a random string of length "len"
  */
 function stringGen(len) {
-    var text = "";
-    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < len; i++ )
-        text += charset.charAt(Math.floor(Math.random() * charset.length));
-    return text;
+	var text = "";
+	var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+	for (var i = 0; i < len; i++)
+		text += charset.charAt(Math.floor(Math.random() * charset.length));
+	return text;
 }
 
 module.exports = query;

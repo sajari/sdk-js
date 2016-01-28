@@ -32,6 +32,7 @@
     "browserify": "^13.0.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.3.4",
+    "gulp-jsbeautifier": "^1.0.1",
     "gulp-jshint": "^2.0.0",
     "gulp-shell": "^0.5.1",
     "gulp-tape": "0.0.7",

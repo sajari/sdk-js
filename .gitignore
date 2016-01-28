@@ -1,6 +1,5 @@
 node_modules/*
-dist/main.js
+dist/*
 
-src/js/main.js
-
+src/js/live-tests.js
 src/index.html

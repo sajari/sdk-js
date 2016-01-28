@@ -11,9 +11,13 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 
-function handleErrors(errors) {
-	console.log(errors);
-}
+var prettify = require('gulp-jsbeautifier');
+
+gulp.task('beautify', function() {
+  gulp.src('./src/js/*.js')
+    .pipe(prettify({config: '.jsbeautifyrc', mode: 'VERIFY_AND_WRITE'}))
+    .pipe(gulp.dest('./src/js/'));
+});
 
 gulp.task('test', function() {
   return gulp.src('tests/*.js')
@@ -26,6 +30,13 @@ gulp.task('browserify', function() {
     return browserify('./src/js/api.js')
         .bundle()
         .pipe(source('sj.js'))
+        .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('live-tests', function() {
+    return browserify('./src/js/live-tests.js')
+        .bundle()
+        .pipe(source('live-tests.js'))
         .pipe(gulp.dest('./dist/'));
 });
 
