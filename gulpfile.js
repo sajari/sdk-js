@@ -51,7 +51,7 @@ gulp.task('uglify', function() {
 
 gulp.task('default', ['test', 'browserify', 'uglify']);
 
-gulp.task("watch", function() {
+gulp.task("watch", ['beautify'], function() {
     watch(['src/js/*', 'tests/*'], function() {
         gulp.start("default");
     });
