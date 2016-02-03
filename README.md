@@ -3,7 +3,7 @@ Sajari JavaScript SDK for integration into web and nodejs applications
 
 [Sajari Search](https://www.sajari.com) is a hosted search and recommendation service supporting instant search, faceted search, recommendations and custom matching algorithms
 
-This module is to interact with the raw API. If you want automated indexing, profiling and convenience functions for rending HTML, please check out [sajari-website](https://github.com/sajari/sajari-sdk-website) instead.
+This module is to interact with the raw API. If you want automated indexing, profiling and convenience functions for rendering HTML, please check out [sajari-website](https://github.com/sajari/sajari-sdk-website) instead.
 
 [![Version][version-svg]][package-url] [![License][license-image]][license-url] [![Downloads][downloads-image]][downloads-url]
 
