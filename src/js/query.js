@@ -75,13 +75,17 @@ query.prototype = {
 			}
 		}
 
-		// Encode the meta
-		if (this.options.meta !== undefined) {
-			for (var i = 0; i < this.options.meta.length; i++) {
-				if (isArray(this.options.meta[i].value)) {
-					args['meta[' + this.options.meta[i].key + ']'] = this.options.meta[i].value.join(';');
-				} else {
-					args['meta[' + this.options.meta[i].key + ']'] = this.options.meta[i].value;
+		// Encode the meta and patch vars (i.e. associative array args)
+		var aas = ['set', 'meta', 'delta', 'append'];
+		for (var j in aas) {
+			var k = aas[j];
+			if (this.options[k] !== undefined) {
+				for (var i = 0; i < this.options[k].length; i++) {
+					if (isArray(this.options[k][i].value)) {
+						args[k + '[' + this.options[k][i].key + ']'] = this.options[k][i].value.join(';');
+					} else {
+						args[k + '[' + this.options[k][i].key + ']'] = this.options[k][i].value;
+					}
 				}
 			}
 		}
@@ -202,13 +206,55 @@ query.prototype = {
 	},
 
 	/**
-	 * Define a meta parameter for the query
+	 * Define a meta parameter
 	 */
 	meta: function(key, value) {
 		if (this.options.meta === undefined) {
 			this.options.meta = [];
 		}
 		this.options.meta.push({
+			key: key,
+			value: value
+		});
+		return this;
+	},
+
+	/**
+	 * Define an append parameter (this will be appended to the meta key, typically used for lists)
+	 */
+	append: function(key, value) {
+		if (this.options.append === undefined) {
+			this.options.append = [];
+		}
+		this.options.append.push({
+			key: key,
+			value: value
+		});
+		return this;
+	},
+
+	/**
+	 * Define a delta parameter (if the meta is numeric, this is the delta change desired)
+	 */
+	delta: function(key, value) {
+		if (this.options.delta === undefined) {
+			this.options.delta = [];
+		}
+		this.options.delta.push({
+			key: key,
+			value: value
+		});
+		return this;
+	},
+
+	/**
+	 * Define a set parameter (overwrites the existing meta key)
+	 */
+	set: function(key, value) {
+		if (this.options.set === undefined) {
+			this.options.set = [];
+		}
+		this.options.set.push({
 			key: key,
 			value: value
 		});
