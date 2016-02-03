@@ -1,7 +1,7 @@
 
 var API = require("../src/js/api");
 var test = require('tape');
-var api = new API("", "", {});
+var api = new API("company", "collection", {});
 
 var query = api.query({
 	'q': 'whatever'
@@ -16,6 +16,8 @@ query.filter("this", "~", "that")
 	.set("category", "changed!")
 	.attr("custom1", "abc")
 	.page(3)
+	.maxresults(5)
+	.decoded(true)
 	.cols(["title", "description", "url"]);
 
 
@@ -31,6 +33,8 @@ test('Query encoding 1', function (t) {
     t.equal(enc["custom1"], "abc");
     t.equal(enc["page"], 3);
     t.equal(enc["cols"], "title,description,url");
+    t.equal(enc["decoded"], true);
+    t.equal(enc["maxresults"], 5);
     t.end();
 });
 

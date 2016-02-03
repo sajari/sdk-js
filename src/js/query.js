@@ -262,6 +262,23 @@ query.prototype = {
 	},
 
 	/**
+	 * Decode fingerprint based responses. By default, fingerprints
+	 * are zlib and base64 encoded to reduce transfer overhead. If
+	 * decoded=true, the unencoded JSON will be returned instead
+	 */
+	decoded: function(state) {
+		return this.attr('decoded', state);
+	},
+
+	/**
+	 * Sets the maximum number of results to be returned. Can be combined
+	 * with the page() to get sequential blocks of results back. Default is 10
+	 */
+	maxresults: function(num) {
+		return this.attr('maxresults', num);
+	},
+
+	/**
 	 * Define an arbitrary attribute for the query
 	 */
 	attr: function(key, value) {
