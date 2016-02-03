@@ -60,14 +60,6 @@ API.prototype = {
 			success: success,
 			failure: failure,
 		}
-		if (typeof data === 'string') {
-			if (data.indexOf('=') === -1) {
-				// Data is a keyword query, change it accordingly
-				data = {
-					q: data
-				};
-			}
-		}
 		return this.send("search", opts, data);
 	},
 
@@ -174,6 +166,59 @@ API.prototype = {
 	},
 
 	/**
+	 * Fingerprint a document or input string. Meta is also commonly part
+	 * of fingerprint creation, e.g. setting a "title", etc.
+	 */
+	fingerprint: function(data, success, failure) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("fingerprint", opts, data);
+	},
+
+	/**
+	 * Resets learning weightings on an encoded input fingerprint.
+	 */
+	fingerprintReset: function(fingerprint, success, failure) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		if (typeof data !== 'string') {
+			log.error("Fingerprint should be a string")
+		}
+		var data = {
+			'fingerprint': fingerprint
+		};
+		return this.send("fingerprint/reset", opts, data);
+	},
+
+	/**
+	 * Indicate good and bad results for a particular fingerprint. This will 
+	 * adjust word weightings and return a new fingerprint with these adjustments
+	 * Weighting is a very quick way to move search results towards the searchers
+	 * chosen context. 
+	 */
+	fingerprintWeight: function(fingerprint, docid, pos, neg) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		if (typeof data !== 'string') {
+			log.error("Fingerprint should be a string")
+		}
+		var data = {
+			'fingerprint': fingerprint
+		};
+		return this.send("fingerprint/weight/" + docid + "/" + pos + "/" + neg, opts, data);
+	},
+
+
+	/**
 	 * Sends the API request and handles the response
 	 */
 	send: function(path, opts, data) {
@@ -229,7 +274,7 @@ API.prototype = {
 		// Send the request and handle the response
 		req.end(function(err, res) {
 			if (err) {
-				opts.failure();
+				opts.failure(err);
 			} else {
 				opts.success(res.body);
 			}
@@ -244,6 +289,14 @@ function toArgs(data) {
 	if (data instanceof newquery) {
 		data.sequence();
 		data = data.encode();
+		return data
+	}
+	if (typeof data === 'string') {
+		if (data.indexOf('=') === -1) {
+			return {
+				q: data
+			};
+		}
 	}
 	return data
 }

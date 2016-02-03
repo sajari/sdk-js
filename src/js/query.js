@@ -279,6 +279,14 @@ query.prototype = {
 	},
 
 	/**
+	 * Adds a fingerprint to the query. Used for finding similar documents
+	 * in a search context. Also used to add parsed documents to an index
+	 */
+	fingerprint: function(fingerprint) {
+		return this.attr('fingerprint', fingerprint);
+	},
+
+	/**
 	 * Define an arbitrary attribute for the query
 	 */
 	attr: function(key, value) {
