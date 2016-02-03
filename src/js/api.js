@@ -7,9 +7,7 @@ var url = require("./utils/url");
 
 var request = require('superagent');
 var jsonp = require('superagent-jsonp'); // To use jsonp chain: .use(jsonp)
-var debug = require('debug');
-var error = debug('app:error');
-var log = debug('app:log');
+var log = require('loglevel');
 
 /*
  * Sajari Search API SDK
@@ -23,11 +21,11 @@ function API(company, collection, opts) {
 	var usage = 'Usage: API(company, collection, opts)';
 
 	if (!company) {
-		error('Please provide a company ID. ' + usage);
+		log.error('Please provide a company ID. ' + usage);
 		return
 	}
 	if (!collection) {
-		error('Please provide a collection ID. ' + usage);
+		log.error('Please provide a collection ID. ' + usage);
 		return
 	}
 	this.company = company;
@@ -49,7 +47,7 @@ function API(company, collection, opts) {
 		index: "https://re.sajari.com"
 	}
 
-	log('API init done, %j', this);
+	log.info('API init done, %j', this);
 }
 
 API.prototype = {
@@ -217,7 +215,7 @@ API.prototype = {
 
 		// If basic auth is enabled, add it
 		if (this.basicauth) {
-			req.auth(this.basicauth.user, this.basicauth.path);
+			req.auth(this.basicauth.user, this.basicauth.pass);
 		}
 
 		// Add data to the req if we aren't using JSONP (which needs 
