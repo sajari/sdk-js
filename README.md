@@ -99,12 +99,12 @@ Sajari has many [supported attributes](https://www.sajari.com/api-documentation#
 var query = api.query('something')
   .filter("this", "~", "that")
   .scale("lat", 50, 5, 1, 0)
-	.scale("lng", 100, 5, 1, 0)
-	.filter("location", "^", "usa")
-	.meta("category", "electronics")
-	.attr("custom1", "abc")
-	.page(3)
-	.cols(["title", "description", "url"]);
+  .scale("lng", 100, 5, 1, 0)
+  .filter("location", "^", "usa")
+  .meta("category", "electronics")
+  .attr("custom1", "abc")
+  .page(3)
+  .cols(["title", "description", "url"]);
 	
 api.search(query, function success(res) {
   console.log(res);
