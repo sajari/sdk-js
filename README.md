@@ -46,7 +46,7 @@ api.search(args, function success(res) {
 
 ##### Quick start for server side:
 
-Note: server side integrations can use the private key-secret combination to access both read and write requests. Do NOT use your provate key-secret in a browser based application.
+Note: server side integrations can use the private key-secret combination to access both read and write requests. Do NOT use your private key-secret in a browser based application.
 
 ```js
 var sajari = require('sajari');
@@ -85,11 +85,12 @@ var query = api.query(opts);
 var query = api.query('something');
 ```
 
-Alternatively `opts` allows and object of args to be passed directly:
+`opts` also allows an object of args to be passed directly:
 ```js
 var query = api.query({
   q : 'something',
-  custom1 : 'group A'
+  custom1 : 'group A',
+  cols: ['title', 'description', 'url']
 });
 ```
 
