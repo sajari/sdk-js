@@ -100,10 +100,11 @@ var query = api.query('something')
   .filter("this", "~", "that")
   .scale("lat", 50, 5, 1, 0)
   .scale("lng", 100, 5, 1, 0)
-  .filter("location", "^", "usa")
+  .filter("location", "contains", "usa")
   .meta("category", "electronics")
   .attr("custom1", "abc")
   .page(3)
+  .maxresults(5)
   .cols(["title", "description", "url"]);
 	
 api.search(query, function success(res) {
@@ -115,5 +116,32 @@ api.search(query, function success(res) {
 
 In the above case, the query is passed directly to the search function, which will decode it automatically into args.
 
+
+### Recommendations
+
+Sajari supports two main groups types of recommendations: 
+
+1. Website recommendations - Typically they require information from the current web page, visitor profile, etc. So although they are very analogous to the "search" function, we would advise those looking for website recommendations to use [sajari-website](https://github.com/sajari/sajari-sdk-website) instead, as that module integrates into the DOM, handles user profile cookies, etc.
+
+2. Custom recommendations - These typically use the "search" function, but include "meta" parameters to help power the recommendation. The way information is used in the recommendation algorithm is [highly configurable](https://www.sajari.com/configuration#fields).
+
+Example below:
+
+```js
+var query = api.query()
+  .meta("category", "electronics")
+  .meta("price", 25.00)
+  .meta("segment", "luxury")
+  .meta("brand", "samsung")
+  .meta("tags", ["phone", "oled", "silver"])
+  .filter("sku", "!=", "J12345")
+  .maxresults(5);
+  
+api.search(query, function success(res) {
+  console.log(res);
+}, function failure(err) {
+  console.log(err);
+});
+```
 
 
