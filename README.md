@@ -117,6 +117,67 @@ api.search(query, function success(res) {
 In the above case, the query is passed directly to the search function, which will decode it automatically into args.
 
 
+### Search
+
+Sajari supports multiple types of searches, which are all relatively interchangeable and use the same API endpoint:
+
+- **instant** - used for "as you type" style keyword searches. Partial words are extended to full queries. Spelling errors are corrected if the query cannot be extended as is, etc.
+- **match** - keyword queries are augmented with meta data, which is used to boost results in various ways. Unlike filters, this does not exclude any results, but rather changes their ranking.
+- **document** - full documents can be used as queries themselves. 
+- **faceted** - generally used with keyword style searches to get aggregate information about matching results meta
+
+All searches can also be filtered, scaled (based on numeric meta).
+
+Instant search example (should be triggered as people type):
+```js
+var query = api.query('di');
+	
+api.search(query, function success(res) {
+  console.log(res);
+}, function failure(err) {
+  console.log(err);
+});
+```
+
+Match example (search must have "jaguar", prefer color="red" & category="cars"):
+```js
+var query = api.query('jaguar')
+  .meta("color", "red")
+  .meta("category", "cars");
+	
+api.search(query, function success(res) {
+  console.log(res);
+}, function failure(err) {
+  console.log(err);
+});
+```
+
+Field Facet example (top 10 categories and colors for docs matching the "jaguar" query):
+```js
+var query = api.query('jaguar')
+  .facetfields(['category', 'color'], 10);
+	
+api.search(query, function success(res) {
+  console.log(res);
+}, function failure(err) {
+  console.log(err);
+});
+```
+
+Metric Facet example (get the count for price brackets of 10,000 from 0 - 200,000 for all docs matching the "jaguar" query): 
+```js
+var query = api.query('jaguar')
+  .filter("color", "=", "red")
+  .metricfacet('price', 0, 200000, 10000);
+	
+api.search(query, function success(res) {
+  console.log(res);
+}, function failure(err) {
+  console.log(err);
+});
+```
+
+
 ### Recommendations
 
 Sajari supports two main groups types of recommendations: 
