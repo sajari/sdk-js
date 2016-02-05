@@ -202,7 +202,7 @@ API.prototype = {
 	 * Weighting is a very quick way to move search results towards the searchers
 	 * chosen context. 
 	 */
-	fingerprintWeight: function(fingerprint, docid, pos, neg) {
+	fingerprintWeight: function(fingerprint, docId, pos, neg) {
 		opts = {
 			method: "POST",
 			success: success,
@@ -214,9 +214,161 @@ API.prototype = {
 		var data = {
 			'fingerprint': fingerprint
 		};
-		return this.send("fingerprint/weight/" + docid + "/" + pos + "/" + neg, opts, data);
+		return this.send("fingerprint/weight/" + docId + "/" + pos + "/" + neg, opts, data);
 	},
 
+	/**
+	 * Add a document/object to the collection
+	 */
+	add: function(query) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("add", opts, data);
+	},
+
+	/**
+	 * Retrieve a document/object using its Sajari ID
+	 */
+	getById: function(docId) {
+		if (typeof docId !== 'string') {
+			log.error("docId should be a string. If using a unique meta key, use the get(data) function instead.");
+		}
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("get/" + docId, opts, null);
+	},
+
+	/**
+	 * Retrieve a document/object using a unique meta key (the field 
+	 * must be flagged as unique in your console). 
+	 * @param data - can be a query or an object
+	 */
+	get: function(data) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("get", opts, data);
+	},
+
+	/**
+	 * Places a document at a specific document ID slot. This should
+	 * normally not be used unless recovering from an outage where
+	 * an external reference to the Sajari ID must be maintained. We 
+	 * don't recommend doing that. Deprecated.
+	 * @param data - can be a query or an object
+	 */
+	put: function(docId, data) {
+		if (typeof docId !== 'string') {
+			log.error("docId should be a string.");
+		}
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("put/" + docId, opts, data);
+	},
+
+	/**
+	 * Patch a document/object using its Sajari ID
+	 * @param data - can be a query or an object, typically it would be a
+	 * query, which handles "set", "delta", "append", etc.
+	 */
+	patchById: function(docId, data) {
+		if (typeof docId !== 'string') {
+			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
+		}
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("patch/" + docId, opts, null);
+	},
+
+	/**
+	 * Patch a document/object using a unique meta key (the field 
+	 * must be flagged as unique in your console). 
+	 * @param data - can be a query or an object, typically it would be a
+	 * query, which handles "set", "delta", "append", etc.
+	 */
+	patch: function(data) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("patch", opts, data);
+	},
+
+	/**
+	 * Remove a document/object using its Sajari ID
+	 */
+	removeById: function(docId) {
+		if (typeof docId !== 'string') {
+			log.error("docId should be a string. If using a unique meta key, use the remove(data) function instead.");
+		}
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("remove/" + docId, opts, null);
+	},
+
+	/**
+	 * Remove a document/object using a unique meta key (the field 
+	 * must be flagged as unique in your console). 
+	 * @param data - can be a query or an object
+	 */
+	remove: function(data) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("remove", opts, data);
+	},
+
+	/**
+	 * Replace a document/object using its Sajari ID
+	 * @param data - can be a query or an object, typically it would be a
+	 * query
+	 */
+	replaceById: function(docId, data) {
+		if (typeof docId !== 'string') {
+			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
+		}
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("replace/" + docId, opts, null);
+	},
+
+	/**
+	 * Replace a document/object using a unique meta key (the field 
+	 * must be flagged as unique in your console). 
+	 * @param data - can be a query or an object, typically it would be a
+	 * query, which handles "set", "delta", "append", etc.
+	 */
+	replace: function(data) {
+		opts = {
+			method: "POST",
+			success: success,
+			failure: failure,
+		}
+		return this.send("replace", opts, data);
+	},
 
 	/**
 	 * Sends the API request and handles the response
