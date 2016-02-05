@@ -130,12 +130,6 @@ API.prototype = {
 	 */
 	pixel: function(data, path) {
 		var img = new Image();
-		img.onerror = function() {
-			log.error('Failed sending: ' + img.src);
-		};
-		img.onload = function() {
-			log.error('Successful send: ' + img.src);
-		};
 		// Merge in the company and collection data
 		data.company = this.company;
 		data.collection = this.collection;
