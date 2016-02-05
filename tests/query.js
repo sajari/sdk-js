@@ -18,6 +18,7 @@ query.filter("this", "~", "that")
 	.page(3)
 	.maxresults(5)
 	.decoded(true)
+	.facetfields(["disco", "dancer"], 5)
 	.cols(["title", "description", "url"]);
 
 
@@ -35,6 +36,7 @@ test('Query encoding 1', function (t) {
     t.equal(enc["cols"], "title,description,url");
     t.equal(enc["decoded"], true);
     t.equal(enc["maxresults"], 5);
+    t.equal(enc["facet.fields"], "disco,dancer");
     t.end();
 });
 

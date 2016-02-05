@@ -31,7 +31,6 @@ query.prototype = {
 		var argOptions = [
 			'q',
 			'url',
-			'facet.fields',
 			'facet.limit',
 			'facet.metric.field',
 			'facet.metric.start',
@@ -90,6 +89,12 @@ query.prototype = {
 			}
 		}
 
+		// Join the facet.fields array
+		if (this.options['facet.fields'] !== undefined) {
+			args['facet.fields'] = this.options['facet.fields'].join(',');
+		}
+
+
 		// Encode the other attributes
 		if (this.options.attrs !== undefined) {
 			for (var i = 0; i < this.options.attrs.length; i++) {
@@ -144,7 +149,8 @@ query.prototype = {
 	},
 
 	/**
-	 * Define facet.fields and limit to return in the query
+	 * Define facet.fields and limit to return in the query. Overwrites 
+	 * any previous values set. Fields can be a string or an array
 	 */
 	facetfields: function(fields, limit) {
 		this.options["facet.fields"] = fields;
