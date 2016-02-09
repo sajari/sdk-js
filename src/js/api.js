@@ -129,11 +129,13 @@ API.prototype = {
 	 * Send tracking data to a URL via an image request. Automatically adds extra arguments for identity, company, and collection.
 	 */
 	pixel: function(data, path) {
-		var img = new Image();
-		// Merge in the company and collection data
-		data.company = this.company;
-		data.collection = this.collection;
+		// Merge in company and collection
+		data = this.mergeArgs(toArgs(data), {
+			"company": this.company,
+			"collection": this.collection
+		});
 
+		var img = new Image();
 		if (path === undefined) {
 			return
 		}
