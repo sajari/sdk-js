@@ -1,6 +1,6 @@
 {
   "name": "sajari",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "JavaScript SDK for access to the Sajari search API",
   "author": {
     "name": "mish15",
