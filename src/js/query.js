@@ -49,28 +49,28 @@ query.prototype = {
 
 		// Set the cols variable if applicable
 		if (this.options.cols !== undefined) {
-			args['cols'] = this.options.cols.join(',');
+			args.cols = this.options.cols.join(',');
 		}
 
 		// Encode the filters
 		if (this.options.filters !== undefined) {
 			var filterArgs = [];
-			for (var i = 0; i < this.options.filters.length; i++) {
+			for (i = 0; i < this.options.filters.length; i++) {
 				filterArgs.push(queryFilterArg(this.options.filters[i]));
 			}
 			if (filterArgs.length > 0) {
-				args['filters'] = filterArgs.join('|');
+				args.filters = filterArgs.join('|');
 			}
 		}
 
 		// Encode the scales
 		if (this.options.scales !== undefined) {
 			var scaleArgs = [];
-			for (var i = 0; i < this.options.scales.length; i++) {
+			for (i = 0; i < this.options.scales.length; i++) {
 				scaleArgs.push(queryScaleArg(this.options.scales[i]));
 			}
 			if (scaleArgs.length > 0) {
-				args['scales'] = scaleArgs.join('|');
+				args.scales = scaleArgs.join('|');
 			}
 		}
 
@@ -79,7 +79,7 @@ query.prototype = {
 		for (var j in aas) {
 			var k = aas[j];
 			if (this.options[k] !== undefined) {
-				for (var i = 0; i < this.options[k].length; i++) {
+				for (i = 0; i < this.options[k].length; i++) {
 					if (isArray(this.options[k][i].value)) {
 						args[k + '[' + this.options[k][i].key + ']'] = this.options[k][i].value.join(';');
 					} else {
@@ -97,7 +97,7 @@ query.prototype = {
 
 		// Encode the other attributes
 		if (this.options.attrs !== undefined) {
-			for (var i = 0; i < this.options.attrs.length; i++) {
+			for (i = 0; i < this.options.attrs.length; i++) {
 				args[this.options.attrs[i].key] = this.options.attrs[i].value;
 			}
 		}
@@ -305,7 +305,7 @@ query.prototype = {
 		});
 		return this;
 	}
-}
+};
 
 /**
  * Compile a filter argument for a query

@@ -3,6 +3,7 @@ var watch = require('gulp-watch');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
+var jslint = require('gulp-jslint');
 var tape = require('gulp-tape');
 var tapColorize = require('tap-colorize');
 var exec = require('child_process').exec;
@@ -17,6 +18,12 @@ gulp.task('beautify', function() {
   gulp.src('./src/js/*.js')
     .pipe(prettify({config: '.jsbeautifyrc', mode: 'VERIFY_AND_WRITE'}))
     .pipe(gulp.dest('./src/js/'));
+});
+
+gulp.task('lint', function() {
+  gulp.src('./src/js/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'))
 });
 
 gulp.task('test', function() {
@@ -49,7 +56,7 @@ gulp.task('uglify', function() {
         .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('default', ['test', 'browserify', 'uglify']);
+gulp.task('default', ['lint', 'test', 'browserify', 'uglify']);
 
 gulp.task("watch", ['beautify'], function() {
     watch(['src/js/*', 'tests/*'], function() {

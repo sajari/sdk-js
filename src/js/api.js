@@ -22,16 +22,18 @@ function API(company, collection, opts) {
 
 	if (!company) {
 		log.error('Please provide a company ID. ' + usage);
-		return
+		return;
 	}
 	if (!collection) {
 		log.error('Please provide a collection ID. ' + usage);
-		return
+		return;
 	}
 	this.company = company;
 	this.collection = collection;
 
-	opts = opts || {};
+	if (opts === undefined) {
+		opts = {};
+	}
 	for (var o in opts) {
 		this[o] = opts[o];
 	}
@@ -45,7 +47,7 @@ function API(company, collection, opts) {
 	this.hosts = {
 		api: "https://www.sajari.com/api/",
 		index: "https://re.sajari.com"
-	}
+	};
 
 	log.info('API init done, %j', this);
 }
@@ -55,11 +57,11 @@ API.prototype = {
 	 * Search an index
 	 */
 	search: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("search", opts, data);
 	},
 
@@ -67,11 +69,11 @@ API.prototype = {
 	 * Popular recommendations
 	 */
 	popular: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("popular", opts, data);
 	},
 
@@ -79,11 +81,11 @@ API.prototype = {
 	 * Related recommendations
 	 */
 	related: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("related", opts, data);
 	},
 
@@ -91,11 +93,11 @@ API.prototype = {
 	 * Recent recommendations
 	 */
 	recent: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("recent", opts, data);
 	},
 
@@ -103,11 +105,11 @@ API.prototype = {
 	 * Best recommendations
 	 */
 	best: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("best", opts, data);
 	},
 
@@ -137,7 +139,7 @@ API.prototype = {
 
 		var img = new Image();
 		if (path === undefined) {
-			return
+			return;
 		}
 		img.src = url.augmentUri(this.hosts.index + path, data);
 	},
@@ -157,7 +159,7 @@ API.prototype = {
 		for (var k in priority) {
 			secondary[k] = priority[k];
 		}
-		return secondary
+		return secondary;
 	},
 
 	/**
@@ -165,11 +167,11 @@ API.prototype = {
 	 * of fingerprint creation, e.g. setting a "title", etc.
 	 */
 	fingerprint: function(data, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("fingerprint", opts, data);
 	},
 
@@ -177,13 +179,13 @@ API.prototype = {
 	 * Resets learning weightings on an encoded input fingerprint.
 	 */
 	fingerprintReset: function(fingerprint, success, failure) {
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		if (typeof data !== 'string') {
-			log.error("Fingerprint should be a string")
+			log.error("Fingerprint should be a string");
 		}
 		var data = {
 			'fingerprint': fingerprint
@@ -197,14 +199,14 @@ API.prototype = {
 	 * Weighting is a very quick way to move search results towards the searchers
 	 * chosen context. 
 	 */
-	fingerprintWeight: function(fingerprint, docId, pos, neg) {
-		opts = {
+	fingerprintWeight: function(fingerprint, docId, pos, neg, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		if (typeof data !== 'string') {
-			log.error("Fingerprint should be a string")
+			log.error("Fingerprint should be a string");
 		}
 		var data = {
 			'fingerprint': fingerprint
@@ -215,27 +217,27 @@ API.prototype = {
 	/**
 	 * Add a document/object to the collection
 	 */
-	add: function(query) {
-		opts = {
+	add: function(query, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("add", opts, data);
 	},
 
 	/**
 	 * Retrieve a document/object using its Sajari ID
 	 */
-	getById: function(docId) {
+	getById: function(docId, success, failure) {
 		if (typeof docId !== 'string') {
 			log.error("docId should be a string. If using a unique meta key, use the get(data) function instead.");
 		}
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("get/" + docId, opts, null);
 	},
 
@@ -244,12 +246,12 @@ API.prototype = {
 	 * must be flagged as unique in your console). 
 	 * @param data - can be a query or an object
 	 */
-	get: function(data) {
-		opts = {
+	get: function(data, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("get", opts, data);
 	},
 
@@ -260,15 +262,15 @@ API.prototype = {
 	 * don't recommend doing that. Deprecated.
 	 * @param data - can be a query or an object
 	 */
-	put: function(docId, data) {
+	put: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
 			log.error("docId should be a string.");
 		}
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("put/" + docId, opts, data);
 	},
 
@@ -277,15 +279,15 @@ API.prototype = {
 	 * @param data - can be a query or an object, typically it would be a
 	 * query, which handles "set", "delta", "append", etc.
 	 */
-	patchById: function(docId, data) {
+	patchById: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
 			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
 		}
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("patch/" + docId, opts, null);
 	},
 
@@ -295,27 +297,27 @@ API.prototype = {
 	 * @param data - can be a query or an object, typically it would be a
 	 * query, which handles "set", "delta", "append", etc.
 	 */
-	patch: function(data) {
-		opts = {
+	patch: function(data, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("patch", opts, data);
 	},
 
 	/**
 	 * Remove a document/object using its Sajari ID
 	 */
-	removeById: function(docId) {
+	removeById: function(docId, success, failure) {
 		if (typeof docId !== 'string') {
 			log.error("docId should be a string. If using a unique meta key, use the remove(data) function instead.");
 		}
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("remove/" + docId, opts, null);
 	},
 
@@ -324,12 +326,12 @@ API.prototype = {
 	 * must be flagged as unique in your console). 
 	 * @param data - can be a query or an object
 	 */
-	remove: function(data) {
-		opts = {
+	remove: function(data, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("remove", opts, data);
 	},
 
@@ -338,15 +340,15 @@ API.prototype = {
 	 * @param data - can be a query or an object, typically it would be a
 	 * query
 	 */
-	replaceById: function(docId, data) {
+	replaceById: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
 			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
 		}
-		opts = {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("replace/" + docId, opts, null);
 	},
 
@@ -356,12 +358,12 @@ API.prototype = {
 	 * @param data - can be a query or an object, typically it would be a
 	 * query, which handles "set", "delta", "append", etc.
 	 */
-	replace: function(data) {
-		opts = {
+	replace: function(data, success, failure) {
+		var opts = {
 			method: "POST",
 			success: success,
 			failure: failure,
-		}
+		};
 		return this.send("replace", opts, data);
 	},
 
@@ -380,26 +382,27 @@ API.prototype = {
 			this.se++;
 		}
 
-		var path = this.hosts.api + path;
+		path = this.hosts.api + path;
 		if (this.jsonp) {
 			// Add the data to the JSONP URL destination
 			path = url.augmentUri(path, data);
 		}
+		var req;
 		switch (opts.method) {
 			case "POST":
-				var req = request.post(path);
+				req = request.post(path);
 				break;
 			case "GET":
-				var req = request.get(path);
+				req = request.get(path);
 				break;
 			case "PATCH":
-				var req = request.patch(path);
+				req = request.patch(path);
 				break;
 			case "DELETE":
-				var req = request.del(path);
+				req = request.del(path);
 				break;
 			case "PUT":
-				var req = request.put(path);
+				req = request.put(path);
 				break;
 			default:
 				return opts.failure();
@@ -425,7 +428,7 @@ API.prototype = {
 			} else {
 				opts.success(res.body);
 			}
-		})
+		});
 	}
 };
 
@@ -436,7 +439,7 @@ function toArgs(data) {
 	if (data instanceof newquery) {
 		data.sequence();
 		data = data.encode();
-		return data
+		return data;
 	}
 	if (typeof data === 'string') {
 		if (data.indexOf('=') === -1) {
@@ -445,7 +448,7 @@ function toArgs(data) {
 			};
 		}
 	}
-	return data
+	return data;
 }
 
 module.exports = API;
