@@ -80,13 +80,11 @@ query.prototype = {
 			var k = aas[j];
 			if (this.options[k] !== undefined) {
 				for (i = 0; i < this.options[k].length; i++) {
-					var val = "";
-					if (isArray(this.options[k][i].value)) {
-						val = this.options[k][i].value.join(';');
-					} else if (typeof this.options[k][i].value === 'object') {
-						val = JSON.stringify(this.options[k][i].value);
-					} else {
-						val = this.options[k][i].value
+					var val = this.options[k][i].value;
+					if (isArray(val)) {
+						val = val.join(';');
+					} else if (typeof val === 'object') {
+						val = JSON.stringify(val);
 					}
 					args[k + '[' + this.options[k][i].key + ']'] = val;
 				}
