@@ -80,11 +80,15 @@ query.prototype = {
 			var k = aas[j];
 			if (this.options[k] !== undefined) {
 				for (i = 0; i < this.options[k].length; i++) {
+					var val = "";
 					if (isArray(this.options[k][i].value)) {
-						args[k + '[' + this.options[k][i].key + ']'] = this.options[k][i].value.join(';');
+						val = this.options[k][i].value.join(';');
+					} else if (typeof this.options[k][i].value === 'object') {
+						val = JSON.stringify(this.options[k][i].value);
 					} else {
-						args[k + '[' + this.options[k][i].key + ']'] = this.options[k][i].value;
+						val = this.options[k][i].value
 					}
+					args[k + '[' + this.options[k][i].key + ']'] = val;
 				}
 			}
 		}

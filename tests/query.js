@@ -11,6 +11,8 @@ query.filter("this", "~", "that")
 	.scale("lng", 100, 5, 1, 0)
 	.filter("location", "^", "usa")
 	.meta("name", "fred")
+	.meta("object", {"key":"val"})
+	.meta("array", ['a', 'b', 'c'])
 	.append("tags", "hoops")
 	.delta("count", 1)
 	.set("category", "changed!")
@@ -28,6 +30,8 @@ test('Query encoding 1', function (t) {
     t.equal(enc["filters"], "~this,that|^location,usa");
     t.equal(enc["scales"], "lat,50,5,1,0|lng,100,5,1,0");
     t.equal(enc["meta[name]"], "fred");
+    t.equal(enc["meta[object]"], '{"key":"val"}');
+    t.equal(enc["meta[array]"], 'a;b;c');
     t.equal(enc["set[category]"], "changed!");
     t.equal(enc["delta[count]"], 1);
     t.equal(enc["append[tags]"], "hoops");
