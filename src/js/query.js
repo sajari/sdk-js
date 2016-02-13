@@ -1,5 +1,5 @@
 var isArray = require('./utils/isArray');
-
+var urlutils = require('./utils/url');
 /**
  * Query constructor
  */
@@ -305,6 +305,25 @@ query.prototype = {
 			key: key,
 			value: value
 		});
+		return this;
+	},
+
+	/**
+	 * Add multiple custom attributes via a "data" object
+	 */
+	attrs: function(data) {
+		if (typeof data == 'string') {
+			data = urlutils.decodeUriArgs(data);
+		}
+		if (this.options.attrs === undefined) {
+			this.options.attrs = [];
+		}
+		for (var k in data) {
+			this.options.attrs.push({
+				key: k,
+				value: data[k]
+			});
+		}
 		return this;
 	}
 };

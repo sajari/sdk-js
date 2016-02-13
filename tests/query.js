@@ -75,4 +75,26 @@ test('Query encoding 2', function (t) {
     t.end();
 });
 
+var query3 = api.query();
+query3.attrs({
+	disco: 'dancer',
+	yogi: 'bear'
+});
 
+test('Query encoding 3', function (t) {
+    var enc = query3.encode();
+    t.equal(enc.disco, "dancer");
+    t.equal(enc.yogi, "bear");
+    t.end();
+});
+
+
+var query4 = api.query();
+query4.attrs('disco=dancer&yogi=bear');
+
+test('Query encoding 4', function (t) {
+    var enc = query4.encode();
+    t.equal(enc.disco, "dancer");
+    t.equal(enc.yogi, "bear");
+    t.end();
+});
