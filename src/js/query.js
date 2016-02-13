@@ -4,7 +4,9 @@ var urlutils = require('./utils/url');
  * Query constructor
  */
 function query(options) {
-	options = options || {};
+	if (options === undefined) {
+		options = {};
+	}
 	this.options = options;
 	if (this.se === undefined) {
 		this.se = 0;
@@ -301,10 +303,12 @@ query.prototype = {
 		if (this.options.attrs === undefined) {
 			this.options.attrs = [];
 		}
-		this.options.attrs.push({
-			key: key,
-			value: value
-		});
+		if (key !== undefined && value !== undefined) {
+			this.options.attrs.push({
+				key: key,
+				value: value
+			});
+		}
 		return this;
 	},
 
@@ -319,10 +323,12 @@ query.prototype = {
 			this.options.attrs = [];
 		}
 		for (var k in data) {
-			this.options.attrs.push({
-				key: k,
-				value: data[k]
-			});
+			if (k !== undefined && data[k] !== undefined) {
+				this.options.attrs.push({
+					key: k,
+					value: data[k]
+				});
+			}
 		}
 		return this;
 	}
