@@ -101,8 +101,8 @@ query.prototype = {
 
 		// Encode the other attributes
 		if (this.options.attrs !== undefined) {
-			for (i = 0; i < this.options.attrs.length; i++) {
-				args[this.options.attrs[i].key] = this.options.attrs[i].value;
+			for (var key in this.options.attrs) {
+				args[key] = this.options.attrs[key];
 			}
 		}
 		return args;
@@ -301,13 +301,10 @@ query.prototype = {
 	 */
 	attr: function(key, value) {
 		if (this.options.attrs === undefined) {
-			this.options.attrs = [];
+			this.options.attrs = {};
 		}
-		if (key !== undefined && value !== undefined) {
-			this.options.attrs.push({
-				key: key,
-				value: value
-			});
+		if (key !== undefined && key != "" && value !== undefined) {
+			this.options.attrs[key] = value;
 		}
 		return this;
 	},
@@ -320,14 +317,11 @@ query.prototype = {
 			data = urlutils.decodeUriArgs(data);
 		}
 		if (this.options.attrs === undefined) {
-			this.options.attrs = [];
+			this.options.attrs = {};
 		}
-		for (var k in data) {
-			if (k !== undefined && data[k] !== undefined) {
-				this.options.attrs.push({
-					key: k,
-					value: data[k]
-				});
+		for (var key in data) {
+			if (key !== undefined && key != "" && data[key] !== undefined) {
+				this.options.attrs[key] = data[key];
 			}
 		}
 		return this;

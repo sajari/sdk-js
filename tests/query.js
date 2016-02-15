@@ -59,9 +59,7 @@ var query2 = api.query({
 		{key: 'name', value: 'fred'}
 	],
 	page: 3,
-	attrs: [
-		{key: 'custom1', value: 'abc'}
-	]
+	attrs: {custom1: 'abc'}
 })
 
 test('Query encoding 2', function (t) {
