@@ -11,6 +11,9 @@ function query(options) {
 	if (this.se === undefined) {
 		this.se = 0;
 	}
+	if (this.options.attrs === undefined) {
+		this.options.attrs = {};
+	}
 	if (this.id === undefined) {
 		this.id = stringGen(16);
 	}
@@ -300,10 +303,7 @@ query.prototype = {
 	 * Define an arbitrary attribute for the query
 	 */
 	attr: function(key, value) {
-		if (this.options.attrs === undefined) {
-			this.options.attrs = {};
-		}
-		if (key !== undefined && key != "" && value !== undefined) {
+		if (key !== undefined && key !== "" && value !== undefined) {
 			this.options.attrs[key] = value;
 		}
 		return this;
@@ -316,11 +316,8 @@ query.prototype = {
 		if (typeof data == 'string') {
 			data = urlutils.decodeUriArgs(data);
 		}
-		if (this.options.attrs === undefined) {
-			this.options.attrs = {};
-		}
 		for (var key in data) {
-			if (key !== undefined && key != "" && data[key] !== undefined) {
+			if (key !== undefined && key !== "" && data[key] !== undefined) {
 				this.options.attrs[key] = data[key];
 			}
 		}
