@@ -1,17 +1,17 @@
 /*
- * api.js - The Sajari JavaScript API SDK
+ * Sajari Search API SDK
+ * https://www.sajari.com/
  */
 
 var newquery = require("./query");
 var url = require("./utils/url");
 
 var request = require('superagent');
-var jsonp = require('superagent-jsonp'); // To use jsonp chain: .use(jsonp)
 var log = require('loglevel');
 
+var searchSeq = 1;
+
 /*
- * Sajari Search API SDK
- * https://www.sajari.com/
  *
  * @param {string} company - Your company ID, see your dashboard
  * @param {string} collection - Your collection, see your dashboard
@@ -416,12 +416,12 @@ API.prototype = {
 		// Add data to the req if we aren't using JSONP (which needs 
 		// to be art of the URL, which was merged already above)
 		if (this.jsonp) {
-			req.use(jsonp);
-		} else {
-			req.send(data);
+			this.jsonpSend(path, data, opts.success, opts.failure);
+			return;
 		}
 
 		// Send the request and handle the response
+		req.send(data);
 		req.end(function(err, res) {
 			if (err) {
 				opts.failure(err);
@@ -429,6 +429,37 @@ API.prototype = {
 				opts.success(res.body);
 			}
 		});
+	},
+
+	/**
+	 * Performs a JSONP request. Asynchronsely either calls success() (with response), or failure().
+	 */
+	jsonpSend : function(path, args, success, failure) {
+		var uri = url.augmentUri(path, args);
+	    var seq = '_jsonp_' + (searchSeq++);
+	    var script = document.createElement('script');
+
+	    window['__SJ'+seq] = function(response) {
+	        success(response);
+	        try {
+	            delete window['__SJ'+seq];
+	        } catch (e) {
+	        	window['__SJ'+seq] = undefined;
+	        }
+	        script.parentNode.removeChild(script);
+	    };
+	    script.onerror = function() {
+	        failure();
+	        try {
+	            delete window['__SJ'+seq];
+	        } catch (e) {
+	        	window['__SJ'+seq] = undefined;
+	        }
+	        script.parentNode.removeChild(script);
+	    };
+
+	    script.src = url.augmentUri(uri, { jsoncallback: '__SJ'+seq });
+	    document.getElementsByTagName('head')[0].appendChild(script);
 	}
 };
 
