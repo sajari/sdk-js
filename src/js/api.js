@@ -434,32 +434,34 @@ API.prototype = {
 	/**
 	 * Performs a JSONP request. Asynchronsely either calls success() (with response), or failure().
 	 */
-	jsonpSend : function(path, args, success, failure) {
+	jsonpSend: function(path, args, success, failure) {
 		var uri = url.augmentUri(path, args);
-	    var seq = '_jsonp_' + (searchSeq++);
-	    var script = document.createElement('script');
+		var seq = '_jsonp_' + (searchSeq++);
+		var script = document.createElement('script');
 
-	    window['__SJ'+seq] = function(response) {
-	        success(response);
-	        try {
-	            delete window['__SJ'+seq];
-	        } catch (e) {
-	        	window['__SJ'+seq] = undefined;
-	        }
-	        script.parentNode.removeChild(script);
-	    };
-	    script.onerror = function() {
-	        failure();
-	        try {
-	            delete window['__SJ'+seq];
-	        } catch (e) {
-	        	window['__SJ'+seq] = undefined;
-	        }
-	        script.parentNode.removeChild(script);
-	    };
+		window['__SJ' + seq] = function(response) {
+			success(response);
+			try {
+				delete window['__SJ' + seq];
+			} catch (e) {
+				window['__SJ' + seq] = undefined;
+			}
+			script.parentNode.removeChild(script);
+		};
+		script.onerror = function() {
+			failure();
+			try {
+				delete window['__SJ' + seq];
+			} catch (e) {
+				window['__SJ' + seq] = undefined;
+			}
+			script.parentNode.removeChild(script);
+		};
 
-	    script.src = url.augmentUri(uri, { jsoncallback: '__SJ'+seq });
-	    document.getElementsByTagName('head')[0].appendChild(script);
+		script.src = url.augmentUri(uri, {
+			jsoncallback: '__SJ' + seq
+		});
+		document.getElementsByTagName('head')[0].appendChild(script);
 	}
 };
 

@@ -97,8 +97,13 @@ query.prototype = {
 		}
 
 		// Join the facet.fields array
-		if (this.options['facet.fields'] !== undefined) {
-			args['facet.fields'] = this.options['facet.fields'].join(',');
+		var ffs = this.options['facet.fields'];
+		if (ffs !== undefined) {
+			if (isArray(ffs)) {
+				args['facet.fields'] = ffs.join(',');
+			} else {
+				args['facet.fields'] = ffs;
+			}
 		}
 
 

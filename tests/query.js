@@ -96,3 +96,13 @@ test('Query encoding 4', function (t) {
     t.equal(enc.yogi, "bear");
     t.end();
 });
+
+var query5 = api.query();
+query5.facetfields("disco", 5);
+
+test('Query encoding 5', function (t) {
+    var enc = query5.encode();
+    t.equal(enc["facet.fields"], "disco");
+    t.end();
+});
+
