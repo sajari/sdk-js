@@ -33,11 +33,11 @@ api = new sajari('companyId', 'collectionId', {
 	jsonp: true
 });
 
-var args = {
-  q : "something"
-};
+var query = api.query({
+	'q': 'whatever'
+})
 
-api.search(args, function success(res) {
+api.search(query, function success(res) {
   console.log(res);
 }, function failure(err) {
   console.log(err);
@@ -57,11 +57,11 @@ api = new sajari('companyId', 'collectionId', {
   }
 );
 
-var args = {
-  q : "something"
-};
+var query = api.query({
+	'q': 'whatever'
+})
 
-api.search(args, function success(res) {
+api.search(query, function success(res) {
   console.log(res);
 }, function failure(err) {
   console.log(err);
@@ -73,19 +73,11 @@ Notes:
 - The `args` object is very generic and supports anything in our [API spec](https://www.sajari.com/api-documentation#attributes)
 - Some of our parameters are more complex, the `query` object helps [encode args](#args)
 
-### Args
+### Query object
 
 Creating a new `query` object from the initialized API is very simple:
-```js
-var query = api.query(opts);
-```
 
-`opts` can be a query string:
-```js
-var query = api.query('something');
-```
-
-`opts` also allows an object of args to be passed directly:
+`opts` can be an object:
 ```js
 var query = api.query({
   q : 'something',
@@ -94,7 +86,12 @@ var query = api.query({
 });
 ```
 
-Sajari has many [supported attributes](https://www.sajari.com/api-documentation#attributes). Many have convenience wrappers as per below, these can also be chained:
+`opts` can also be a query string:
+```js
+var query = api.query('something');
+```
+
+Sajari has many [supported attributes](https://www.sajari.com/api-documentation#attributes) with query methods. These can also be chained:
 ```js
 var query = api.query('something')
   .filter("this", "~", "that")
@@ -114,7 +111,7 @@ api.search(query, function success(res) {
 });
 ```
 
-In the above case, the query is passed directly to the search function, which will decode it automatically into args.
+In the above case, the query is passed directly to the search function, which handles the appropriate encoding for you.
 
 
 ### Search
@@ -128,7 +125,7 @@ Sajari supports multiple types of searches, which are all relatively interchange
 
 All searches can also be filtered, scaled (based on numeric meta).
 
-Instant search example (should be triggered as people type):
+Instant search example (should be triggered using the keyup event or similar):
 ```js
 var query = api.query('di');
 	
