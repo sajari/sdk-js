@@ -106,3 +106,9 @@ test('Query encoding 5', function (t) {
     t.end();
 });
 
+var query6 = api.query('disco');
+test('Query encoding 6', function (t) {
+    var enc = query6.encode();
+    t.equal(enc["q"], "disco");
+    t.end();
+});

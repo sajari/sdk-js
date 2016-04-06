@@ -4,6 +4,11 @@ var urlutils = require('./utils/url');
  * Query constructor
  */
 function query(options) {
+	if (typeof options === 'string') {
+		options = {
+			q: options
+		};
+	}
 	if (options === undefined) {
 		options = {};
 	}
