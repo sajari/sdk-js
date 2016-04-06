@@ -75,7 +75,7 @@ Notes:
 
 ### Query object
 
-Creating a new `query` object from the initialized API is very simple:
+A new `query` object can be initialized with `opts`:
 
 `opts` can be an object:
 ```js
