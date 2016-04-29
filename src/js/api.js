@@ -45,7 +45,7 @@ function API(company, collection, opts) {
 	this.se = 1;
 
 	this.hosts = {
-		api: "https://www.sajari.com/api/",
+		api: "https://sajaricom.appspot.com/api/",
 		index: "https://re.sajari.com"
 	};
 
