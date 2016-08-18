@@ -11,7 +11,6 @@ This module is for querying the search service. If you want automated indexing, 
 ## Table of Contents
 
 * [Setup](#setup)
-  * [Browser](#browser)
   * [Npm, Browserify, Webpack](#npm-browserify-webpack)
 * [Getting Started](#getting-started)
 * [Body](#body)
@@ -26,9 +25,11 @@ This module is for querying the search service. If you want automated indexing, 
 * [License](#license)
 * [Browser Support](#browser-support)
 
-To install:
+## Setup
 
-## NPM, Browserify, webpack
+The library is 4.7kb minified and 1.9kb gzipped.
+
+### NPM, Browserify, webpack
 ```
 npm install sajari --save
 ```
