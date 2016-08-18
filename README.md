@@ -353,7 +353,7 @@ The results that come back from a successful search look like this
         keywords: ['sale', 'deal', 'part'],
         ...
       },
-      score: 0.4, // Score of the document with boosts applied and normalised
+      score: 0.4, // Score of the document with boosts applied
       rawScore: 0.4 // Score of the document without boosts applied
     },
     ...
