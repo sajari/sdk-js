@@ -1,7 +1,2 @@
 node_modules/*
-dist/*
-
-src/js/live-tests.js
-src/index.html
-
-dist/sj.js
+coverage/*
