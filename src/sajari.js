@@ -9,7 +9,7 @@ export class Api {
   }
 
   // search takes a query, success and error callbacks
-  search(query, success, error) {
+  search(query, callback) {
     // create a new XMLHttpRequest for the search
     const request = new XMLHttpRequest();
 
@@ -24,9 +24,9 @@ export class Api {
       }
 
       if (request.status === 200) {
-        success(JSON.parse(request.responseText));
+        callback(null, JSON.parse(request.responseText));
       } else {
-        error(request.responseText);
+        callback(request.responseText, null);
       }
     };
 

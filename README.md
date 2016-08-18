@@ -44,11 +44,9 @@ query.body([
   body("foo bar")
 ]);
 
-api.search(
-  query,
-  result => { console.log('Success!', result) },
-  error  => { console.log('Error!!!', error)  },
-);
+api.search(query, (err, res) => {
+  console.log(err, res);
+});
 ```
 
 The `Api` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Api`:
