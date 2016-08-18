@@ -117,9 +117,9 @@ Field filters act on a value in a field, resulting in a true or false result.
 | `FILTER_OP_LT` | `field < value` |
 | `FILTER_OP_LT_EQ` | `field <= value` |
 | `FILTER_OP_CONTAIN` | `array.contains(value)` |
-| `FILTER_OP_NOT_CON` | `!array.contains(value)` |
-| `FILTER_OP_SUFFIX` | `string.startWith(value)` |
-| `FILTER_OP_PREFIX` | `string.endsWith(value)` |
+| `FILTER_OP_NOT_CONTAIN` | `!array.contains(value)` |
+| `FILTER_OP_PREFIX` | `string.startWith(value)` |
+| `FILTER_OP_SUFFIX` | `string.endsWith(value)` |
 
 Combinator filters act on an array of filters, also resulting in a true of false result.
 
