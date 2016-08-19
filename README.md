@@ -270,7 +270,7 @@ query.metaBoosts([
 ]);
 ```
 
-### Additve Meta Boost Example
+### Additive Meta Boost Example
 
 ```javascript
 query.metaBoosts([
@@ -292,7 +292,7 @@ If you would like to scale a value based on arbitrary points, you can use the in
 
 ### Interval Meta Boost Example
 
-This will scale the score based on the distance from the value to a point. A value of `0` will receive a scaling of 50%, a value of `80` will receive 100%, and a value of `100` will receive 150%.
+This will scale the score based on a sliding scale defined through points.
 
 ```javascript
 query.metaBoosts([
