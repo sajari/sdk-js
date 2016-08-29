@@ -257,11 +257,6 @@ Meta boosts allow you to influence the scoring of results based on the data in c
 
 The most obvious boost is a filter boost. It applies a boost if the document matches the filter.
 
-| Geo Boost Regions |
-| :-- |
-| `GEO_META_BOOST_REGION_INSIDE` |
-| `GEO_META_BOOST_REGION_OUTSIDE` |
-
 ### Filter Meta Boost Example
 
 ```javascript
@@ -281,6 +276,11 @@ query.metaBoosts([
 If you had latitude and longitude fields, geo-boosting is a good option to get location-aware results.
 
 ### Geo Meta Boost Example
+
+| Geo Boost Regions |
+| :-- |
+| `GEO_META_BOOST_REGION_INSIDE` |
+| `GEO_META_BOOST_REGION_OUTSIDE` |
 
 ```javascript
 query.metaBoosts([
