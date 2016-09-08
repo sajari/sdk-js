@@ -81,10 +81,10 @@ export const FILTER_OP_GT = 'GREATER_THAN';
 export const FILTER_OP_GT_EQ = 'GREATER_THAN_OR_EQUAL_TO';
 export const FILTER_OP_LT = 'LESS_THAN';
 export const FILTER_OP_LT_EQ = 'LESS_THAN_OR_EQUAL_TO';
-export const FILTER_OP_CONTAIN = 'CONTAINS';
-export const FILTER_OP_NOT_CONTAIN = 'DOES_NOT_CONTAINS';
-export const FILTER_OP_SUFFIX = 'ENDS_WITH';
-export const FILTER_OP_PREFIX = 'STARTS_WITH';
+export const FILTER_OP_CONTAINS = 'CONTAINS';
+export const FILTER_OP_NOT_CONTAIN = 'DOES_NOT_CONTAIN';
+export const FILTER_OP_SUFFIX = 'HAS_SUFFIX';
+export const FILTER_OP_PREFIX = 'HAS_PREFX';
 
 export function fieldFilter(field, value, operator) {
   // eslint-disable-next-line no-use-before-define
@@ -104,23 +104,23 @@ export function combinatorFilter(filters, operator) {
 
 /* Index Boosts */
 
-export function fieldIndexBoost(field, value) {
+export function fieldInstanceBoost(field, value) {
   return { field: { field, value } };
 }
 
-export function scoreIndexBoost(threshold) {
+export function scoreInstanceBoost(threshold) {
   return { score: { threshold } };
 }
 
 /* Meta Boosts */
 
-export function filterMetaBoost(filter, value) {
+export function filterFieldBoost(filter, value) {
   return { filter: { filter, value } };
 }
 
 // eslint-disable-next-line camelcase
-export function additiveMetaBoost(meta_boost, value) {
-  return { add: { meta_boost, value } };
+export function additiveFieldBoost(field_boost, value) {
+  return { add: { field_boost, value } };
 }
 
 export const GEO_META_BOOST_REGION_INSIDE = 'INSIDE';
@@ -135,19 +135,19 @@ export function pointValue(point, value) {
   return { point, value };
 }
 
-export function intervalMetaBoost(field, points) {
+export function intervalFieldBoost(field, points) {
   return { interval: { field, points } };
 }
 
-export function distanceMetaBoost(min, max, ref, field, value) {
+export function distanceFieldBoost(min, max, ref, field, value) {
   return { distance: { min, max, ref, field, value } };
 }
 
-export function elementMetaBoost(field, elts) {
+export function elementFieldBoost(field, elts) {
   return { element: { field, elts } };
 }
 
-export function textMetaBoost(field, text) {
+export function textFieldBoost(field, text) {
   return { text: { field, text } };
 }
 
@@ -187,9 +187,9 @@ export class Query {
     }
   }
 
-  // Max results is a number
-  resultsPerPage(max) {
-    this.q.max_results = max;
+  // Results per page is a number
+  resultsPerPage(results) {
+    this.q.results_per_page = results;
   }
 
   // Page is a number
@@ -213,14 +213,14 @@ export class Query {
     this.q.filter = filter;
   }
 
-  // Meta boosts is a list of MetaBoost objects
-  metaBoosts(boosts) {
-    this.q.meta_boosts = boosts;
+  // Field boosts is a list of FieldBoost objects
+  fieldBoosts(boosts) {
+    this.q.field_boosts = boosts;
   }
 
-  // Index boosts is a list of IndexBoost objectss
-  indexBoosts(boosts) {
-    this.q.index_boosts = boosts;
+  // Instance boosts is a list of InstancBoost objectss
+  instanceBoosts(boosts) {
+    this.q.instance_boosts = boosts;
   }
 
   // Aggregates is a list of Aggregate Objects
