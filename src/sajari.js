@@ -40,8 +40,8 @@ export class Api {
               r[i].tokens = json.tokens[i];
             }
           }
-          // Return searchResponse, thereby dropping the tokens from the original structure
-          callback(null, json.searchResponse)
+          // Return searchResponse
+          callback(null, json)
         })
       } else {
         res.text().then((errMsg) => callback(errMsg, null));
