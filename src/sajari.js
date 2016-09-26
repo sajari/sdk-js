@@ -5,42 +5,48 @@ export class Api {
   constructor(project, collection, address) {
     this.p = project;
     this.c = collection;
-    this.a = address || 'https://apid.sajari.com:9200/search-v10/';
+    this.a = address || 'http://apid.sajari.com:9201/search/';
   }
 
   // search takes a query, success and error callbacks
   search(query, callback) {
-    // create a new XMLHttpRequest for the search
-    const request = new XMLHttpRequest();
-
-    // specify POST, the address, and async is true
-    request.open('POST', this.a, true);
-    request.setRequestHeader('Accept', 'application/json');
-
-    request.onreadystatechange = () => {
-      // if the request is not done, do nothing
-      if (request.readyState !== 4) {
-        return;
-      }
-
-      if (request.status === 200) {
-        callback(null, JSON.parse(request.responseText));
+    return fetch(this.a, {
+      method: 'POST',
+      body: JSON.stringify({
+        searchRequest: {
+          searchRequest: query.q,
+          // eslint-disable-next-line no-param-reassign
+          tracking: {
+            type: query.generate_tokens,
+            field: query.token_key_field,
+            sequence: query.s++, // Increment query sequence
+            query_id: query.i,
+          },
+        },
+        project: this.p,
+        collection: this.c,
+      })
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((json) => {
+          // Flatten single value / multiple values proto structure
+          const r = json.searchResponse.results;
+          for (let i = 0; i < r.length; i++) {
+            for (let f in r[i].values) {
+              r[i].values[f] = r[i].values[f].single ? r[i].values[f].single : r[i].values[f].multiple;
+            }
+            // Copy tokens into results
+            if (json.tokens) {
+              r[i].tokens = json.tokens[i];
+            }
+          }
+          // Return searchResponse, thereby dropping the tokens from the original structure
+          callback(null, json.searchResponse)
+        })
       } else {
-        callback(request.responseText, null);
+        res.text().then((errMsg) => callback(errMsg, null));
       }
-    };
-
-    // Add project, collection, query sequence, and query id to the query and send it
-    request.send(JSON.stringify({
-      request: query.q,
-      project: this.p,
-      collection: this.c,
-      // eslint-disable-next-line no-param-reassign
-      sequence: query.s++, // Increment query sequence
-      id: query.i,
-    }));
-
-    return request;
+    }).catch((err) => callback('Error during fetch: ' + err.message, null));
   }
 }
 
@@ -88,7 +94,7 @@ export const FILTER_OP_PREFIX = 'HAS_PREFX';
 
 export function fieldFilter(field, value, operator) {
   // eslint-disable-next-line no-use-before-define
-  return { field: { field, value: encode(String(value)), operator } };
+  return { field: { field, value: String(value), operator } };
 }
 
 /* Filter Combinators */
@@ -123,11 +129,11 @@ export function additiveFieldBoost(field_boost, value) {
   return { add: { field_boost, value } };
 }
 
-export const GEO_META_BOOST_REGION_INSIDE = 'INSIDE';
-export const GEO_META_BOOST_REGION_OUTSIDE = 'OUTSIDE';
+export const GEO_FIELD_BOOST_REGION_INSIDE = 'INSIDE';
+export const GEO_FIELD_BOOST_REGION_OUTSIDE = 'OUTSIDE';
 
 // eslint-disable-next-line camelcase
-export function geoMetaBoost(field_lat, field_lng, lat, lng, radius, value, region) {
+export function geoFieldBoost(field_lat, field_lng, lat, lng, radius, value, region) {
   return { geo: { field_lat, field_lng, lat, lng, radius, value, region } };
 }
 
@@ -173,7 +179,7 @@ export class Query {
     this.resetID();
     this.q = {
       page: 1,
-      max_results: 10,
+      results_per_page: 10,
     };
   }
 
@@ -218,7 +224,7 @@ export class Query {
     this.q.field_boosts = boosts;
   }
 
-  // Instance boosts is a list of InstancBoost objectss
+  // Instance boosts is a list of InstanceBoost objects
   instanceBoosts(boosts) {
     this.q.instance_boosts = boosts;
   }
@@ -240,60 +246,20 @@ export class Query {
   transforms(transforms) {
     this.q.transforms = transforms;
   }
-}
 
-/* Base64 encoding */
+  tracking(type, field, data) {
+    this.type = type;
+    this.field = field;
 
-const b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-/* eslint-disable */
-function _utf8_encode(string) {
-  string = string.replace(/\r\n/g,'\n');
-  var utftext = '';
-
-  for (var n = 0; n < string.length; n++) {
-    var c = string.charCodeAt(n);
-
-    if (c < 128) {
-      utftext += String.fromCharCode(c);
-    } else if((c > 127) && (c < 2048)) {
-      utftext += String.fromCharCode((c >> 6) | 192);
-      utftext += String.fromCharCode((c & 63) | 128);
-    } else {
-      utftext += String.fromCharCode((c >> 12) | 224);
-      utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-      utftext += String.fromCharCode((c & 63) | 128);
-    }
   }
 
-  return utftext;
-}
-
-function encode(input) {
-  let output = '';
-  let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-  let i = 0;
-
-  input = _utf8_encode(input);
-
-  while (i < input.length) {
-    chr1 = input.charCodeAt(i++);
-    chr2 = input.charCodeAt(i++);
-    chr3 = input.charCodeAt(i++);
-
-    enc1 = chr1 >> 2;
-    enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-    enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-    enc4 = chr3 & 63;
-
-    if (isNaN(chr2)) {
-      enc3 = enc4 = 64;
-    } else if (isNaN(chr3)) {
-      enc4 = 64;
-    }
-
-    output = output + b64.charAt(enc1) + b64.charAt(enc2) + b64.charAt(enc3) + b64.charAt(enc4);
+  posNeg(field) {
+    this.generate_tokens = 'POS_NEG';
+    this.token_key_field = field;
   }
 
-  return output;
+  click(field) {
+    this.generate_tokens = 'CLICK';
+    this.token_key_field = field;
+  }
 }
