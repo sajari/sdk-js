@@ -15,19 +15,23 @@ This module is for querying the search service. If you want automated indexing, 
 * [Getting Started](#getting-started)
 * [Body](#body)
 * [Page](#page)
-* [ResultsPerPage](#resultsperpage)
+* [Results Per Page](#resultsperpage)
 * [Filter](#filter)
 * [Sorting](#sorting)
 * [Aggregates](#aggregates)
-* [Index Boosts](#index-boosts)
-* [Meta Boosts](#meta-boosts)
+* [Instance Boosts](#instance-boosts)
+* [Field Boosts](#field-boosts)
+* [Tokens](#tokens)
+  * [Pos Neg](#pos-neg)
+  * [Click](#click)
 * [Results](#results)
+* [Reset ID]($reset-id)
 * [License](#license)
 * [Browser Support](#browser-support)
 
 ## Setup
 
-The library is 4.7kb minified and 1.9kb gzipped.
+The library is 5.2kb minified and 2kb gzipped.
 
 ### NPM, Browserify, webpack
 ```
@@ -231,72 +235,72 @@ query.aggregates([
 ]);
 ```
 
-## Index boosts
+## Instance boosts
 
-Index boosts can influence the scoring of indexed fields. This is commonly used to make the title or keywords of a page play a larger role.
+Instance boosts can influence the scoring of indexed fields. This is commonly used to make the title or keywords of a page play a larger role.
 
-### Field Index Boost Example
+### Field Instance Boost Example
 
 ```javascript
-query.indexBoosts([
-  fieldIndexBoost('title', 1.5) // Score from the title field is now worth 1.5x.
+query.instanceBoosts([
+  fieldInstanceBoost('title', 1.5) // Score from the title field is now worth 1.5x.
 ]);
 ```
 
-### Score Index Boost Example
+### Score Instance Boost Example
 
 ```javascript
-query.indexBoosts([
-  scoreIndexBoost(2)
+query.instanceBoosts([
+  scoreInstanceBoost(2)
 ]);
 ```
 
-## Meta boosts
+## Field boosts
 
-Meta boosts allow you to influence the scoring of results based on the data in certain meta fields. In theory they are similar to filters that influence the score rather than exclude/include documents.
+Field boosts allow you to influence the scoring of results based on the data in certain meta fields. In theory they are similar to filters that influence the score rather than exclude/include documents.
 
 The most obvious boost is a filter boost. It applies a boost if the document matches the filter.
 
-### Filter Meta Boost Example
+### Filter Field Boost Example
 
 ```javascript
-query.metaBoosts([
-  filterMetaBoost(fieldFilter('price', 100, FILTER_OP_LT), 2) // Double the score of items with 'price' less than 100.
+query.fieldBoosts([
+  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2) // Double the score of items with 'price' less than 100.
 ]);
 ```
 
-### Additive Meta Boost Example
+### Additive Field Boost Example
 
 ```javascript
-query.metaBoosts([
-  additiveMetaBoost(filterMetaBoost(fieldFilter('price', 100, FILTER_OP_LT), 2), 0.5) // Make the filterMetaBoost worth half of the total score.
+query.fieldBoosts([
+  additiveFieldBoost(filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2), 0.5) // Make the filterFieldBoost worth half of the total score.
 ])
 ```
 
 If you had latitude and longitude fields, geo-boosting is a good option to get location-aware results.
 
-### Geo Meta Boost Example
+### Geo Field Boost Example
 
 | Geo Boost Regions |
 | :-- |
-| `GEO_META_BOOST_REGION_INSIDE` |
-| `GEO_META_BOOST_REGION_OUTSIDE` |
+| `GEO_FIELD_BOOST_REGION_INSIDE` |
+| `GEO_FIELD_BOOST_REGION_OUTSIDE` |
 
 ```javascript
-query.metaBoosts([
-  geoMetaBoost('lat', 'lng', -33.8688, 151.2093, 50, 2, GEO_META_BOOST_REGION_INSIDE) // Multiply the score of documents within 50km of Sydney by 2x.
+query.fieldBoosts([
+  geoFieldBoost('lat', 'lng', -33.8688, 151.2093, 50, 2, GEO_FIELD_BOOST_REGION_INSIDE) // Multiply the score of documents within 50km of Sydney by 2x.
 ]);
 ```
 
 If you would like to scale a value based on arbitrary points, you can use the interval boost.
 
-### Interval Meta Boost Example
+### Interval Field Boost Example
 
 This will scale the score based on a sliding scale defined through points.
 
 ```javascript
-query.metaBoosts([
-  intervalMetaBoost('performance', [
+query.fieldBoosts([
+  intervalFieldBoost('performance', [
     pointValue(0, 0.5),
     pointValue(80, 1),
     pointValue(100, 1.5),
@@ -306,30 +310,48 @@ query.metaBoosts([
 
 Distance boosts let you boost a result if it's within a certain distance from a reference point.
 
-### Distance Meta Boost Example
+### Distance Field Boost Example
 
 ```javascript
-query.metaBoosts([
-  distanceMetaBoost(0, 20, 50, 'price', 2) // Double the score of a value from 'price' if it's between 0 and 20 away from 50.
+query.fieldBoosts([
+  distanceFieldBoost(0, 20, 50, 'price', 2) // Double the score of a value from 'price' if it's between 0 and 20 away from 50.
 ]);
 ```
 
-### Element Meta Boost Example
+### Element Field Boost Example
 
-Element meta boosts can be applied to string arrays.
+Element field boosts can be applied to string arrays.
 
 ```javascript
-query.metaBoosts([
-  elementMetaBoost('keywords', ['sale', 'deal']) // Boost results with 'sale' and 'deal' values in the 'keywords' field.
+query.fieldBoosts([
+  elementFieldBoost('keywords', ['sale', 'deal']) // Boost results with 'sale' and 'deal' values in the 'keywords' field.
 ]);
 ```
 
-### Text Meta Boost Example
+### Text Field Boost Example
 
 ```javascript
-query.metaBoosts([
-  textMetaBoost('description', 'reviews') // Boost results with the word 'reviews' in the 'description' field.
+query.fieldBoosts([
+  textFieldBoost('description', 'reviews') // Boost results with the word 'reviews' in the 'description' field.
 ])
+```
+
+## Tokens
+
+### Pos Neg
+
+The argument to `posNeg` is the field to use. It must be unique.
+
+```javascript
+query.posNeg('url')
+```
+
+### Click
+
+The argument to `click` is the field to use. It must be unique.
+
+```javascript
+query.click('url')
 ```
 
 ## Results
@@ -363,24 +385,14 @@ The results that come back from a successful search look like this
 
 The `results` property is an array of objects, each containing their score, and meta fields.
 
+## Reset ID
+
+This method is used if you would like the next search you perform to count as a different query. This has more to do with stats and won't directly affect your query in any way.
+
 ## License
 
 We use the [MIT license](./LICENSE)
 
 ## Browser Support
 
-| Browser | Version |
-| :-- | :-: |
-| Chrome | 5+ |
-| Firefox | 4+ |
-| Internet Explorer | 8+ |
-| Opera | 11.6+ |
-| Safari | 5+ |
-
-| Mobile Browser | Version |
-| :-- | :-: |
-| Android Browser | 2.1+ |
-| Chrome for Android | 38+ |
-| Firefox for Android | 32+ |
-| iOS Sajari | 4+ |
-| Opera Mini | 5+ |
+This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). Fetch is available on all evergreen browsers (Chrome, Firefox, Edge), see [here](http://caniuse.com/#feat=fetch) for a more complete overview. We recommend using [isomorphic-fetch](https://github.com/matthew-andrews/isomorphic-fetch) to increase compatibility across other browsers and [Node.js](https://nodejs.org).
