@@ -30,7 +30,7 @@ export class Api {
       if (res.ok) {
         res.json().then((json) => {
           // Flatten single value / multiple values proto structure
-          const r = json.searchResponse.results;
+          const r = json.searchResponse.results || []; // Some queries do not have results
           for (let i = 0; i < r.length; i++) {
             for (let f in r[i].values) {
               r[i].values[f] = r[i].values[f].single ? r[i].values[f].single : r[i].values[f].multiple;
