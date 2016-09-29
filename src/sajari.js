@@ -94,7 +94,17 @@ export const FILTER_OP_PREFIX = 'HAS_PREFX';
 
 export function fieldFilter(field, value, operator) {
   // eslint-disable-next-line no-use-before-define
-  return { field: { field, value: String(value), operator } };
+  return {
+    field: {
+      field,
+      value: value instanceof Array ? {
+        multiple: value.map(String),
+      } : {
+        single: String(value)
+      },
+      operator
+    }
+  };
 }
 
 /* Filter Combinators */
