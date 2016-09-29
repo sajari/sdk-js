@@ -5,7 +5,7 @@ export class Api {
   constructor(project, collection, address) {
     this.p = project;
     this.c = collection;
-    this.a = address || 'http://apid.sajari.com:9201/search/';
+    this.a = address || 'https://apid.sajari.com:9200/search/';
   }
 
   // search takes a query, success and error callbacks
