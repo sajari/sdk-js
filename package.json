@@ -35,7 +35,9 @@
       "url": "https://www.sajari.com"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+    "js-cookie": "^2.1.3"
+  },
   "devDependencies": {
     "babel-core": "^6.11.4",
     "babel-loader": "^6.2.4",

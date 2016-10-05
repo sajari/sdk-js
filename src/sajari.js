@@ -1,3 +1,5 @@
+import { getGAID } from './utils'
+
 // Api handles the searching of queries and keeping track of query id and sequence
 export class Api {
 
@@ -21,6 +23,7 @@ export class Api {
             field: query.token_key_field,
             sequence: query.s++, // Increment query sequence
             query_id: query.i,
+            data: query.d,
           },
         },
         project: this.p,
@@ -191,6 +194,11 @@ export class Query {
       page: 1,
       results_per_page: 10,
     };
+    this.d = {} // tracking data
+    const gaID = getGAID()
+    if (gaID) {
+      this.data('gaID', gaID)
+    }
   }
 
   resetID() {
@@ -271,5 +279,10 @@ export class Query {
   click(field) {
     this.generate_tokens = 'CLICK';
     this.token_key_field = field;
+  }
+
+  // Set tracking data
+  data(name, value) {
+    this.d[name] = value
   }
 }
