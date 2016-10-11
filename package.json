@@ -1,6 +1,6 @@
 {
   "name": "sajari",
-  "version": "1.0.0-beta",
+  "version": "0.10.0",
   "description": "JavaScript SDK for the Sajari search API",
   "scripts": {
     "build": "webpack -p",
@@ -25,7 +25,9 @@
     "match",
     "recommend",
     "realtime",
-    "autocomplete"
+    "autocomplete",
+    "instant",
+    "hosted"
   ],
   "homepage": "https://github.com/sajari/sajari-sdk-js",
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
@@ -36,7 +38,7 @@
     }
   ],
   "dependencies": {
-    "js-cookie": "^2.1.3"
+    "js-cookie": "2.1.3"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",
@@ -55,6 +57,17 @@
     "mocha": "^3.0.0",
     "webpack": "^1.13.1"
   },
-  "author": "Sajari",
+  "author": [
+    {
+      "name": "Trent Billington",
+      "email": "tbillington@sajari.com",
+      "url": "https://www.sajari.com"
+    },
+    {
+      "name": "David Howden",
+      "email": "dhowden@sajari.com",
+      "url": "https://www.sajari.com"
+    }
+  ],
   "license": "MIT"
 }
