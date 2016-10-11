@@ -13,25 +13,26 @@ This module is for querying the search service. If you want automated indexing, 
 * [Setup](#setup)
   * [Npm, Browserify, Webpack](#npm-browserify-webpack)
 * [Getting Started](#getting-started)
-* [Body](#body)
-* [Page](#page)
-* [Results Per Page](#resultsperpage)
-* [Filter](#filter)
-* [Sorting](#sorting)
-* [Aggregates](#aggregates)
-* [Instance Boosts](#instance-boosts)
-* [Field Boosts](#field-boosts)
-* [Tokens](#tokens)
-  * [Pos Neg](#pos-neg)
-  * [Click](#click)
-* [Results](#results)
-* [Reset ID]($reset-id)
+* Usage
+  * [Body](#body)
+  * [Page](#page)
+  * [Results Per Page](#resultsperpage)
+  * [Filter](#filter)
+  * [Sorting](#sorting)
+  * [Aggregates](#aggregates)
+  * [Instance Boosts](#instance-boosts)
+  * [Field Boosts](#field-boosts)
+  * [Tokens](#tokens)
+    * [Pos Neg](#pos-neg)
+    * [Click](#click)
+  * [Results](#results)
+  * [Reset ID]($reset-id)
 * [License](#license)
 * [Browser Support](#browser-support)
 
 ## Setup
 
-The library is 5.2kb minified and 2kb gzipped.
+The library is 7.2KB minified and 2.8KB gzipped.
 
 ### NPM, Browserify, webpack
 ```
@@ -40,18 +41,18 @@ npm install sajari --save
 
 ## Getting Started
 ```javascript
-import { Api, Query, body } from 'sajari';
+import { Api, Query, body } from 'sajari'
 
-const api = new Api('project', 'collection');
-const query = new Query();
+const api = new Api('project', 'collection')
+const query = new Query()
 
 query.body([
   body("foo bar")
-]);
+])
 
 api.search(query, (err, res) => {
-  console.log(err, res);
-});
+  console.log(err, res)
+})
 ```
 
 The `Api` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Api`:
@@ -64,13 +65,15 @@ The `Query` object handles the query state. Use the methods on it to define your
 
 ## Body
 
-`body` is the text to search for in the collection. It takes a string, and an optional decimal number between 0 and 1 for the weighting.
+`body` is the text to search for in the collection. It takes a string, and an optional decimal number for the weighting.
 
-The `query.body()` method takes an array of `body`. This is useful if you would like to weigh some words differently.
+The `query.body()` method takes an array of `body`. This is useful if you would like to weigh some text differently.
 
 ### Simple example
 
 ```javascript
+import { body } from 'sajari'
+
 query.body([
   body('computer parts')
 ])
@@ -79,11 +82,13 @@ query.body([
 ### Expanded example
 
 ```javascript
+import { body } from 'sajari'
+
 query.body([
   body('red computer parts', 1),
   body('laptop', 0.8),
   body('desktop', 0.8),
-]);
+])
 ```
 
 ## Page
@@ -93,7 +98,7 @@ To use pagination, set the page value on the query via the `query.page()` method
 ### Example
 
 ```javascript
-query.page(2);
+query.page(2)
 ```
 
 ## ResultsPerPage
@@ -103,7 +108,7 @@ To set the maximum number of results to be returned by one query use `query.resu
 ### Example
 
 ```javascript
-query.resultsPerPage(20);
+query.resultsPerPage(20)
 ```
 
 ## Filter
@@ -112,54 +117,65 @@ Filters let you exclude documents from the result set. A query only has 1 filter
 
 Field filters act on a value in a field, resulting in a true or false result.
 
-| Query Filter | JS Equivalent |
-| :-- | :-- |
-| `FILTER_OP_EQ` | `field === value` |
-| `FILTER_OP_NOT_EQ` | `field !== value` |
-| `FILTER_OP_GT` | `field > value` |
-| `FILTER_OP_GT_EQ` | `field >= value` |
-| `FILTER_OP_LT` | `field < value` |
-| `FILTER_OP_LT_EQ` | `field <= value` |
-| `FILTER_OP_CONTAIN` | `array.contains(value)` |
-| `FILTER_OP_NOT_CONTAIN` | `!array.contains(value)` |
-| `FILTER_OP_PREFIX` | `string.startWith(value)` |
-| `FILTER_OP_SUFFIX` | `string.endsWith(value)` |
+| Query Filter |
+| :-- |
+| `FILTER_OP_EQ` |
+| `FILTER_OP_NOT_EQ` |
+| `FILTER_OP_GT` |
+| `FILTER_OP_GT_EQ` |
+| `FILTER_OP_LT` |
+| `FILTER_OP_LT_EQ` |
+| `FILTER_OP_CONTAINS` |
+| `FILTER_OP_NOT_CONTAIN` |
+| `FILTER_OP_PREFIX` |
+| `FILTER_OP_SUFFIX` |
 
 Combinator filters act on an array of filters, also resulting in a true of false result.
 
 | Query Filter Combinator |
 | :-- |
-| `COMB_FILTER_ALL` |
-| `COMB_FILTER_ANY` |
-| `COMB_FILTER_ONE` |
-| `COMB_FILTER_NONE` |
+| `COMB_FILTER_OP_ALL` |
+| `COMB_FILTER_OP_ANY` |
+| `COMB_FILTER_OP_ONE` |
+| `COMB_FILTER_OP_NONE` |
 
 ### Filter Example
 
 ```javascript
+import { fieldFilter, FILTER_OP_LT } from 'sajari'
+
 query.filter(
   fieldFilter('price', 100, FILTER_OP_LT)
-);
+)
 ```
 
 ### Combinator Filter Example
 
 ```javascript
+import { fieldFIlter, FILTER_OP_LT, FILTER_OP_GT_EQ, combinatorFilter } from 'sajari'
+
 query.filter(
   combinatorFilter([
     fieldFilter('price', 100, FILTER_OP_LT),
     fieldFilter('stock', 3, FILTER_OP_GT_EQ)
   ], COMB_FILTER_OP_ALL)
-);
+)
 ```
 
 ## Sorting
 
 Sorts allow you to order your results based on their fields. Queries can take multiple sorts, using successive sorts to resolve ties.
 
+| Sort Order |
+| :-- |
+| `SORT_ASCENDING` |
+| `SORT_DESCENDING` |
+
 ## Sort Example
 
 ```javascript
+import { SORT_ASCENDING } from 'sajari'
+
 query.sort([
   sort('price', SORT_ASCENDING)
 ])
@@ -168,6 +184,8 @@ query.sort([
 ## Expanded Sort Example
 
 ```javascript
+import { SORT_ASCENDING, SORT_DESCENDING } from 'sajari'
+
 query.sort([
   sort('rating', SORT_DESCENDING),
   sort('price', SORT_ASCENDING),
@@ -195,25 +213,31 @@ There are 3 types of aggregates. Metric and Count both work on fields, while Buc
 ### Metric example
 
 ```javascript
+import { metricAggregate, METRIC_TYPE_MAX, METRIC_TYPE_MIN, METRIC_TYPE_AVG, METRIC_TYPE_SUM } from 'sajari'
+
 query.aggregates([
   metricAggregate('Most expensive part', 'price', METRIC_TYPE_MAX),
   metricAggregate('Least expensive part', 'price', METRIC_TYPE_MIN),
   metricAggregate('Average price of part', 'price', METRIC_TYPE_AVG),
   metricAggregate('Number of parts available', 'quantity', METRIC_TYPE_SUM),
-]);
+])
 ```
 
 ### Count example
 
 ```javascript
+import { countAggregate } from 'sajari'
+
 query.aggregates([
   countAggregate('Number of parts by manufacturer', 'manufacturer')
-]);
+])
 ```
 
 ### Bucket example
 
 ```javascript
+import { bucketAggregate, bucket, fieldFilter, FILTER_OP_LT, FILTER_OP_GT_EQ, FILTER_OP_GT, combinatorFilter, COMB_FILTER_OP_ALL } from 'sajari'
+
 query.aggregates([
   bucketAggregate(
     'Price groups',
@@ -232,7 +256,7 @@ query.aggregates([
       ),
     ]
   )
-]);
+])
 ```
 
 ## Instance boosts
@@ -242,17 +266,21 @@ Instance boosts can influence the scoring of indexed fields. This is commonly us
 ### Field Instance Boost Example
 
 ```javascript
+import { fieldInstanceBoost } from 'sajari'
+
 query.instanceBoosts([
-  fieldInstanceBoost('title', 1.5) // Score from the title field is now worth 1.5x.
-]);
+  fieldInstanceBoost('title', 1.5)
+])
 ```
 
 ### Score Instance Boost Example
 
 ```javascript
+import { scoreInstanceBoost } from 'sajari'
+
 query.instanceBoosts([
   scoreInstanceBoost(2)
-]);
+])
 ```
 
 ## Field boosts
@@ -264,22 +292,28 @@ The most obvious boost is a filter boost. It applies a boost if the document mat
 ### Filter Field Boost Example
 
 ```javascript
+import { filterFieldBoost, fieldFilter, FILTER_OP_LT } from 'sajari'
+
 query.fieldBoosts([
-  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2) // Double the score of items with 'price' less than 100.
-]);
+  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2) 
+])
 ```
 
 ### Additive Field Boost Example
 
 ```javascript
+import { additiveFieldBoost, filterFieldBoost, fieldFilter, FILTER_OP_LT } from 'sajari'
+
 query.fieldBoosts([
-  additiveFieldBoost(filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2), 0.5) // Make the filterFieldBoost worth half of the total score.
+  additiveFieldBoost(filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2), 0.5)
 ])
 ```
 
 If you had latitude and longitude fields, geo-boosting is a good option to get location-aware results.
 
 ### Geo Field Boost Example
+
+Boost results within 50km of Sydney.
 
 | Geo Boost Regions |
 | :-- |
@@ -288,7 +322,7 @@ If you had latitude and longitude fields, geo-boosting is a good option to get l
 
 ```javascript
 query.fieldBoosts([
-  geoFieldBoost('lat', 'lng', -33.8688, 151.2093, 50, 2, GEO_FIELD_BOOST_REGION_INSIDE) // Multiply the score of documents within 50km of Sydney by 2x.
+  geoFieldBoost('lat', 'lng', -33.8688, 151.2093, 50, 2, GEO_FIELD_BOOST_REGION_INSIDE)
 ]);
 ```
 
@@ -299,23 +333,27 @@ If you would like to scale a value based on arbitrary points, you can use the in
 This will scale the score based on a sliding scale defined through points.
 
 ```javascript
+import { intervalFieldBoost, pointValue } from 'sajari'
+
 query.fieldBoosts([
   intervalFieldBoost('performance', [
     pointValue(0, 0.5),
     pointValue(80, 1),
     pointValue(100, 1.5),
   ])
-]);
+])
 ```
-
-Distance boosts let you boost a result if it's within a certain distance from a reference point.
 
 ### Distance Field Boost Example
 
+Distance boosts let you boost a result, with values closer to the ref given a higher boost (up to the specified boost value). In this example, a value of 50 would get 2x boost, value 60 would get 1.5x, value of 70 or higher would get 1x.
+
 ```javascript
+import { distanceFieldBoost } from 'sajari'
+
 query.fieldBoosts([
-  distanceFieldBoost(0, 20, 50, 'price', 2) // Double the score of a value from 'price' if it's between 0 and 20 away from 50.
-]);
+  distanceFieldBoost(30, 70, 50, 'price', 2)
+])
 ```
 
 ### Element Field Boost Example
@@ -323,16 +361,22 @@ query.fieldBoosts([
 Element field boosts can be applied to string arrays.
 
 ```javascript
+import { elementFieldBoost } from 'sajari'
+
 query.fieldBoosts([
-  elementFieldBoost('keywords', ['sale', 'deal']) // Boost results with 'sale' and 'deal' values in the 'keywords' field.
-]);
+  elementFieldBoost('keywords', ['sale', 'deal'])
+])
 ```
 
 ### Text Field Boost Example
 
+Boost results with the word 'reviews' in the 'description' field.
+
 ```javascript
+import { textFieldBoost } from 'sajari'
+
 query.fieldBoosts([
-  textFieldBoost('description', 'reviews') // Boost results with the word 'reviews' in the 'description' field.
+  textFieldBoost('description', 'reviews')
 ])
 ```
 
@@ -388,6 +432,12 @@ The `results` property is an array of objects, each containing their score, and 
 ## Reset ID
 
 This method is used if you would like the next search you perform to count as a different query. This has more to do with stats and won't directly affect your query in any way.
+
+```javascript
+// ... Some searches
+query.resetID() // You have determined that from now on, the query is sufficiently different to be classified as a new query for tracking purposes
+// ... Some searches
+```
 
 ## License
 
