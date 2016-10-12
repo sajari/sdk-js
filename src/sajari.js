@@ -127,8 +127,8 @@ export function fieldInstanceBoost(field, value) {
   return { field: { field, value } };
 }
 
-export function scoreInstanceBoost(threshold) {
-  return { score: { threshold } };
+export function scoreInstanceBoost(threshold, min_count) {
+  return { score: { threshold, min_count } };
 }
 
 /* Meta Boosts */
