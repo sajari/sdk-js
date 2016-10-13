@@ -152,7 +152,7 @@ query.filter(
 ### Combinator Filter Example
 
 ```javascript
-import { fieldFIlter, FILTER_OP_LT, FILTER_OP_GT_EQ, combinatorFilter } from 'sajari'
+import { fieldFilter, FILTER_OP_LT, FILTER_OP_GT_EQ, combinatorFilter } from 'sajari'
 
 query.filter(
   combinatorFilter([
@@ -295,7 +295,7 @@ The most obvious boost is a filter boost. It applies a boost if the document mat
 import { filterFieldBoost, fieldFilter, FILTER_OP_LT } from 'sajari'
 
 query.fieldBoosts([
-  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2) 
+  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2)
 ])
 ```
 
