@@ -93,7 +93,7 @@ export const FILTER_OP_LT_EQ = 'LESS_THAN_OR_EQUAL_TO';
 export const FILTER_OP_CONTAINS = 'CONTAINS';
 export const FILTER_OP_NOT_CONTAIN = 'DOES_NOT_CONTAIN';
 export const FILTER_OP_SUFFIX = 'HAS_SUFFIX';
-export const FILTER_OP_PREFIX = 'HAS_PREFX';
+export const FILTER_OP_PREFIX = 'HAS_PREFIX';
 
 export function fieldFilter(field, value, operator) {
   // eslint-disable-next-line no-use-before-define
