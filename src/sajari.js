@@ -110,6 +110,11 @@ export function fieldFilter(field, value, operator) {
   };
 }
 
+// eslint-disable-next-line camelcase
+export function geoFilter(field_lat, field_lng, lat, lng, radius, region) {
+  return { geo: { field_lat, field_lng, lat, lng, radius, region } };
+}
+
 /* Filter Combinators */
 
 export const COMB_FILTER_OP_ALL = 'ALL';
@@ -139,16 +144,11 @@ export function filterFieldBoost(filter, value) {
 
 // eslint-disable-next-line camelcase
 export function additiveFieldBoost(field_boost, value) {
-  return { add: { field_boost, value } };
+  return { additive: { field_boost, value } };
 }
 
 export const GEO_FIELD_BOOST_REGION_INSIDE = 'INSIDE';
 export const GEO_FIELD_BOOST_REGION_OUTSIDE = 'OUTSIDE';
-
-// eslint-disable-next-line camelcase
-export function geoFieldBoost(field_lat, field_lng, lat, lng, radius, value, region) {
-  return { geo: { field_lat, field_lng, lat, lng, radius, value, region } };
-}
 
 export function pointValue(point, value) {
   return { point, value };
