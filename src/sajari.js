@@ -85,7 +85,7 @@ export function bucketAggregate(name, buckets) {
 /* Filters */
 
 export const FILTER_OP_EQ = 'EQUAL_TO';
-export const FILTER_OP_NOT_EQ = 'DOES_NOT_EQUAL';
+export const FILTER_OP_NOT_EQ = 'NOT_EQUAL_TO';
 export const FILTER_OP_GT = 'GREATER_THAN';
 export const FILTER_OP_GT_EQ = 'GREATER_THAN_OR_EQUAL_TO';
 export const FILTER_OP_LT = 'LESS_THAN';
@@ -95,15 +95,14 @@ export const FILTER_OP_NOT_CONTAIN = 'DOES_NOT_CONTAIN';
 export const FILTER_OP_SUFFIX = 'HAS_SUFFIX';
 export const FILTER_OP_PREFIX = 'HAS_PREFIX';
 
-export function fieldFilter(field, value, operator) {
+export function fieldFilter(field, values, operator) {
   // eslint-disable-next-line no-use-before-define
   return {
     field: {
       field,
-      value: value instanceof Array ? {
-        multiple: value.map(String),
-      } : {
-        single: String(value)
+      value: {
+        type: values instanceof Array ? 'REPEATED' : (values === null ? 'NULL' : 'SINGLE'),
+        values: [].concat(values).map(String),
       },
       operator
     }
