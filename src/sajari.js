@@ -36,7 +36,7 @@ export class Api {
           const r = json.searchResponse.results || []; // Some queries do not have results
           for (let i = 0; i < r.length; i++) {
             for (let f in r[i].values) {
-              r[i].values[f] = r[i].values[f].single ? r[i].values[f].single : r[i].values[f].repeated.values;
+              r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
             }
             // Copy tokens into results
             if (json.tokens) {
