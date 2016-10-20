@@ -36,7 +36,7 @@ export class Api {
           const r = json.searchResponse.results || []; // Some queries do not have results
           for (let i = 0; i < r.length; i++) {
             for (let f in r[i].values) {
-              r[i].values[f] = r[i].values[f].single ? r[i].values[f].single : r[i].values[f].multiple;
+              r[i].values[f] = r[i].values[f].single ? r[i].values[f].single : r[i].values[f].repeated.values;
             }
             // Copy tokens into results
             if (json.tokens) {
@@ -96,17 +96,17 @@ export const FILTER_OP_SUFFIX = 'HAS_SUFFIX';
 export const FILTER_OP_PREFIX = 'HAS_PREFIX';
 
 export function fieldFilter(field, values, operator) {
+  let value = null
+  if (values instanceof Array) {
+    value = { repeated: { values } }
+  } else if (values === null) {
+    value = { null: true }
+  } else {
+    value = { single: values }
+  }
+
   // eslint-disable-next-line no-use-before-define
-  return {
-    field: {
-      field,
-      value: {
-        type: values instanceof Array ? 'REPEATED' : (values === null ? 'NULL' : 'SINGLE'),
-        values: [].concat(values).map(String),
-      },
-      operator
-    }
-  };
+  return { field: { field, value, operator } };
 }
 
 // eslint-disable-next-line camelcase
