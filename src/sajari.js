@@ -98,11 +98,11 @@ export const FILTER_OP_PREFIX = 'HAS_PREFIX';
 export function fieldFilter(field, values, operator) {
   let value = null
   if (values instanceof Array) {
-    value = { repeated: { values } }
+    value = { repeated: { values: values.map(String) } }
   } else if (values === null) {
     value = { null: true }
   } else {
-    value = { single: values }
+    value = { single: String(values) }
   }
 
   // eslint-disable-next-line no-use-before-define
