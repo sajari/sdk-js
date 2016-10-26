@@ -187,11 +187,8 @@ export function textFieldBoost(field, text) {
 
 /* Sort */
 
-export const SORT_ASCENDING = 'ASC';
-export const SORT_DESCENDING = 'DESC';
-
-export function sort(field, order) {
-  return { field, order };
+export function sort(field) {
+  return { field, order: field[0] === '-' ? 'DESC' : 'ASC' };
 }
 
 export function transform(identifier) {
