@@ -84,29 +84,45 @@ export function bucketAggregate(name, buckets) {
 
 /* Filters */
 
-export const FILTER_OP_EQ = 'EQUAL_TO';
-export const FILTER_OP_NOT_EQ = 'NOT_EQUAL_TO';
-export const FILTER_OP_GT = 'GREATER_THAN';
-export const FILTER_OP_GT_EQ = 'GREATER_THAN_OR_EQUAL_TO';
-export const FILTER_OP_LT = 'LESS_THAN';
-export const FILTER_OP_LT_EQ = 'LESS_THAN_OR_EQUAL_TO';
-export const FILTER_OP_CONTAINS = 'CONTAINS';
-export const FILTER_OP_NOT_CONTAIN = 'DOES_NOT_CONTAIN';
-export const FILTER_OP_SUFFIX = 'HAS_SUFFIX';
-export const FILTER_OP_PREFIX = 'HAS_PREFIX';
-
-export function fieldFilter(field, values, operator) {
-  let value = null
+function protoValue(values) {
   if (values instanceof Array) {
-    value = { repeated: { values: values.map(String) } }
-  } else if (values === null) {
-    value = { null: true }
-  } else {
-    value = { single: String(values) }
+    return { repeated: { values: values.map(String) } }
   }
+  if (values === null) {
+    return value = { null: true }
+  }
+  return { single: String(values) }
+}
 
-  // eslint-disable-next-line no-use-before-define
-  return { field: { field, value, operator } };
+function operatorFromString(operator) {
+  switch (operator) {
+  case '=':
+    return 'EQUAL_TO'
+  case '!=':
+    return 'NOT_EQUAL_TO'
+  case '>':
+    return 'GREATER_THAN'
+  case '>=':
+    return 'GREATER_THAN_OR_EQUAL_TO'
+  case '<':
+    return 'LESS_THAN'
+  case '<=':
+    return 'LESS_THAN_OR_EQUAL_TO'
+  case '~':
+    return 'CONTAINS'
+  case '!~':
+    return 'DOES_NOT_CONTAIN'
+  case '^':
+    return 'HAS_SUFFIX'
+  case '$':
+    return 'HAS_PREFIX'
+  default:
+    throw `invalid operator: ${operator}`
+  }
+}
+
+export function fieldFilter(field, operator, values) {
+  return { field: { field, value: protoValue(values), operator: operatorFromString(operator) } };
 }
 
 // eslint-disable-next-line camelcase
