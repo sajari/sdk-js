@@ -23,7 +23,7 @@ export class Api {
             field: query.token_key_field,
             sequence: query.s++, // Increment query sequence
             query_id: query.i,
-            data: query.d,
+            data: query.data,
           },
         },
         project: this.p,
@@ -264,24 +264,20 @@ export class Query {
     this.q.transforms = transforms;
   }
 
-  tracking(type, field, data) {
-    this.type = type;
-    this.field = field;
-
-  }
-
-  posNeg(field) {
+  // Sets pos neg tracking token field and enables click tracking
+  posNegTracking(field) {
     this.generate_tokens = 'POS_NEG';
     this.token_key_field = field;
   }
 
-  click(field) {
+  // Sets click tracking token field and enables pos neg tracking
+  clickTracking(field) {
     this.generate_tokens = 'CLICK';
     this.token_key_field = field;
   }
 
   // Set tracking data
-  data(name, value) {
-    this.d[name] = value
+  tracking(name, value) {
+    this.data[name] = value
   }
 }
