@@ -132,13 +132,25 @@ export function geoFilter(field_lat, field_lng, lat, lng, radius, region) {
 
 /* Filter Combinators */
 
-export const COMB_FILTER_OP_ALL = 'ALL';
-export const COMB_FILTER_OP_ANY = 'ANY';
-export const COMB_FILTER_OP_ONE = 'ONE';
-export const COMB_FILTER_OP_NONE = 'NONE';
 
-export function combinatorFilter(filters, operator) {
+function combinatorFilter(filters, operator) {
   return { combinator: { filters, operator } };
+}
+
+export function allFilters(filters) {
+  return combinatorFilter(filters, 'ALL')
+}
+
+export function anyFilters(filters) {
+  return combinatorFilter(filters, 'ANY')
+}
+
+export function oneOfFilters(filters) {
+  return combinatorFilter(filters, 'ONE')
+}
+
+export function noneOfFilters(filters) {
+  return combinatorFilter(filters, 'NONE')
 }
 
 /* Index Boosts */
