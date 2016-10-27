@@ -117,48 +117,48 @@ Filters let you exclude documents from the result set. A query only has 1 filter
 
 Field filters act on a value in a field, resulting in a true or false result.
 
-| Query Filter |
-| :-- |
-| `FILTER_OP_EQ` |
-| `FILTER_OP_NOT_EQ` |
-| `FILTER_OP_GT` |
-| `FILTER_OP_GT_EQ` |
-| `FILTER_OP_LT` |
-| `FILTER_OP_LT_EQ` |
-| `FILTER_OP_CONTAINS` |
-| `FILTER_OP_NOT_CONTAIN` |
-| `FILTER_OP_PREFIX` |
-| `FILTER_OP_SUFFIX` |
+| Query Filter | Behaviour             |
+| :--          | :--                   |
+| `=`          | Equal to              |
+| `!=`         | Not equal to          |
+| `>`          | Greater than          |
+| `>=`         | Greater than or Equal |
+| `<`          | Less than             |
+| `<=`         | Less than or Equal    |
+| `~`          | Contains              |
+| `!~`         | Does not Contains     |
+| `^`          | Has prefix            |
+| `$`          | Has suffix            |
 
 Combinator filters act on an array of filters, also resulting in a true of false result.
 
-| Query Filter Combinator |
-| :-- |
-| `COMB_FILTER_OP_ALL` |
-| `COMB_FILTER_OP_ANY` |
-| `COMB_FILTER_OP_ONE` |
-| `COMB_FILTER_OP_NONE` |
+| Query Combinator | Behaviour                                   |
+| :--              | :--                                         |
+| `allFilters`     | All filters must resolve to be true         |
+| `anyFilters`     | At least one filter must resolve to be true |
+| `oneOfFilters`   | Exactly one filter must resolve to be true  |
+| `noneOfFilters`  | All filters must resolve to be false        |
 
 ### Filter Example
 
 ```javascript
-import { fieldFilter, FILTER_OP_LT } from 'sajari'
+import { fieldFilter } from 'sajari'
 
 query.filter(
-  fieldFilter('price', 100, FILTER_OP_LT)
+  fieldFilter('price', '<', 100)
 )
 ```
 
 ### Combinator Filter Example
 
 ```javascript
-import { fieldFilter, FILTER_OP_LT, FILTER_OP_GT_EQ, combinatorFilter } from 'sajari'
+import { fieldFilter, allFilters } from 'sajari'
 
 query.filter(
-  combinatorFilter([
-    fieldFilter('price', 100, FILTER_OP_LT),
-    fieldFilter('stock', 3, FILTER_OP_GT_EQ)
-  ], COMB_FILTER_OP_ALL)
+  allFilters([
+    fieldFilter('price', '<', 100),
+    fieldFilter('stock', '>=', 3)
+  ])
 )
 ```
 
@@ -166,30 +166,27 @@ query.filter(
 
 Sorts allow you to order your results based on their fields. Queries can take multiple sorts, using successive sorts to resolve ties.
 
-| Sort Order |
-| :-- |
-| `SORT_ASCENDING` |
-| `SORT_DESCENDING` |
+Prepending a `-` to the front of the field will change the ordering to descending
 
 ## Sort Example
 
 ```javascript
-import { SORT_ASCENDING } from 'sajari'
+import { sort } from 'sajari'
 
 query.sort([
-  sort('price', SORT_ASCENDING)
+  sort('price') // Sort by price ascending
 ])
 ```
 
 ## Expanded Sort Example
 
 ```javascript
-import { SORT_ASCENDING, SORT_DESCENDING } from 'sajari'
+import { sort } from 'sajari'
 
 query.sort([
-  sort('rating', SORT_DESCENDING),
-  sort('price', SORT_ASCENDING),
-  sort('performance', SORT_DESCENDING),
+  sort('-rating'),
+  sort('price'),
+  sort('-performance'),
 ])
 ```
 
