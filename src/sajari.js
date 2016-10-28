@@ -7,7 +7,7 @@ export class Api {
   constructor(project, collection, address) {
     this.p = project;
     this.c = collection;
-    this.a = address || 'https://apid.sajari.com:9200/search/';
+    this.a = address || 'https://api.sajari.com:9200/search/';
   }
 
   // search takes a query, success and error callbacks
@@ -215,7 +215,6 @@ export class Query {
   constructor() {
     this.resetID();
     this.q = {
-      page: 1,
       results_per_page: 10,
     };
     this.data = {} // tracking data
