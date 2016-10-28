@@ -218,10 +218,10 @@ export class Query {
       page: 1,
       results_per_page: 10,
     };
-    this.d = {} // tracking data
+    this.data = {} // tracking data
     const gaID = getGAID()
     if (gaID) {
-      this.data('gaID', gaID)
+      this.tracking('gaID', gaID)
     }
   }
 
