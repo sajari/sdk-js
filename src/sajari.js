@@ -113,9 +113,9 @@ function operatorFromString(operator) {
   case '!~':
     return 'DOES_NOT_CONTAIN'
   case '^':
-    return 'HAS_SUFFIX'
-  case '$':
     return 'HAS_PREFIX'
+  case '$':
+    return 'HAS_SUFFIX'
   default:
     throw `invalid operator: ${operator}`
   }
