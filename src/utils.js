@@ -1,5 +1,6 @@
 import cookie from 'js-cookie'
 
+/** @ignore */
 export function getGAID() {
 	var userId = '';
 	var gaUserCookie = cookie.get("_ga");

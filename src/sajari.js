@@ -1,16 +1,38 @@
+/**
+ * @fileOverview Exports the Sajari javascript api.
+ * @name sajari.js
+ * @author Sajari
+ * @license MIT
+ * @module sajari
+ */
 import { getGAID } from './utils'
 
-// Api handles the searching of queries and keeping track of query id and sequence
+/** Class representing an instance of the Api. Handles the searching of queries and keeping track of query id and sequence */
 export class Api {
 
-  // constructor takes sajari project and collection details, and an optional address as an override
+  /**
+   * Creates an Api object.
+   * @constructor
+   * @param {string} project The project name.
+   * @param {string} collection The collection name.
+   * @param {string} [address] A custom address to send searches.
+   * @returns {Api} Api object.
+   */
   constructor(project, collection, address) {
+    /** @private */
     this.p = project;
+    /** @private */
     this.c = collection;
+    /** @private */
     this.a = address || 'https://api.sajari.com:9200/search/';
   }
 
-  // search takes a query, success and error callbacks
+  /**
+   * Performs a search
+   * @param {Query} query The query object to perform a search with.
+   * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
+   * @returns {Promise} A promise of the search.
+   */
   search(query, callback) {
     return fetch(this.a, {
       method: 'POST',
@@ -53,36 +75,82 @@ export class Api {
   }
 }
 
-/* Body */
+/**
+ * @typedef {Object} Body
+ * @property {string} text The text of the Body.
+ * @property {number} weight The weight of the Body.
+ */
 
+/**
+ * Creates a body object
+ * @param {string} text The text to use for the body.
+ * @param {number} [weight=1] The weight to give the body.
+ * @returns {Body} A body object.
+ */
 export function body(text, weight) {
   return { text, weight: weight || 1 };
 }
 
-/* Aggregate */
+/** @typedef {string} MetricType */
 
+/** @returns MetricType */
 export const METRIC_TYPE_MAX = 'MAX';
+/** @returns MetricType */
 export const METRIC_TYPE_MIN = 'MIN';
+/** @returns MetricType */
 export const METRIC_TYPE_AVG = 'AVG';
+/** @returns MetricType */
 export const METRIC_TYPE_SUM = 'SUM';
 
+/** @typedef {Object} Aggregate */
+/** @typedef {string} Field
+
+/**
+ * Creates a Metric Aggregate Object.
+ * @param {string} name The name of the aggregate.
+ * @param {Field} field The field to aggregate.
+ * @param {MetricType} type The type of metric to gather.
+ * @returns {Aggregate} A Metric Aggregate Object
+ */
 export function metricAggregate(name, field, type) {
   return [name, { metric: { field, type } }];
 }
 
+/**
+ * Creates a Count Aggregate Object.
+ * @param {string} name The name of the aggregate.
+ * @param {Field} field The field to aggregate.
+ * @returns {Aggregate} A Count Aggregate Object.
+ */
 export function countAggregate(name, field) {
   return [name, { count: { field } }];
 }
 
+/**
+ * @typedef {Object} Bucket
+ * @property {string} name The name of the bucket.
+ * @property {Filter} filter The filter to use as the classifier.
+ */
+
+/**
+ * Creates a Bucket object.
+ * @param {string} name The name of the bucket.
+ * @param {Filter} filter The filter fo use as the classifier.
+ * @returns {Bucket} The bucket object.
+ */
 export function bucket(name, filter) {
   return { name, filter };
 }
 
+/**
+ * Creates a Bucket Aggregate Object.
+ * @param {string} name The name of the Bucket Aggregate.
+ * @param {bucket[]} buckets The buckets to use.
+ * @returns {Aggregate}
+ */
 export function bucketAggregate(name, buckets) {
   return [name, { bucket: { buckets } }];
 }
-
-/* Filters */
 
 function protoValue(values) {
   if (values instanceof Array) {
@@ -121,102 +189,234 @@ function operatorFromString(operator) {
   }
 }
 
+/**
+ * @typedef {Object} Filter
+ */
+
+/**
+ * Create a Field Filter.
+ *
+ * Table of operators and behaviours
+ *
+ * | Query Filter | Behaviour             |
+ * | :-:          | :--                   |
+ * | `=`          | Equal to              |
+ * | `!=`         | Not equal to          |
+ * | `>`          | Greater than          |
+ * | `>=`         | Greater than or Equal |
+ * | `<`          | Less than             |
+ * | `<=`         | Less than or Equal    |
+ * | `~`          | Contains              |
+ * | `!~`         | Does not Contains     |
+ * | `^`          | Has prefix            |
+ * | `$`          | Has suffix            |
+ *
+ * @param {Field} field The field to filter on.
+ * @param {string} operator The operator to use.
+ * @param {*} values The value(s) to compare against.
+ * @returns {Filter} Field filter object.
+ */
 export function fieldFilter(field, operator, values) {
   return { field: { field, value: protoValue(values), operator: operatorFromString(operator) } };
 }
 
-// eslint-disable-next-line camelcase
+/**
+ * Creates a Geo Filter.
+ * @param {Field} field_lat The field containing the latitude value.
+ * @param {Field} field_lng The field containing the longitude value.
+ * @param {number} lat The latitude to compare against.
+ * @param {number} lng The longitude to compare against.
+ * @param {radius} radius The radius to restrict the filter to.
+ * @param {GeoRegion} region The region to restrict the filter to.
+ * @returns {Filter}
+ */
 export function geoFilter(field_lat, field_lng, lat, lng, radius, region) {
   return { geo: { field_lat, field_lng, lat, lng, radius, region } };
 }
-
-/* Filter Combinators */
-
 
 function combinatorFilter(filters, operator) {
   return { combinator: { filters, operator } };
 }
 
+/**
+ * Creates an All Filter. An All filter will resolve to True only if all it's child filters resolve to True.
+ * @param {Filter[]} filters The child filters.
+ * @returns {Filter}
+ */
 export function allFilters(filters) {
   return combinatorFilter(filters, 'ALL')
 }
 
+/**
+ * Creates an Any Filter. An Any filter will resolve to True if at least one of it's child filters resolve to True.
+ * @param {Filter[]} filters The child filters.
+ * @returns {Filter}
+ */
 export function anyFilters(filters) {
   return combinatorFilter(filters, 'ANY')
 }
 
+/**
+ * Creates a One Of Filter. A One Of filter will resolve to True only if exactly one of it's child filters resolve to True.
+ * @param {Filter[]} filters The child filters.
+ * @returns {Filter}
+ */
 export function oneOfFilters(filters) {
   return combinatorFilter(filters, 'ONE')
 }
 
+/**
+ * Creates a None Of Filter. A None Of filter will resolve to True only if none of it's child filters resolve to True.
+ * @param {Filter[]} filters The child filters.
+ * @returns {Filter}
+ */
 export function noneOfFilters(filters) {
   return combinatorFilter(filters, 'NONE')
 }
 
-/* Index Boosts */
+/** @typedef {Object} InstanceBoost */
 
+/**
+ * Creates a Field Instance Boost. FilterFieldBoost is a boost which is applied to documents which satisfy the filter. Value must be greater than 0. Documents which match the filter will receive a boost of Value.
+ * @param {Field} field The field to boost.
+ * @param {number} value The value to boost by.
+ * @returns {InstanceBoost}
+ */
 export function fieldInstanceBoost(field, value) {
   return { field: { field, value } };
 }
 
+/**
+ * Creates a Score Instance Boost. ScoreInstanceBoost is a boost applied to index terms which have interaction data set. For an instance score boost to take effect, the instance must have received at least minCount score updates (i.e. count). If an item is performing as it should then its score will be 1. If the score is below threshold (0 < threshold < 1) then the score will be applied.
+ * @param {number} threshold
+ * @param {number} min_count
+ * @returns {InstanceBoost}
+ */
 export function scoreInstanceBoost(threshold, min_count) {
   return { score: { threshold, min_count } };
 }
 
-/* Meta Boosts */
+/** @typedef {Object} FieldBoost */
 
+/**
+ * Creates a Filter Field Boost. FilterFieldBoost is a boost which is applied to documents which satisfy the filter. Value must be greater than 0. Documents which match the filter will receive a boost of Value
+ * @param {Filter} filter The Filter to use as the condition for the boost.
+ * @param {number} value The value to give the boost.
+ * @returns {FieldBoost}
+ */
 export function filterFieldBoost(filter, value) {
   return { filter: { filter, value } };
 }
 
-// eslint-disable-next-line camelcase
+/**
+ * Creates an Additive Field Boost for a Field Boost. AdditiveFieldBoost uses the normalised form of the FieldBoost b (computed internally) to count for a portion (value between 0 and 1) of the overall document score.
+ * @param {FieldBoost} field_boost The field boost to make additive.
+ * @param {number} value The percentage to attribute to this attitive boost.
+ * @returns {FieldBoost}
+ */
 export function additiveFieldBoost(field_boost, value) {
   return { additive: { field_boost, value } };
 }
 
+/** @typedef {string} GeoRegion */
+
+/** @returns {GeoRegion} */
 export const GEO_FIELD_BOOST_REGION_INSIDE = 'INSIDE';
+/** @returns {GeoRegion} */
 export const GEO_FIELD_BOOST_REGION_OUTSIDE = 'OUTSIDE';
 
+/** @typedef {Object} PointValue */
+
+/**
+ * Creates a Point Value for use in an Interval Field Boost.
+ * @param {number} point A point to scale from/to.
+ * @param {number} value The value to give at this point.
+ * @returns {PointValue}
+ */
 export function pointValue(point, value) {
   return { point, value };
 }
 
+/**
+ * Creates an Interval Field Boost. IntervalFieldBoost represents an interval-based boost for numeric field values. An interval field boost is defined by a list of points with corresponding boost values. When a field value falls between between two PointValues.Point values is computed linearly.
+ * @param {Field} field The field to boost.
+ * @param {PointValue[]} points The points to use as intervals.
+ * @returns {FieldBoost}
+ */
 export function intervalFieldBoost(field, points) {
   return { interval: { field, points } };
 }
 
+/**
+ * Creates a Distance Field Boost. DistanceFieldBoost is a distance-based boost for numeric field values.
+ * @param {number} min The minimum value to start boosting at.
+ * @param {number} max The maximum value to finish boosting at.
+ * @param {number} ref The value in the range to get the full `value` of boost.
+ * @param {Field} field The field to boost on.
+ * @param {number} value The boost value to give.
+ * @returns {FieldBoost}
+ */
 export function distanceFieldBoost(min, max, ref, field, value) {
   return { distance: { min, max, ref, field, value } };
 }
 
+/**
+ * Creates an Element Field Boost. ElementFieldBoost represents an element-based boosting for repeated field values. The resulting boost is the proportion of elements in elts that are also in the field value.
+ * @param {Field} field The field to boost on.
+ * @param {string[]} elts The elements to use for the boost.
+ * @returns {FieldBoost}
+ */
 export function elementFieldBoost(field, elts) {
   return { element: { field, elts } };
 }
 
+/**
+ * TextFieldBoost represents a text-based boosting for string fields. It compares the text gainst the document field using a bag-of-words model.
+ * @param {Field} field The field to boost on.
+ * @param {string} text The text to use for the boost.
+ * @returns {FieldBoost}
+ */
 export function textFieldBoost(field, text) {
   return { text: { field, text } };
 }
 
-/* Sort */
+/** @typedef {Object} Sort */
 
+/**
+ * Creates a Sort object. Sort defines a sort order for a query.
+ * @param {Field} field The field to sort by, prepended by `-` if it should be descending.
+ * @returns {Sort}
+ */
 export function sort(field) {
   return { field, order: field[0] === '-' ? 'DESC' : 'ASC' };
 }
 
+/** @typedef {string} Transform
+
+/**
+ * Creates a transform. Transform is a definition of a transformation applied to a Request which is applied before the Request is executed.
+ * @param {string} identifier The name of the Transform to be applied.]
+ * @returns {Transform}
+ */
 export function transform(identifier) {
   return { identifier };
 }
 
-/* Query */
-
+/** Class representing a Query. */
 export class Query {
 
-  // Constructor sets some sane defaults
+  /**
+   * Creates a Query object.
+   * @constructor
+   * @returns {Object} Query object.
+   */
   constructor() {
     this.resetID();
+    /** @private */
     this.q = {
       results_per_page: 10,
     };
+    /** @private */
     this.data = {} // tracking data
     const gaID = getGAID()
     if (gaID) {
@@ -224,8 +424,13 @@ export class Query {
     }
   }
 
+  /**
+   * Resets tracking ID on the Query object.
+   */
   resetID() {
+    /** @private */
     this.i = '';
+    /** @private */
     this.s = 0;
 
     // Generate a random id for the query
@@ -234,43 +439,67 @@ export class Query {
     }
   }
 
-  // Results per page is a number
+  /**
+   * Sets the Results Per Page value on the Query. This determines the maximum number of results each search will return.
+   * @param {number} results The number of results to return per search.
+   */
   resultsPerPage(results) {
     this.q.results_per_page = results;
   }
 
-  // Page is a number
+  /**
+   * Page of results to return.
+   * The first page of results is page 0.  If this value is not set then it defaults to the first page.
+   * @param {number} page The page to set (0 indexed).
+   */
   page(page) {
     this.q.page = page;
   }
 
-  // Body is a list of Body objects
-  // eslint-disable-next-line no-shadow
+  /**
+   * Sets the body of a query. Body is a list of weighted free-text.
+   * @param {Body[]} body A list of body objects.
+   */
   body(body) {
     this.q.body = body;
   }
 
-  // Fields is a list of strings
+  /**
+   * Sets a list of Fields to be returned.
+   * @param {Field[]} fields The Fields to be returned from a search.
+   */
   fields(fields) {
     this.q.fields = fields;
   }
 
-  // Filter is a single Filter object
+  /**
+   * Sets a Filter for the Query.
+   * @param {Filter} filter The Filter to be applied to the Query.
+   */
   filter(filter) {
     this.q.filter = filter;
   }
 
-  // Field boosts is a list of FieldBoost objects
+  /**
+   * Sets a list of FieldBoost for the Query.
+   * @param {FieldBoost[]} boosts The FieldBoosts to be applied to the Query.
+   */
   fieldBoosts(boosts) {
     this.q.field_boosts = boosts;
   }
 
-  // Instance boosts is a list of InstanceBoost objects
+  /**
+   * Sets a list of InstanceBoost for the Query.
+   * @param {InstanceBoost[]} boosts The InstanceBoosts to be applied to the Query.
+   */
   instanceBoosts(boosts) {
     this.q.instance_boosts = boosts;
   }
 
-  // Aggregates is a list of Aggregate Objects
+  /**
+   * Sets the Aggregates on a query. Aggregates is a set of Aggregates to run against a result set.
+   * @param {Aggregate[]} aggregates The list of Aggregates.
+   */
   aggregates(aggregates) {
     const newAggregates = {};
     for (let i = 0; i < aggregates.length; i++) {
@@ -279,28 +508,47 @@ export class Query {
     this.q.aggregates = newAggregates;
   }
 
+  /**
+   * Sets the Sorts on a Query.
+   * @param {Sort[]} sorts The Sorts to be applied in order to the Query.
+   */
   sort(sorts) {
     this.q.sort = sorts;
   }
 
-  // Transforms is a list of strings
+  /**
+   * Sets the Transforms on a Query.
+   * @param {Transform[]} transforms The Transforms to be applied to the Query.
+   */
   transforms(transforms) {
     this.q.transforms = transforms;
   }
 
-  // Sets pos neg tracking token field and enables click tracking
+  /**
+   * Sets pos neg tracking token field and enables click tracking
+   * @param {Field} field The Field to apply pos neg tracking to.
+   */
   posNegTracking(field) {
+    /** @private */
     this.generate_tokens = 'POS_NEG';
+    /** @private */
     this.token_key_field = field;
   }
 
-  // Sets click tracking token field and enables pos neg tracking
+  /**
+   * Sets click tracking token field and enables pos neg tracking
+   * @param {Field} field The Field to apply click tracking to.
+   */
   clickTracking(field) {
     this.generate_tokens = 'CLICK';
     this.token_key_field = field;
   }
 
-  // Set tracking data
+  /**
+   * Set tracking data in a key value stre to be sent with the Query.
+   * @param {string} name The name of the custom tracking data
+   * @param {string} value The value of the custom tracking data
+   */
   tracking(name, value) {
     this.data[name] = value
   }
