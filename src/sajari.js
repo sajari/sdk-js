@@ -103,7 +103,7 @@ export const METRIC_TYPE_AVG = 'AVG';
 export const METRIC_TYPE_SUM = 'SUM';
 
 /** @typedef {Object} Aggregate */
-/** @typedef {string} Field
+/** @typedef {string} Field */
 
 /**
  * Creates a Metric Aggregate Object.
@@ -196,18 +196,16 @@ function operatorFromString(operator) {
 /**
  * Create a Field Filter.
  *
- * Table of operators and behaviours
- *
- * | Query Filter | Behaviour             |
+ * | Operator     | Description           |
  * | :-:          | :--                   |
  * | `=`          | Equal to              |
  * | `!=`         | Not equal to          |
  * | `>`          | Greater than          |
- * | `>=`         | Greater than or Equal |
+ * | `>=`         | Greater than or equal to |
  * | `<`          | Less than             |
- * | `<=`         | Less than or Equal    |
+ * | `<=`         | Less than or equal to |
  * | `~`          | Contains              |
- * | `!~`         | Does not Contains     |
+ * | `!~`         | Does not contain      |
  * | `^`          | Has prefix            |
  * | `$`          | Has suffix            |
  *
