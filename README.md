@@ -22,9 +22,10 @@ This module is for querying the search service. If you want automated indexing, 
   * [Aggregates](#aggregates)
   * [Instance Boosts](#instance-boosts)
   * [Field Boosts](#field-boosts)
-  * [Tokens](#tokens)
+  * [Tracking](#tracking)
     * [Pos Neg](#pos-neg)
     * [Click](#click)
+    * [Misc data](#misc-data)
   * [Results](#results)
   * [Reset ID]($reset-id)
 * [License](#license)
@@ -118,7 +119,7 @@ Filters let you exclude documents from the result set. A query only has 1 filter
 Field filters act on a value in a field, resulting in a true or false result.
 
 | Query Filter | Behaviour             |
-| :--          | :--                   |
+| :-:          | :--                   |
 | `=`          | Equal to              |
 | `!=`         | Not equal to          |
 | `>`          | Greater than          |
@@ -201,11 +202,11 @@ There are 3 types of aggregates. Metric and Count both work on fields, while Buc
 - Bucket - counts of categories that match the supplied filters
 
 | Metric Aggregate Type |
-| :-- |
-| `METRIC_TYPE_MAX` |
-| `METRIC_TYPE_MIN` |
-| `METRIC_TYPE_AVG` |
-| `METRIC_TYPE_SUM` |
+| :--                   |
+| `METRIC_TYPE_MAX`     |
+| `METRIC_TYPE_MIN`     |
+| `METRIC_TYPE_AVG`     |
+| `METRIC_TYPE_SUM`     |
 
 ### Metric example
 
@@ -233,23 +234,23 @@ query.aggregates([
 ### Bucket example
 
 ```javascript
-import { bucketAggregate, bucket, fieldFilter, FILTER_OP_LT, FILTER_OP_GT_EQ, FILTER_OP_GT, combinatorFilter, COMB_FILTER_OP_ALL } from 'sajari'
+import { bucketAggregate, bucket, fieldFilter, allFilters } from 'sajari'
 
 query.aggregates([
   bucketAggregate(
     'Price groups',
     [
       bucket('$0 - $99',
-        fieldFilter('price', 100, FILTER_OP_LT)
+        fieldFilter('price', '<', 100)
       )
       bucket('$100 - $199',
-        combinatorFilter([
-          fieldFilter('price', 100, FILTER_OP_GT_EQ),
-          fieldFilter('price', 200, FILTER_OP_LT),
-        ], COMB_FILTER_ALL)
+        allFilters([
+          fieldFilter('price', '>=', 100),
+          fieldFilter('price', '<', 200),
+        ])
       ),
       bucket('$200+',
-        fieldFilter('price', 200, FILTER_OP_GT)
+        fieldFilter('price', '>', 200)
       ),
     ]
   )
@@ -289,20 +290,20 @@ The most obvious boost is a filter boost. It applies a boost if the document mat
 ### Filter Field Boost Example
 
 ```javascript
-import { filterFieldBoost, fieldFilter, FILTER_OP_LT } from 'sajari'
+import { filterFieldBoost, fieldFilter } from 'sajari'
 
 query.fieldBoosts([
-  filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2)
+  filterFieldBoost(fieldFilter('price', '<', 100), 2)
 ])
 ```
 
 ### Additive Field Boost Example
 
 ```javascript
-import { additiveFieldBoost, filterFieldBoost, fieldFilter, FILTER_OP_LT } from 'sajari'
+import { additiveFieldBoost, filterFieldBoost, fieldFilter } from 'sajari'
 
 query.fieldBoosts([
-  additiveFieldBoost(filterFieldBoost(fieldFilter('price', 100, FILTER_OP_LT), 2), 0.5)
+  additiveFieldBoost(filterFieldBoost(fieldFilter('price', '<', 100), 2), 0.5)
 ])
 ```
 
@@ -312,9 +313,9 @@ If you had latitude and longitude fields, geo-boosting is a good option to get l
 
 Boost results within 50km of Sydney.
 
-| Geo Boost Regions |
-| :-- |
-| `GEO_FIELD_BOOST_REGION_INSIDE` |
+| Geo Boost Regions                |
+| :--                              |
+| `GEO_FIELD_BOOST_REGION_INSIDE`  |
 | `GEO_FIELD_BOOST_REGION_OUTSIDE` |
 
 ```javascript
@@ -377,22 +378,30 @@ query.fieldBoosts([
 ])
 ```
 
-## Tokens
+## Tracking
 
 ### Pos Neg
 
-The argument to `posNeg` is the field to use. It must be unique.
+The argument to `posNegTracking` is the field to use. It must be unique.
 
 ```javascript
-query.posNeg('url')
+query.posNegTracking('url')
 ```
 
 ### Click
 
-The argument to `click` is the field to use. It must be unique.
+The argument to `clickTracking` is the field to use. It must be unique.
 
 ```javascript
-query.click('url')
+query.clickTracking('url')
+```
+
+### Misc data
+
+Misc tracking data can be added to the query via `tracking`. It takes a key and value as arguments.
+
+```javascript
+query.tracking('page', 'contact-us')
 ```
 
 ## Results
