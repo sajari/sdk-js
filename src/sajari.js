@@ -15,16 +15,16 @@ export class Api {
    * @constructor
    * @param {string} project The project name.
    * @param {string} collection The collection name.
-   * @param {string} [address] A custom address to send searches.
+   * @param {string} [endpoint] A custom endpoint to send searches.
    * @returns {Api} Api object.
    */
-  constructor(project, collection, address) {
+  constructor(project, collection, endpoint) {
     /** @private */
     this.p = project;
     /** @private */
     this.c = collection;
     /** @private */
-    this.a = address || 'https://api.sajari.com:9200/search/';
+    this.a = endpoint || 'https://api.sajari.com:9200/search/';
   }
 
   /**
@@ -309,7 +309,7 @@ export function filterFieldBoost(filter, value) {
 /**
  * Creates an Additive Field Boost for a Field Boost. AdditiveFieldBoost uses the normalised form of the FieldBoost b (computed internally) to count for a portion (value between 0 and 1) of the overall document score.
  * @param {FieldBoost} field_boost The field boost to make additive.
- * @param {number} value The percentage to attribute to this attitive boost.
+ * @param {number} value The percentage to attribute to this additive boost.
  * @returns {FieldBoost}
  */
 export function additiveFieldBoost(field_boost, value) {
