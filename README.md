@@ -1,6 +1,6 @@
 # Sajari Javascript SDK
 
-![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square) ![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
+![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square) ![docs](https://doc.esdoc.org/github.com/sajari/sajari-sdk-js/badge.svg) ![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
 The Sajari Javascript SDK provides web integration for browsers.
 
