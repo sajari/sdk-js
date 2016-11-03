@@ -7,16 +7,16 @@
  */
 import { getGAID } from './utils'
 
-/** Class representing an instance of the Api. Handles the searching of queries and keeping track of query id and sequence */
-export class Api {
+/** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
+export class Client {
 
   /**
-   * Creates an Api object.
+   * Creates an Client object.
    * @constructor
    * @param {string} project The project name.
    * @param {string} collection The collection name.
    * @param {string} [endpoint] A custom endpoint to send searches.
-   * @returns {Api} Api object.
+   * @returns {Client} Client object.
    */
   constructor(project, collection, endpoint) {
     /** @private */
