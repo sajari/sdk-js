@@ -308,16 +308,6 @@ export function filterFieldBoost(filter, value) {
   return { filter: { filter, value } };
 }
 
-/**
- * Creates an Additive Field Boost for a Field Boost. AdditiveFieldBoost uses the normalised form of the FieldBoost b (computed internally) to count for a portion (value between 0 and 1) of the overall document score.
- * @param {FieldBoost} field_boost The field boost to make additive.
- * @param {number} value The percentage to attribute to this additive boost.
- * @returns {FieldBoost}
- */
-export function additiveFieldBoost(field_boost, value) {
-  return { additive: { field_boost, value } };
-}
-
 /** @typedef {string} GeoRegion */
 
 /** @returns {GeoRegion} */
