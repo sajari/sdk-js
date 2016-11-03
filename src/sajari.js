@@ -378,6 +378,18 @@ export function textFieldBoost(field, text) {
   return { text: { field, text } };
 }
 
+/** @typedef {Object} FeatureFieldBoost */
+
+/**
+ * Creates a FeatureFieldBoost from a FieldBoost
+ * @param {FieldBoost} field_boost
+ * @param {number} value
+ * @returns {FeatureFieldBoost} FeatureFieldBoost object.
+ */
+export function featureFieldBoost(field_boost, value) {
+  return { field_boost , value }
+}
+
 /** @typedef {Object} Sort */
 
 /**
@@ -400,6 +412,60 @@ export function transform(identifier) {
   return { identifier };
 }
 
+/** Class representing a IndexQuery */
+export class IndexQuery {
+
+  /**
+   * Creates a IndexQuery Object.
+   * @constructor
+   * @returns {IndexQuery} IndexQuery Object.
+   */
+  constructor() {}
+
+  /**
+   * Sets the body of a query. Body is a list of weighted free-text.
+   * @param {Body[]} bodies A list of body objects
+   */
+  body(bodies) {
+    this.body = bodies
+  }
+
+  /**
+   * Sets a list of InstanceBoost for the IndexQuery.
+   * @param {InstanceBoost[]} boosts The InstanceBoosts to be applied to the IndexQuery.
+   */
+  instanceBoosts(boosts) {
+    this.instance_boosts = boosts
+  }
+
+  /**
+   * Sets a list of FieldBoost for the IndexQuery.
+   * @param {FieldBoost[]} boosts The FieldBoosts to be applied to the IndexQuery.
+   */
+  fieldBoosts(boosts) {
+    this.field_boosts = boosts;
+  }
+}
+
+/** Class representing a FeatureQuery */
+export class FeatureQuery {
+
+  /**
+   * Creates a FeatureQuery Object.
+   * @constructor
+   * @returns {FeatureQuery} FeatureQuery Obejct.
+   */
+  constructor() {}
+
+  /**
+   * Sets the FieldBoosts on the FeatureQuery.
+   * @param {FeatureFieldBoost[]} boosts The FeatureFieldBoosts to apply to the FeatureQuery.
+   */
+  fieldBoosts(boosts) {
+    this.field_boosts = boosts
+  }
+}
+
 /** Class representing a Query. */
 export class Query {
 
@@ -412,7 +478,7 @@ export class Query {
     this.resetID();
     /** @private */
     this.q = {
-      results_per_page: 10,
+      limit: 10,
     };
     /** @private */
     this.data = {} // tracking data
@@ -423,43 +489,43 @@ export class Query {
   }
 
   /**
-   * Resets tracking ID on the Query object.
+   * Sets a Filter for the Query.
+   * @param {Filter} filter The Filter to be applied to the Query.
    */
-  resetID() {
-    /** @private */
-    this.i = '';
-    /** @private */
-    this.s = 0;
-
-    // Generate a random id for the query
-    for (let i = 0; i < 16; i++) {
-      this.i += 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36));
-    }
+  filter(filter) {
+    this.q.filter = filter
   }
 
   /**
-   * Sets the Results Per Page value on the Query. This determines the maximum number of results each search will return.
-   * @param {number} results The number of results to return per search.
+   * Applies the IndexQuery to the Query
+   * @param {IndexQuery} query
    */
-  resultsPerPage(results) {
-    this.q.results_per_page = results;
+  indexQuery(query) {
+    this.q.index_query = query
   }
 
   /**
-   * Page of results to return.
-   * The first page of results is page 0.  If this value is not set then it defaults to the first page.
-   * @param {number} page The page to set (0 indexed).
+   * Applies the FeatureQuery to the Query
+   * @param {FeatureQuery} query
    */
-  page(page) {
-    this.q.page = page;
+  featureQuery(query) {
+    this.q.feature_query = query
   }
 
   /**
-   * Sets the body of a query. Body is a list of weighted free-text.
-   * @param {Body[]} body A list of body objects.
+   * Sets the offset on the Query.
+   * @param {number} offset The offset to use.
    */
-  body(body) {
-    this.q.body = body;
+  offset(offset) {
+    this.q.offset = offset
+  }
+
+  /**
+   * Sets the limit on the Query. This determines the maximum number of results each search will return.
+   * @param {number} limit The maximum number of results to return per search.
+   */
+  limit(limit) {
+    this.q.limit = limit
   }
 
   /**
@@ -467,31 +533,15 @@ export class Query {
    * @param {Field[]} fields The Fields to be returned from a search.
    */
   fields(fields) {
-    this.q.fields = fields;
+    this.q.fields = fields
   }
 
   /**
-   * Sets a Filter for the Query.
-   * @param {Filter} filter The Filter to be applied to the Query.
+   * Sets the Sorts on a Query.
+   * @param {Sort[]} sorts The Sorts to be applied in order to the Query.
    */
-  filter(filter) {
-    this.q.filter = filter;
-  }
-
-  /**
-   * Sets a list of FieldBoost for the Query.
-   * @param {FieldBoost[]} boosts The FieldBoosts to be applied to the Query.
-   */
-  fieldBoosts(boosts) {
-    this.q.field_boosts = boosts;
-  }
-
-  /**
-   * Sets a list of InstanceBoost for the Query.
-   * @param {InstanceBoost[]} boosts The InstanceBoosts to be applied to the Query.
-   */
-  instanceBoosts(boosts) {
-    this.q.instance_boosts = boosts;
+  sort(sorts) {
+    this.q.sort = sorts
   }
 
   /**
@@ -501,17 +551,9 @@ export class Query {
   aggregates(aggregates) {
     const newAggregates = {};
     for (let i = 0; i < aggregates.length; i++) {
-      newAggregates[aggregates[i][0]] = aggregates[i][1];
+      newAggregates[aggregates[i][0]] = aggregates[i][1]
     }
-    this.q.aggregates = newAggregates;
-  }
-
-  /**
-   * Sets the Sorts on a Query.
-   * @param {Sort[]} sorts The Sorts to be applied in order to the Query.
-   */
-  sort(sorts) {
-    this.q.sort = sorts;
+    this.q.aggregates = newAggregates
   }
 
   /**
@@ -519,7 +561,22 @@ export class Query {
    * @param {Transform[]} transforms The Transforms to be applied to the Query.
    */
   transforms(transforms) {
-    this.q.transforms = transforms;
+    this.q.transforms = transforms
+  }
+
+  /**
+   * Resets tracking ID on the Query object.
+   */
+  resetID() {
+    /** @private */
+    this.i = ''
+    /** @private */
+    this.s = 0
+
+    // Generate a random id for the query
+    for (let i = 0; i < 16; i++) {
+      this.i += 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))
+    }
   }
 
   /**
@@ -528,9 +585,9 @@ export class Query {
    */
   posNegTracking(field) {
     /** @private */
-    this.generate_tokens = 'POS_NEG';
+    this.generate_tokens = 'POS_NEG'
     /** @private */
-    this.token_key_field = field;
+    this.token_key_field = field
   }
 
   /**
@@ -538,8 +595,8 @@ export class Query {
    * @param {Field} field The Field to apply click tracking to.
    */
   clickTracking(field) {
-    this.generate_tokens = 'CLICK';
-    this.token_key_field = field;
+    this.generate_tokens = 'CLICK'
+    this.token_key_field = field
   }
 
   /**
