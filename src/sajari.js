@@ -15,16 +15,16 @@ export class Client {
    * @constructor
    * @param {string} project The project name.
    * @param {string} collection The collection name.
-   * @param {string} [endpoint] A custom endpoint to send searches.
+   * @param {string} [address] A custom address to send requests.
    * @returns {Client} Client object.
    */
-  constructor(project, collection, endpoint) {
+  constructor(project, collection, address) {
     /** @private */
     this.p = project;
     /** @private */
     this.c = collection;
     /** @private */
-    this.a = endpoint || 'https://api.sajari.com:9200/search/';
+    this.a = address || 'https://api.sajari.com:9200';
   }
 
   /**
@@ -34,10 +34,10 @@ export class Client {
    * @returns {Promise} A promise of the search.
    */
   search(query, callback) {
-    return fetch(this.a, {
+    return fetch(this.a + '/sajari.api.query.v1.Query/Search', {
       method: 'POST',
       body: JSON.stringify({
-        searchRequest: {
+        request: {
           searchRequest: query.q,
           // eslint-disable-next-line no-param-reassign
           tracking: {
@@ -48,8 +48,10 @@ export class Client {
             data: query.data,
           },
         },
-        project: this.p,
-        collection: this.c,
+        metadata: {
+          project: [this.p],
+          collection: [this.c],
+        }
       })
     }).then((res) => {
       if (res.ok) {
