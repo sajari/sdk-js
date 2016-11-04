@@ -390,7 +390,13 @@ export function featureFieldBoost(field_boost, value) {
  * @returns {Sort}
  */
 export function sort(field) {
-  return { field, order: field[0] === '-' ? 'DESC' : 'ASC' };
+  return field[0] === '-' ? {
+    field: field.slice(1),
+    order: 'DESC'
+  } : {
+    field,
+    order: 'ASC',
+  }
 }
 
 /** @typedef {string} Transform
