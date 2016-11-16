@@ -288,12 +288,12 @@ export function fieldInstanceBoost(field, value) {
 
 /**
  * Creates a Score Instance Boost. ScoreInstanceBoost is a boost applied to index terms which have interaction data set. For an instance score boost to take effect, the instance must have received at least minCount score updates (i.e. count). If an item is performing as it should then its score will be 1. If the score is below threshold (0 < threshold < 1) then the score will be applied.
- * @param {number} threshold
- * @param {number} min_count
+ * @param {number} threshold Threshold of scoring change required to apply this boost.
+ * @param {number} minCount Minimum number of scores required to apply this boost.
  * @returns {InstanceBoost}
  */
-export function scoreInstanceBoost(threshold, min_count) {
-  return { score: { threshold, min_count } };
+export function scoreInstanceBoost(threshold, minCount) {
+  return { score: { threshold, minCount } };
 }
 
 /** @typedef {Object} FieldBoost */
