@@ -338,19 +338,6 @@ export function intervalFieldBoost(field, points) {
 }
 
 /**
- * Creates a Distance Field Boost. DistanceFieldBoost is a distance-based boost for numeric field values.
- * @param {number} min The minimum value to start boosting at.
- * @param {number} max The maximum value to finish boosting at.
- * @param {number} ref The value in the range to get the full `value` of boost.
- * @param {Field} field The field to boost on.
- * @param {number} value The boost value to give.
- * @returns {FieldBoost}
- */
-export function distanceFieldBoost(min, max, ref, field, value) {
-  return { distance: { min, max, ref, field, value } };
-}
-
-/**
  * Creates an Element Field Boost. ElementFieldBoost represents an element-based boosting for repeated field values. The resulting boost is the proportion of elements in elts that are also in the field value.
  * @param {Field} field The field to boost on.
  * @param {string[]} elts The elements to use for the boost.
