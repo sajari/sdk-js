@@ -57,17 +57,26 @@ export class Client {
       if (res.ok) {
         res.json().then((json) => {
           // Flatten single value / multiple values proto structure
-          const r = json.searchResponse.results || []; // Some queries do not have results
-          for (let i = 0; i < r.length; i++) {
-            for (let f in r[i].values) {
-              r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
+          const r = json.searchResponse.results;
+          if (r) {
+            for (let i = 0; i < r.length; i++) {
+              for (let f in r[i].values) {
+                r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
+              }
+              // Copy tokens into results
+              if (json.tokens) {
+                r[i].tokens = json.tokens[i];
+              }
             }
-            // Copy tokens into results
-            if (json.tokens) {
-              r[i].tokens = json.tokens[i];
+          } else {
+            // Set default proto values for empty response
+            json.searchResponse = {
+              results: [],
+              time: json.searchResponse.time,
+              totalResults: '0',
+              reads: '0',
             }
           }
-          // Return searchResponse
           callback(null, json)
         })
       } else {
