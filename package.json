@@ -1,6 +1,6 @@
 {
   "name": "sajari",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "JavaScript SDK for access to the Sajari search API",
   "author": {
     "name": "mish15",
@@ -47,7 +47,6 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
-    "loglevel": "^1.4.0",
     "superagent": "^1.6.1",
     "superagent-jsonp": "0.0.6"
   },

@@ -7,7 +7,6 @@ var newquery = require("./query");
 var url = require("./utils/url");
 
 var request = require('superagent');
-var log = require('loglevel');
 
 var searchSeq = 1;
 
@@ -21,11 +20,9 @@ function API(company, collection, opts) {
 	var usage = 'Usage: API(company, collection, opts)';
 
 	if (!company) {
-		log.error('Please provide a company ID. ' + usage);
 		return;
 	}
 	if (!collection) {
-		log.error('Please provide a collection ID. ' + usage);
 		return;
 	}
 	this.company = company;
@@ -49,7 +46,6 @@ function API(company, collection, opts) {
 		index: "https://re.sajari.com"
 	};
 
-	log.info('API init done, %j', this);
 }
 
 API.prototype = {
@@ -185,7 +181,7 @@ API.prototype = {
 			failure: failure,
 		};
 		if (typeof data !== 'string') {
-			log.error("Fingerprint should be a string");
+			// TODO
 		}
 		var data = {
 			'fingerprint': fingerprint
@@ -206,7 +202,7 @@ API.prototype = {
 			failure: failure,
 		};
 		if (typeof data !== 'string') {
-			log.error("Fingerprint should be a string");
+			// TODO
 		}
 		var data = {
 			'fingerprint': fingerprint
@@ -231,7 +227,7 @@ API.prototype = {
 	 */
 	getById: function(docId, success, failure) {
 		if (typeof docId !== 'string') {
-			log.error("docId should be a string. If using a unique meta key, use the get(data) function instead.");
+			// TODO
 		}
 		var opts = {
 			method: "POST",
@@ -264,7 +260,7 @@ API.prototype = {
 	 */
 	put: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
-			log.error("docId should be a string.");
+			// TODO
 		}
 		var opts = {
 			method: "POST",
@@ -281,7 +277,7 @@ API.prototype = {
 	 */
 	patchById: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
-			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
+			// TODO
 		}
 		var opts = {
 			method: "POST",
@@ -311,7 +307,7 @@ API.prototype = {
 	 */
 	removeById: function(docId, success, failure) {
 		if (typeof docId !== 'string') {
-			log.error("docId should be a string. If using a unique meta key, use the remove(data) function instead.");
+			// TODO
 		}
 		var opts = {
 			method: "POST",
@@ -342,7 +338,7 @@ API.prototype = {
 	 */
 	replaceById: function(docId, data, success, failure) {
 		if (typeof docId !== 'string') {
-			log.error("docId should be a string. If using a unique meta key, use the patch(data) function instead.");
+			// TODO
 		}
 		var opts = {
 			method: "POST",
