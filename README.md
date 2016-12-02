@@ -19,7 +19,7 @@ This module is for querying the search service. If you want automated indexing, 
 
 ## Setup
 
-The library is 10KB minified and 3KB gzipped.
+`sajari` is 3KB gzipped.
 
 ### NPM, Browserify, webpack
 ```
@@ -28,24 +28,24 @@ npm install sajari --save
 
 ## Getting Started
 ```javascript
-import { Api, Query, body } from 'sajari'
+import { Client, Query, body } from 'sajari'
 
-const api = new Api('project', 'collection')
+const api = new Client('project', 'collection')
 const query = new Query()
 
 query.body([
   body("foo bar")
 ])
 
-api.search(query, (err, res) => {
+client.search(query, (err, res) => {
   console.log(err, res)
 })
 ```
 
-The `Api` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Api`:
+The `Client` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Client`:
 
 ```javascript
-new Api('project', 'collection', 'http://localhost:8000')
+new Client('project', 'collection', 'http://localhost:8000')
 ```
 
 The `Query` object handles the query state. Use the methods on it to define your queries.
