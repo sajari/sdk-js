@@ -30,7 +30,7 @@ npm install sajari --save
 ```javascript
 import { Client, Query, body } from 'sajari'
 
-const api = new Client('project', 'collection')
+const client = new Client('project', 'collection')
 const query = new Query()
 
 query.body([
