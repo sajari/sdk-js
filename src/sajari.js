@@ -24,7 +24,7 @@ export class Client {
     /** @private */
     this.c = collection;
     /** @private */
-    this.a = address || 'https://api.sajari.com:9200';
+    this.a = address || 'https://jsonapi.sajari.com';
   }
 
   /**
