@@ -5,7 +5,7 @@
  * @license MIT
  * @module sajari
  */
-import { getGAID } from './utils'
+import profile from 'sajari-website/src/js/profile'
 
 /** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
 export class Client {
@@ -51,6 +51,7 @@ export class Client {
         metadata: {
           project: [this.p],
           collection: [this.c],
+          "user-agent": ['sajari-sdk-js ' + VERSION],
         }
       })
     }).then((res) => {
@@ -476,9 +477,14 @@ export class Query {
     };
     /** @private */
     this.data = {} // tracking data
-    const gaID = getGAID()
+    const p = new profile()
+    const gaID = p.gaId
+    const visitorID = p.visitorId
     if (gaID) {
       this.tracking('gaID', gaID)
+    }
+    if (visitorID) {
+      this.tracking('sjID', visitorID)
     }
   }
 

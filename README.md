@@ -19,7 +19,7 @@ This module is for querying the search service. If you want automated indexing, 
 
 ## Setup
 
-`sajari` is 3KB gzipped.
+`sajari` is 11KB gzipped.
 
 ### NPM, Browserify, webpack
 ```
