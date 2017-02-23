@@ -5,11 +5,10 @@
  * @license MIT
  * @module sajari
  */
-import profile from 'sajari-website/src/js/profile'
+import profile from "sajari-website/src/js/profile";
 
 /** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
 export class Client {
-
   /**
    * Creates an Client object.
    * @constructor
@@ -24,7 +23,7 @@ export class Client {
     /** @private */
     this.c = collection;
     /** @private */
-    this.e = endpoint || 'https://jsonapi.sajari.com';
+    this.e = endpoint || "https://jsonapi.sajari.com";
   }
 
   /**
@@ -34,8 +33,8 @@ export class Client {
    * @returns {Promise} A promise of the search.
    */
   search(query, tracking, callback) {
-    return fetch(this.e + '/sajari.api.query.v1.Query/Search', {
-      method: 'POST',
+    return fetch(this.e + "/sajari.api.query.v1.Query/Search", {
+      method: "POST",
       body: JSON.stringify({
         request: {
           searchRequest: query.q,
@@ -45,16 +44,18 @@ export class Client {
             field: tracking.field,
             sequence: tracking.s++, // Increment query sequence
             query_id: tracking.i,
-            data: tracking.data,
-          },
+            data: tracking.data
+          }
         },
         metadata: {
           project: [this.p],
           collection: [this.c],
-          "user-agent": ['sajari-sdk-js ' + VERSION],
+          "user-agent": ["sajari-sdk-js " + VERSION]
         }
       })
-    }).then(handleSearchResponse).catch(err => callback('Error during fetch: ' + err.message, null);
+    })
+      .then(handleSearchResponse(callback))
+      .catch(err => callback("Error during fetch: " + err.message, null));
   }
 
   /**
@@ -64,8 +65,8 @@ export class Client {
    * @returns {Promise} A promise of the pipeline search.
    */
   searchPipeline(name, values, tracking, callback) {
-    return fetch(this.e + '/sajari.api.pipeline.v1.Query/Search', {
-      method: 'POST',
+    return fetch(this.e + "/sajari.api.pipeline.v1.Query/Search", {
+      method: "POST",
       body: JSON.stringify({
         request: {
           pipeline: { name },
@@ -75,27 +76,33 @@ export class Client {
             field: tracking.field,
             sequence: tracking.s++, // Increment query sequence
             query_id: tracking.i,
-            data: tracking.data,
+            data: tracking.data
           },
-          values,
+          values
         },
         metadata: {
           project: [this.p],
-          collection: [this.c],
+          collection: [this.c]
         }
       })
-    }).then(handleSearchResponse).catch(err => callback('Error during fetch: ' + err.message, null);
+    })
+      .then(handleSearchResponse(callback))
+      .catch(err => callback("Error during fetch: " + err.message, null));
+  }
 }
 
-const handleSearchResponse = (res) => {
+const handleSearchResponse = callback => res => {
   if (res.ok) {
-    res.json().then((json) => {
+    res.json().then(json => {
       // Flatten single value / multiple values proto structure
+      json.searchResponse = json.searchResponse.searchResponse;
       const r = json.searchResponse.results;
       if (r) {
         for (let i = 0; i < r.length; i++) {
           for (let f in r[i].values) {
-            r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
+            r[i].values[f] = r[i].values[f].single !== undefined
+              ? r[i].values[f].single
+              : r[i].values[f].repeated.values;
           }
           // Copy tokens into results
           if (json.tokens) {
@@ -107,16 +114,16 @@ const handleSearchResponse = (res) => {
         json.searchResponse = {
           results: [],
           time: json.searchResponse.time,
-          totalResults: '0',
-          reads: '0',
-        }
+          totalResults: "0",
+          reads: "0"
+        };
       }
-      callback(null, json)
-    })
+      callback(null, json);
+    });
   } else {
-    res.text().then((errMsg) => callback(errMsg, null));
+    res.text().then(errMsg => callback(errMsg, null));
   }
-}).catch((err) => callback('Error during fetch: ' + err.message, null);
+};
 
 /**
  * @typedef {Object} Body
@@ -137,13 +144,13 @@ export function body(text, weight) {
 /** @typedef {string} MetricType */
 
 /** @returns MetricType */
-export const METRIC_TYPE_MAX = 'MAX';
+export const METRIC_TYPE_MAX = "MAX";
 /** @returns MetricType */
-export const METRIC_TYPE_MIN = 'MIN';
+export const METRIC_TYPE_MIN = "MIN";
 /** @returns MetricType */
-export const METRIC_TYPE_AVG = 'AVG';
+export const METRIC_TYPE_AVG = "AVG";
 /** @returns MetricType */
-export const METRIC_TYPE_SUM = 'SUM';
+export const METRIC_TYPE_SUM = "SUM";
 
 /** @typedef {Object} Aggregate */
 /** @typedef {string} Field */
@@ -197,38 +204,38 @@ export function bucketAggregate(name, buckets) {
 
 function protoValue(values) {
   if (values instanceof Array) {
-    return { repeated: { values: values.map(String) } }
+    return { repeated: { values: values.map(String) } };
   }
   if (values === null) {
-    return value = { null: true }
+    return value = { null: true };
   }
-  return { single: String(values) }
+  return { single: String(values) };
 }
 
 function operatorFromString(operator) {
   switch (operator) {
-  case '=':
-    return 'EQUAL_TO'
-  case '!=':
-    return 'NOT_EQUAL_TO'
-  case '>':
-    return 'GREATER_THAN'
-  case '>=':
-    return 'GREATER_THAN_OR_EQUAL_TO'
-  case '<':
-    return 'LESS_THAN'
-  case '<=':
-    return 'LESS_THAN_OR_EQUAL_TO'
-  case '~':
-    return 'CONTAINS'
-  case '!~':
-    return 'DOES_NOT_CONTAIN'
-  case '^':
-    return 'HAS_PREFIX'
-  case '$':
-    return 'HAS_SUFFIX'
-  default:
-    throw `invalid operator: ${operator}`
+    case "=":
+      return "EQUAL_TO";
+    case "!=":
+      return "NOT_EQUAL_TO";
+    case ">":
+      return "GREATER_THAN";
+    case ">=":
+      return "GREATER_THAN_OR_EQUAL_TO";
+    case "<":
+      return "LESS_THAN";
+    case "<=":
+      return "LESS_THAN_OR_EQUAL_TO";
+    case "~":
+      return "CONTAINS";
+    case "!~":
+      return "DOES_NOT_CONTAIN";
+    case "^":
+      return "HAS_PREFIX";
+    case "$":
+      return "HAS_SUFFIX";
+    default:
+      throw `invalid operator: ${operator}`;
   }
 }
 
@@ -258,7 +265,13 @@ function operatorFromString(operator) {
  * @returns {Filter} Field filter object.
  */
 export function fieldFilter(field, operator, values) {
-  return { field: { field, value: protoValue(values), operator: operatorFromString(operator) } };
+  return {
+    field: {
+      field,
+      value: protoValue(values),
+      operator: operatorFromString(operator)
+    }
+  };
 }
 
 /**
@@ -285,7 +298,7 @@ function combinatorFilter(filters, operator) {
  * @returns {Filter}
  */
 export function allFilters(filters) {
-  return combinatorFilter(filters, 'ALL')
+  return combinatorFilter(filters, "ALL");
 }
 
 /**
@@ -294,7 +307,7 @@ export function allFilters(filters) {
  * @returns {Filter}
  */
 export function anyFilters(filters) {
-  return combinatorFilter(filters, 'ANY')
+  return combinatorFilter(filters, "ANY");
 }
 
 /**
@@ -303,7 +316,7 @@ export function anyFilters(filters) {
  * @returns {Filter}
  */
 export function oneOfFilters(filters) {
-  return combinatorFilter(filters, 'ONE')
+  return combinatorFilter(filters, "ONE");
 }
 
 /**
@@ -312,7 +325,7 @@ export function oneOfFilters(filters) {
  * @returns {Filter}
  */
 export function noneOfFilters(filters) {
-  return combinatorFilter(filters, 'NONE')
+  return combinatorFilter(filters, "NONE");
 }
 
 /** @typedef {Object} InstanceBoost */
@@ -352,9 +365,9 @@ export function filterFieldBoost(filter, value) {
 /** @typedef {string} GeoRegion */
 
 /** @returns {GeoRegion} */
-export const GEO_FIELD_BOOST_REGION_INSIDE = 'INSIDE';
+export const GEO_FIELD_BOOST_REGION_INSIDE = "INSIDE";
 /** @returns {GeoRegion} */
-export const GEO_FIELD_BOOST_REGION_OUTSIDE = 'OUTSIDE';
+export const GEO_FIELD_BOOST_REGION_OUTSIDE = "OUTSIDE";
 
 /** @typedef {Object} PointValue */
 
@@ -407,11 +420,11 @@ export function textFieldBoost(field, text) {
  * @returns {FeatureFieldBoost} FeatureFieldBoost object.
  */
 export function featureFieldBoost(field_boost, value) {
-  return { field_boost , value }
+  return { field_boost, value };
 }
 
 export function pipeline(name, values, tracking) {
-  return { pipeline: { name }, values, tracking }
+  return { pipeline: { name }, values, tracking };
 }
 
 /** @typedef {Object} Sort */
@@ -422,13 +435,15 @@ export function pipeline(name, values, tracking) {
  * @returns {Sort}
  */
 export function sort(field) {
-  return field[0] === '-' ? {
-    field: field.slice(1),
-    order: 'DESC'
-  } : {
-    field,
-    order: 'ASC',
-  }
+  return field[0] === "-"
+    ? {
+        field: field.slice(1),
+        order: "DESC"
+      }
+    : {
+        field,
+        order: "ASC"
+      };
 }
 
 /** @typedef {string} Transform
@@ -444,7 +459,6 @@ export function transform(identifier) {
 
 /** Class representing a IndexQuery */
 export class IndexQuery {
-
   /**
    * Creates a IndexQuery Object.
    * @constructor
@@ -457,7 +471,7 @@ export class IndexQuery {
    * @param {Body[]} bodies A list of body objects
    */
   body(bodies) {
-    this.body = bodies
+    this.body = bodies;
   }
 
   /**
@@ -465,7 +479,7 @@ export class IndexQuery {
    * @param {InstanceBoost[]} boosts The InstanceBoosts to be applied to the IndexQuery.
    */
   instanceBoosts(boosts) {
-    this.instance_boosts = boosts
+    this.instance_boosts = boosts;
   }
 
   /**
@@ -479,7 +493,6 @@ export class IndexQuery {
 
 /** Class representing a FeatureQuery */
 export class FeatureQuery {
-
   /**
    * Creates a FeatureQuery Object.
    * @constructor
@@ -492,13 +505,12 @@ export class FeatureQuery {
    * @param {FeatureFieldBoost[]} boosts The FeatureFieldBoosts to apply to the FeatureQuery.
    */
   fieldBoosts(boosts) {
-    this.field_boosts = boosts
+    this.field_boosts = boosts;
   }
 }
 
 /** Class representing a Query. */
 export class Query {
-
   /**
    * Creates a Query object.
    * @constructor
@@ -507,7 +519,7 @@ export class Query {
   constructor() {
     /** @private */
     this.q = {
-      limit: 10,
+      limit: 10
     };
   }
 
@@ -516,7 +528,7 @@ export class Query {
    * @param {Filter} filter The Filter to be applied to the Query.
    */
   filter(filter) {
-    this.q.filter = filter
+    this.q.filter = filter;
   }
 
   /**
@@ -524,7 +536,7 @@ export class Query {
    * @param {IndexQuery} query
    */
   indexQuery(query) {
-    this.q.index_query = query
+    this.q.index_query = query;
   }
 
   /**
@@ -532,7 +544,7 @@ export class Query {
    * @param {FeatureQuery} query
    */
   featureQuery(query) {
-    this.q.feature_query = query
+    this.q.feature_query = query;
   }
 
   /**
@@ -540,7 +552,7 @@ export class Query {
    * @param {number} offset The offset to use.
    */
   offset(offset) {
-    this.q.offset = offset
+    this.q.offset = offset;
   }
 
   /**
@@ -548,7 +560,7 @@ export class Query {
    * @param {number} limit The maximum number of results to return per search.
    */
   limit(limit) {
-    this.q.limit = limit
+    this.q.limit = limit;
   }
 
   /**
@@ -556,7 +568,7 @@ export class Query {
    * @param {Field[]} fields The Fields to be returned from a search.
    */
   fields(fields) {
-    this.q.fields = fields
+    this.q.fields = fields;
   }
 
   /**
@@ -564,7 +576,7 @@ export class Query {
    * @param {Sort[]} sorts The Sorts to be applied in order to the Query.
    */
   sort(sorts) {
-    this.q.sort = sorts
+    this.q.sort = sorts;
   }
 
   /**
@@ -574,9 +586,9 @@ export class Query {
   aggregates(aggregates) {
     const newAggregates = {};
     for (let i = 0; i < aggregates.length; i++) {
-      newAggregates[aggregates[i][0]] = aggregates[i][1]
+      newAggregates[aggregates[i][0]] = aggregates[i][1];
     }
-    this.q.aggregates = newAggregates
+    this.q.aggregates = newAggregates;
   }
 
   /**
@@ -584,40 +596,42 @@ export class Query {
    * @param {Transform[]} transforms The Transforms to be applied to the Query.
    */
   transforms(transforms) {
-    this.q.transforms = transforms
+    this.q.transforms = transforms;
   }
 }
 
 export class Tracking {
   constructor() {
-    this.resetID()
+    this.resetID();
 
     /** @private */
-    this.data = {} // tracking data
+    this.data = {}; // tracking data
 
-    const p = new profile()
-    const gaID = p.gaId
+    const p = new profile();
+    const gaID = p.gaId;
     if (gaID) {
-      this.setData('gaID', gaID)
+      this.setData("gaID", gaID);
     }
-    const visitorID = p.visitorId
+    const visitorID = p.visitorId;
     if (visitorID) {
-      this.tracking('sjID', visitorID)
+      this.setData("sjID", visitorID);
     }
   }
-  
+
   /**
    * Resets tracking ID on the Query object.
    */
   resetID() {
     /** @private */
-    this.i = ''
+    this.i = "";
     /** @private */
-    this.s = 0
+    this.s = 0;
 
     // Generate a random id for the query
     for (let i = 0; i < 16; i++) {
-      this.i += 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))
+      this.i += "abcdefghijklmnopqrstuvwxyz0123456789".charAt(
+        Math.floor(Math.random() * 36)
+      );
     }
   }
 
@@ -627,9 +641,9 @@ export class Tracking {
    */
   posNegTokens(field) {
     /** @private */
-    this.type = 'POS_NEG'
+    this.type = "POS_NEG";
     /** @private */
-    this.field = field
+    this.field = field;
   }
 
   /**
@@ -637,8 +651,8 @@ export class Tracking {
    * @param {Field} field The Field to apply click tracking to.
    */
   clickTokens(field) {
-    this.type = 'CLICK'
-    this.field = field
+    this.type = "CLICK";
+    this.field = field;
   }
 
   /**
@@ -647,6 +661,6 @@ export class Tracking {
    * @param {string} value The value of the custom tracking data
    */
   setData(name, value) {
-    this.data[name] = value
+    this.data[name] = value;
   }
 }
