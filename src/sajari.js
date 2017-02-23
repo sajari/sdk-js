@@ -15,16 +15,16 @@ export class Client {
    * @constructor
    * @param {string} project The project name.
    * @param {string} collection The collection name.
-   * @param {string} [address] A custom address to send requests.
+   * @param {string} [endpoint] A custom endpoint to send requests.
    * @returns {Client} Client object.
    */
-  constructor(project, collection, address) {
+  constructor(project, collection, endpoint) {
     /** @private */
     this.p = project;
     /** @private */
     this.c = collection;
     /** @private */
-    this.a = address || 'https://jsonapi.sajari.com';
+    this.e = endpoint || 'https://jsonapi.sajari.com';
   }
 
   /**
@@ -33,19 +33,19 @@ export class Client {
    * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
    * @returns {Promise} A promise of the search.
    */
-  search(query, callback) {
-    return fetch(this.a + '/sajari.api.query.v1.Query/Search', {
+  search(query, tracking, callback) {
+    return fetch(this.e + '/sajari.api.query.v1.Query/Search', {
       method: 'POST',
       body: JSON.stringify({
         request: {
           searchRequest: query.q,
           // eslint-disable-next-line no-param-reassign
           tracking: {
-            type: query.generate_tokens,
-            field: query.token_key_field,
-            sequence: query.s++, // Increment query sequence
-            query_id: query.i,
-            data: query.data,
+            type: tracking.type,
+            field: tracking.field,
+            sequence: tracking.s++, // Increment query sequence
+            query_id: tracking.i,
+            data: tracking.data,
           },
         },
         metadata: {
@@ -54,38 +54,69 @@ export class Client {
           "user-agent": ['sajari-sdk-js ' + VERSION],
         }
       })
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json) => {
-          // Flatten single value / multiple values proto structure
-          const r = json.searchResponse.results;
-          if (r) {
-            for (let i = 0; i < r.length; i++) {
-              for (let f in r[i].values) {
-                r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
-              }
-              // Copy tokens into results
-              if (json.tokens) {
-                r[i].tokens = json.tokens[i];
-              }
-            }
-          } else {
-            // Set default proto values for empty response
-            json.searchResponse = {
-              results: [],
-              time: json.searchResponse.time,
-              totalResults: '0',
-              reads: '0',
-            }
-          }
-          callback(null, json)
-        })
-      } else {
-        res.text().then((errMsg) => callback(errMsg, null));
-      }
-    }).catch((err) => callback('Error during fetch: ' + err.message, null));
+    }).then(handleSearchResponse).catch(err => callback('Error during fetch: ' + err.message, null);
   }
+
+  /**
+   * Performs a search using a pipeline.
+   * @param {string} pipeline The name of the pipeline to search with.
+   * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
+   * @returns {Promise} A promise of the pipeline search.
+   */
+  searchPipeline(name, values, tracking, callback) {
+    return fetch(this.e + '/sajari.api.pipeline.v1.Query/Search', {
+      method: 'POST',
+      body: JSON.stringify({
+        request: {
+          pipeline: { name },
+          // eslint-disable-next-line no-param-reassign
+          tracking: {
+            type: tracking.type,
+            field: tracking.field,
+            sequence: tracking.s++, // Increment query sequence
+            query_id: tracking.i,
+            data: tracking.data,
+          },
+          values,
+        },
+        metadata: {
+          project: [this.p],
+          collection: [this.c],
+        }
+      })
+    }).then(handleSearchResponse).catch(err => callback('Error during fetch: ' + err.message, null);
 }
+
+const handleSearchResponse = (res) => {
+  if (res.ok) {
+    res.json().then((json) => {
+      // Flatten single value / multiple values proto structure
+      const r = json.searchResponse.results;
+      if (r) {
+        for (let i = 0; i < r.length; i++) {
+          for (let f in r[i].values) {
+            r[i].values[f] = r[i].values[f].single !== undefined ? r[i].values[f].single : r[i].values[f].repeated.values;
+          }
+          // Copy tokens into results
+          if (json.tokens) {
+            r[i].tokens = json.tokens[i];
+          }
+        }
+      } else {
+        // Set default proto values for empty response
+        json.searchResponse = {
+          results: [],
+          time: json.searchResponse.time,
+          totalResults: '0',
+          reads: '0',
+        }
+      }
+      callback(null, json)
+    })
+  } else {
+    res.text().then((errMsg) => callback(errMsg, null));
+  }
+}).catch((err) => callback('Error during fetch: ' + err.message, null);
 
 /**
  * @typedef {Object} Body
@@ -379,6 +410,10 @@ export function featureFieldBoost(field_boost, value) {
   return { field_boost , value }
 }
 
+export function pipeline(name, values, tracking) {
+  return { pipeline: { name }, values, tracking }
+}
+
 /** @typedef {Object} Sort */
 
 /**
@@ -470,22 +505,10 @@ export class Query {
    * @returns {Object} Query object.
    */
   constructor() {
-    this.resetID();
     /** @private */
     this.q = {
       limit: 10,
     };
-    /** @private */
-    this.data = {} // tracking data
-    const p = new profile()
-    const gaID = p.gaId
-    const visitorID = p.visitorId
-    if (gaID) {
-      this.tracking('gaID', gaID)
-    }
-    if (visitorID) {
-      this.tracking('sjID', visitorID)
-    }
   }
 
   /**
@@ -563,7 +586,26 @@ export class Query {
   transforms(transforms) {
     this.q.transforms = transforms
   }
+}
 
+export class Tracking {
+  constructor() {
+    this.resetID()
+
+    /** @private */
+    this.data = {} // tracking data
+
+    const p = new profile()
+    const gaID = p.gaId
+    if (gaID) {
+      this.setData('gaID', gaID)
+    }
+    const visitorID = p.visitorId
+    if (visitorID) {
+      this.tracking('sjID', visitorID)
+    }
+  }
+  
   /**
    * Resets tracking ID on the Query object.
    */
@@ -580,23 +622,23 @@ export class Query {
   }
 
   /**
-   * Sets pos neg tracking token field and enables click tracking
+   * Sets pos neg tracking token field and enables pos neg tracking
    * @param {Field} field The Field to apply pos neg tracking to.
    */
-  posNegTracking(field) {
+  posNegTokens(field) {
     /** @private */
-    this.generate_tokens = 'POS_NEG'
+    this.type = 'POS_NEG'
     /** @private */
-    this.token_key_field = field
+    this.field = field
   }
 
   /**
-   * Sets click tracking token field and enables pos neg tracking
+   * Sets click tracking token field and enables click tracking
    * @param {Field} field The Field to apply click tracking to.
    */
-  clickTracking(field) {
-    this.generate_tokens = 'CLICK'
-    this.token_key_field = field
+  clickTokens(field) {
+    this.type = 'CLICK'
+    this.field = field
   }
 
   /**
@@ -604,7 +646,7 @@ export class Query {
    * @param {string} name The name of the custom tracking data
    * @param {string} value The value of the custom tracking data
    */
-  tracking(name, value) {
+  setData(name, value) {
     this.data[name] = value
   }
 }
