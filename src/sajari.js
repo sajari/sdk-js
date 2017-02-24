@@ -95,7 +95,7 @@ const handleSearchResponse = callback => res => {
   if (res.ok) {
     res.json().then(json => {
       // Flatten single value / multiple values proto structure
-      json.searchResponse = json.searchResponse.searchResponse;
+      json.searchResponse = json.searchResponse;
       const r = json.searchResponse.results;
       if (r) {
         for (let i = 0; i < r.length; i++) {
