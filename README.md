@@ -28,7 +28,7 @@ npm install sajari --save
 
 ## Getting Started
 ```javascript
-import { Client, Query, body } from 'sajari'
+import { Client, Query, Tracking, body } from 'sajari'
 
 const client = new Client('project', 'collection')
 const query = new Query()
@@ -37,7 +37,7 @@ query.body([
   body("foo bar")
 ])
 
-client.search(query, (err, res) => {
+client.search(query, new Tracking(), (err, res) => {
   console.log(err, res)
 })
 ```
