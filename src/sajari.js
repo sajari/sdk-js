@@ -29,6 +29,7 @@ export class Client {
   /**
    * Performs a search
    * @param {Query} query The query object to perform a search with.
+   * @param {Tracking} tracking The tracking config for the search.
    * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
    * @returns {Promise} A promise of the search.
    */
@@ -61,6 +62,7 @@ export class Client {
   /**
    * Performs a search using a pipeline.
    * @param {string} pipeline The name of the pipeline to search with.
+   * @param {Tracking} tracking The tracking config for the search.
    * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
    * @returns {Promise} A promise of the pipeline search.
    */
