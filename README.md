@@ -28,18 +28,18 @@ npm install sajari --save
 
 ## Getting Started
 ```javascript
-import { Client, Query, Tracking, body } from 'sajari'
+import { Client, Tracking, Query } from "sajari";
 
-const client = new Client('project', 'collection')
-const query = new Query()
+const client = new Client("<project>", "<collection>");
 
-query.body([
-  body("foo bar")
-])
-
-client.search(query, new Tracking(), (err, res) => {
-  console.log(err, res)
-})
+client.searchPipeline(
+  "website",
+  { q: "Foo Bar", resultsPerPage: "10" },
+  new Tracking(),
+  (err, res) => {
+    console.log(err || res);
+  }
+);
 ```
 
 The `Client` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Client`:
