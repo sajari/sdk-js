@@ -35,10 +35,13 @@ import { Client, Tracking } from "sajari";
 
 const client = new Client("<project>", "<collection>");
 
+const tracking = new Tracking();
+tracking.clickTokens("url");
+
 client.searchPipeline(
   "website",
   { q: "Foo Bar", resultsPerPage: "10" },
-  new Tracking(),
+  tracking,
   (err, res) => {
     console.log(err || res);
   }
