@@ -27,8 +27,11 @@ npm install sajari --save
 ```
 
 ## Getting Started
+
+A quick example showing how to run a search using the `website` search pipeline.
+
 ```javascript
-import { Client, Tracking, Query } from "sajari";
+import { Client, Tracking } from "sajari";
 
 const client = new Client("<project>", "<collection>");
 
@@ -42,13 +45,7 @@ client.searchPipeline(
 );
 ```
 
-The `Client` object handles the requesting and callbacks. If you need to override the default address, you can supply an extra parameter to `Client`:
-
-```javascript
-new Client('project', 'collection', 'http://localhost:8000')
-```
-
-The `Query` object handles the query state. Use the methods on it to define your queries.
+The `Client` object handles the requesting and callbacks.
 
 ## Documentation
 
