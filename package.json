@@ -1,6 +1,6 @@
 {
   "name": "sajari",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "JavaScript SDK for the Sajari search API",
   "scripts": {
     "build": "webpack -p",

@@ -84,7 +84,8 @@ export class Client {
         },
         metadata: {
           project: [this.p],
-          collection: [this.c]
+          collection: [this.c],
+          "user-agent": ["sajari-sdk-js " + VERSION]
         }
       })
     })
