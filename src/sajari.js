@@ -84,7 +84,7 @@ export class Client {
             query_id: tracking.i,
             data: tracking.data
           },
-          stringifiedValues
+          values: stringifiedValues
         },
         metadata: {
           project: [this.p],
