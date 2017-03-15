@@ -67,6 +67,10 @@ export class Client {
    * @returns {Promise} A promise of the pipeline search.
    */
   searchPipeline(name, values, tracking, callback) {
+    const stringifiedValues = JSON.parse(JSON.stringify(values))
+    Object.keys(stringifiedValues).forEach(k => {
+      stringifiedValues[k] = "" + stringifiedValues[k]
+    })
     return fetch(this.e + "/sajari.api.pipeline.v1.Query/Search", {
       method: "POST",
       body: JSON.stringify({
@@ -80,7 +84,7 @@ export class Client {
             query_id: tracking.i,
             data: tracking.data
           },
-          values
+          stringifiedValues
         },
         metadata: {
           project: [this.p],
