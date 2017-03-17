@@ -99,7 +99,7 @@ export class Client {
 }
 
 const handleSearchResponse = callback => res => {
-  const headers = { ...res };
+  const headers = res.clone();
   if (res.ok) {
     res.json().then(json => {
       // Flatten single value / multiple values proto structure
