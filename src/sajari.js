@@ -67,10 +67,10 @@ export class Client {
    * @returns {Promise} A promise of the pipeline search.
    */
   searchPipeline(name, values, tracking, callback) {
-    const stringifiedValues = JSON.parse(JSON.stringify(values))
+    const stringifiedValues = JSON.parse(JSON.stringify(values));
     Object.keys(stringifiedValues).forEach(k => {
-      stringifiedValues[k] = "" + stringifiedValues[k]
-    })
+      stringifiedValues[k] = "" + stringifiedValues[k];
+    });
     return fetch(this.e + "/sajari.api.pipeline.v1.Query/Search", {
       method: "POST",
       body: JSON.stringify({
@@ -213,7 +213,7 @@ function protoValue(values) {
     return { repeated: { values: values.map(String) } };
   }
   if (values === null) {
-    return value = { null: true };
+    return (value = { null: true });
   }
   return { single: String(values) };
 }
