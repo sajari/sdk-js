@@ -124,10 +124,10 @@ const handleSearchResponse = callback => res => {
           reads: "0"
         };
       }
-      callback(null, json);
+      callback(null, { ...res, ...json });
     });
   } else {
-    res.text().then(errMsg => callback(errMsg, null));
+    res.text().then(errMsg => callback({ ...res, error: errMsg }, null));
   }
 };
 
