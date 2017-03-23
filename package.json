@@ -1,6 +1,6 @@
 {
   "name": "sajari",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "description": "JavaScript SDK for the Sajari search API",
   "scripts": {
     "build": "webpack -p",
@@ -38,7 +38,7 @@
     }
   ],
   "dependencies": {
-    "sajari-website": "^0.7.4"
+    "sajari-website": "^0.7.5"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",
