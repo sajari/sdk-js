@@ -99,7 +99,6 @@ export class Client {
 }
 
 const handleSearchResponse = callback => res => {
-  const headers = res.clone();
   if (res.ok) {
     res.json().then(json => {
       // Flatten single value / multiple values proto structure
@@ -125,10 +124,10 @@ const handleSearchResponse = callback => res => {
           reads: "0"
         };
       }
-      callback(null, { ...headers, searchResponse: json });
+      callback(null, { searchResponse: json });
     });
   } else {
-    res.text().then(errMsg => callback({ ...headers, error: errMsg }, null));
+    res.text().then(errMsg => callback({ error: errMsg }, null));
   }
 };
 
