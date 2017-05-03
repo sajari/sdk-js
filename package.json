@@ -38,7 +38,9 @@
     }
   ],
   "dependencies": {
-    "sajari-website": "^0.7.5"
+    "promise-polyfill": "6.0.2",
+    "sajari-website": "^0.7.5",
+    "whatwg-fetch": "2.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.11.4",

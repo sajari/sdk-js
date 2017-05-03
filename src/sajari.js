@@ -5,6 +5,11 @@
  * @license MIT
  * @module sajari
  */
+import Promise from "promise-polyfill";
+if (!window.Promise) {
+  window.Promise = Promise;
+};
+import "whatwg-fetch";
 import profile from "sajari-website/src/js/profile";
 
 /** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
