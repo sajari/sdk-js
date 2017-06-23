@@ -129,7 +129,7 @@ API.prototype = {
 	pixel: function(data, path) {
 		// Merge in company and collection
 		data = this.mergeArgs(toArgs(data), {
-			"company": this.company,
+			"project": this.company,
 			"collection": this.collection
 		});
 
@@ -369,7 +369,7 @@ API.prototype = {
 	send: function(path, opts, data) {
 		// Merge in company and collection
 		data = this.mergeArgs(toArgs(data), {
-			"company": this.company,
+			"project": this.company,
 			"collection": this.collection
 		});
 		if (!data.hasOwnProperty('q.se') && path == 'search') {
