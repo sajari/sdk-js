@@ -107,7 +107,7 @@ const handleSearchResponse = callback => res => {
   if (res.ok) {
     res.json().then(json => {
       // Flatten single value / multiple values proto structure
-      const r = json.searchResponse.results;
+      const r = (json.searchResponse || {}).results;
       if (r) {
         for (let i = 0; i < r.length; i++) {
           for (let f in r[i].values) {
@@ -124,7 +124,7 @@ const handleSearchResponse = callback => res => {
         // Set default proto values for empty response
         json.searchResponse = {
           results: [],
-          time: json.searchResponse.time,
+          time: (json.searchResponse || {}).time,
           totalResults: "0",
           reads: "0"
         };
