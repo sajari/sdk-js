@@ -612,16 +612,13 @@ export class Query {
   }
 }
 
-export const eventResultClicked = "result-clicked";
 export const eventTrackingReset = "tracking-reset";
 
 export class Tracking {
   constructor() {
     this.listeners = {
-      [eventResultClicked]: [],
       [eventTrackingReset]: []
     };
-    this.resultClickedListeners = [];
     this.trackingResetListeners = [];
 
     this.reset();
@@ -649,12 +646,6 @@ export class Tracking {
     return () => {
       this.listeners[event] = this.listeners[event].filter(c => c !== callback);
     };
-  }
-
-  emitResultClicked(value) {
-    this.listeners[eventResultClicked].forEach(callback => {
-      callback(value);
-    });
   }
 
   emitTrackingReset() {
