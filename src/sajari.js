@@ -8,7 +8,7 @@
 import Promise from "promise-polyfill";
 if (!window.Promise) {
   window.Promise = Promise;
-};
+}
 import "whatwg-fetch";
 import profile from "sajari-website/src/js/profile";
 
@@ -111,9 +111,10 @@ const handleSearchResponse = callback => res => {
       if (r) {
         for (let i = 0; i < r.length; i++) {
           for (let f in r[i].values) {
-            r[i].values[f] = r[i].values[f].single !== undefined
-              ? r[i].values[f].single
-              : r[i].values[f].repeated.values;
+            r[i].values[f] =
+              r[i].values[f].single !== undefined
+                ? r[i].values[f].single
+                : r[i].values[f].repeated.values;
           }
           // Copy tokens into results
           if (json.tokens) {
