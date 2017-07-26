@@ -611,9 +611,19 @@ export class Query {
   }
 }
 
+export const eventResultClicked = "result-clicked";
+export const eventTrackingReset = "tracking-reset";
+
 export class Tracking {
   constructor() {
-    this.resetID();
+    this.listeners = {
+      [eventResultClicked]: [],
+      [eventTrackingReset]: []
+    };
+    this.resultClickedListeners = [];
+    this.trackingResetListeners = [];
+
+    this.reset();
 
     /** @private */
     this.data = {}; // tracking data
@@ -629,10 +639,33 @@ export class Tracking {
     }
   }
 
+  listen(event, callback) {
+    if (!this.listeners[event]) {
+      throw new Error("unknown event " + event);
+    }
+
+    this.listeners[event].push(callback);
+    return () => {
+      this.listeners[event] = this.listeners[event].filter(c => c !== callback);
+    };
+  }
+
+  emitResultClicked(value) {
+    this.listeners[eventResultClicked].forEach(callback => {
+      callback(value);
+    });
+  }
+
+  emitTrackingReset() {
+    this.listeners[eventTrackingReset].forEach(callback => {
+      callback();
+    });
+  }
+
   /**
    * Resets tracking ID on the Query object.
    */
-  resetID() {
+  reset() {
     /** @private */
     this.i = "";
     /** @private */
@@ -644,6 +677,8 @@ export class Tracking {
         Math.floor(Math.random() * 36)
       );
     }
+
+    this.emitTrackingReset();
   }
 
   /**
