@@ -612,12 +612,12 @@ export class Query {
   }
 }
 
-export const eventTrackingReset = "tracking-reset";
+export const trackingResetEvent = "tracking-reset";
 
 export class Tracking {
   constructor() {
     this.listeners = {
-      [eventTrackingReset]: []
+      [trackingResetEvent]: []
     };
     this.trackingResetListeners = [];
 
@@ -649,7 +649,7 @@ export class Tracking {
   }
 
   emitTrackingReset() {
-    this.listeners[eventTrackingReset].forEach(callback => {
+    this.listeners[trackingResetEvent].forEach(callback => {
       callback();
     });
   }
