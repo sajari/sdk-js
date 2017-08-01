@@ -627,7 +627,17 @@ export class Query {
 export const trackingResetEvent = "tracking-reset";
 
 export class Tracking {
-  constructor() {
+  /**
+   * Create a new Tracking object.
+   * @param {string|undefined} [type=undefined] Type of tracking to be used.
+   * @param {string|undefined} [field=undefined] Unique field to use for tracking.
+   */
+  constructor(type = undefined, field = undefined) {
+    /** @private */
+    this.type = type;
+    /** @private */
+    this.field = field;
+
     this.listeners = {
       [trackingResetEvent]: []
     };
