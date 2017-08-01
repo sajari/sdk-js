@@ -12,6 +12,12 @@ if (!window.Promise) {
 import "whatwg-fetch";
 import profile from "sajari-website/src/js/profile";
 
+const assertString = (name, value) => {
+  if (typeof value !== "string") {
+    throw new Error(`${name} must be of type string, got ${typeof value}`);
+  }
+};
+
 /** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
 export class Client {
   /**
@@ -22,13 +28,18 @@ export class Client {
    * @param {string} [endpoint] A custom endpoint to send requests.
    * @returns {Client} Client object.
    */
-  constructor(project, collection, endpoint) {
+  constructor(project, collection, endpoint = "https://jsonapi.sajari.com") {
+    assertString("project", project);
     /** @private */
     this.p = project;
+
+    assertString("collection", collection);
     /** @private */
     this.c = collection;
+
+    assertString("endpoint", endpoint);
     /** @private */
-    this.e = endpoint || "https://jsonapi.sajari.com";
+    this.e = endpoint;
   }
 
   /**
@@ -72,6 +83,7 @@ export class Client {
    * @returns {Promise} A promise of the pipeline search.
    */
   searchPipeline(name, values, tracking, callback) {
+    assertString("pipeline name", name);
     const stringifiedValues = {};
     Object.keys(values).forEach(k => {
       stringifiedValues[k] = String(values[k]);
