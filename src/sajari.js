@@ -624,7 +624,6 @@ export class Query {
   }
 }
 
-export const trackingResetEvent = "tracking-reset";
 
 export class Tracking {
   /**
@@ -637,11 +636,6 @@ export class Tracking {
     this.type = type;
     /** @private */
     this.field = field;
-
-    this.listeners = {
-      [trackingResetEvent]: []
-    };
-    this.trackingResetListeners = [];
 
     this.reset();
 
@@ -659,23 +653,6 @@ export class Tracking {
     }
   }
 
-  listen(event, callback) {
-    if (!this.listeners[event]) {
-      throw new Error("unknown event " + event);
-    }
-
-    this.listeners[event].push(callback);
-    return () => {
-      this.listeners[event] = this.listeners[event].filter(c => c !== callback);
-    };
-  }
-
-  emitTrackingReset() {
-    this.listeners[trackingResetEvent].forEach(callback => {
-      callback();
-    });
-  }
-
   /**
    * Resets tracking ID on the Query object.
    */
@@ -691,28 +668,6 @@ export class Tracking {
         Math.floor(Math.random() * 36)
       );
     }
-
-    this.emitTrackingReset();
-  }
-
-  /**
-   * Sets pos neg tracking token field and enables pos neg tracking
-   * @param {Field} field The Field to apply pos neg tracking to.
-   */
-  posNegTokens(field) {
-    /** @private */
-    this.type = "POS_NEG";
-    /** @private */
-    this.field = field;
-  }
-
-  /**
-   * Sets click tracking token field and enables click tracking
-   * @param {Field} field The Field to apply click tracking to.
-   */
-  clickTokens(field) {
-    this.type = "CLICK";
-    this.field = field;
   }
 
   /**
