@@ -624,6 +624,8 @@ export class Query {
   }
 }
 
+export const clickTracking = "CLICK";
+export const posNeg = "POS_NEG";
 
 export class Tracking {
   /**
