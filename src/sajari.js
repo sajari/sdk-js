@@ -231,7 +231,7 @@ function protoValue(values) {
     return { repeated: { values: values.map(String) } };
   }
   if (values === null) {
-    return (value = { null: true });
+    return { null: true };
   }
   return { single: String(values) };
 }
