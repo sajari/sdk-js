@@ -5,17 +5,59 @@
  * @license MIT
  * @module sajari
  */
-import Promise from "promise-polyfill";
-if (!window.Promise) {
-  window.Promise = Promise;
-}
-import "whatwg-fetch";
 import profile from "sajari-website/src/js/profile";
+
+export const userAgent = "sdk-js-0.18.0";
 
 const assertString = (name, value) => {
   if (typeof value !== "string") {
     throw new Error(`${name} must be of type string, got ${typeof value}`);
   }
+};
+
+const makeRequest = (address, body, callback) => {
+  const request = new XMLHttpRequest();
+  request.open("POST", address, true);
+  request.setRequestHeader("Accept", "application/json");
+  request.onreadystatechange = () => {
+    if (request.readyState !== 4) return;
+
+    if (request.status === 200) {
+      callback(null, JSON.parse(request.responseText));
+    } else {
+      callback(request.response || request.responseText, null);
+    }
+  };
+  request.send(body);
+  return request;
+};
+
+const makeSearchResponse = json => {
+  // Flatten single value / multiple values proto structure
+  const r = (json.searchResponse || {}).results;
+  if (r) {
+    for (let i = 0; i < r.length; i++) {
+      for (let f in r[i].values) {
+        r[i].values[f] =
+          r[i].values[f].single !== undefined
+            ? r[i].values[f].single
+            : r[i].values[f].repeated.values;
+      }
+      // Copy tokens into results
+      if (json.tokens) {
+        r[i].tokens = json.tokens[i];
+      }
+    }
+  } else {
+    // Set default proto values for empty response
+    json.searchResponse = {
+      results: [],
+      time: (json.searchResponse || {}).time,
+      totalResults: "0",
+      reads: "0"
+    };
+  }
+  return json;
 };
 
 /** Class representing an instance of the Client. Handles the searching of queries and keeping track of query id and sequence */
@@ -47,40 +89,48 @@ export class Client {
    * @param {Query} query The query object to perform a search with.
    * @param {Tracking} tracking The tracking config for the search.
    * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
-   * @returns {Promise} A promise of the search.
+   * @returns {XMLHttpRequest}
    */
   search(query, tracking, callback) {
-    return fetch(this.e + "/sajari.api.query.v1.Query/Search", {
-      method: "POST",
-      body: JSON.stringify({
-        request: {
-          searchRequest: query.q,
-          // eslint-disable-next-line no-param-reassign
-          tracking: {
-            type: tracking.type,
-            field: tracking.field,
-            sequence: tracking.s++, // Increment query sequence
-            query_id: tracking.i,
-            data: tracking.data
-          }
-        },
-        metadata: {
-          project: [this.p],
-          collection: [this.c],
-          "user-agent": ["sdk-js-" + VERSION]
+    const requestBody = JSON.stringify({
+      request: {
+        searchRequest: query.q,
+        // eslint-disable-next-line no-param-reassign
+        tracking: {
+          type: tracking.type,
+          field: tracking.field,
+          sequence: tracking.s++, // Increment query sequence
+          query_id: tracking.i,
+          data: tracking.data
         }
-      })
-    })
-      .then(handleSearchResponse(callback))
-      .catch(err => callback("Error during fetch: " + err.message, null));
+      },
+      metadata: {
+        project: [this.p],
+        collection: [this.c],
+        "user-agent": [userAgent]
+      }
+    });
+
+    return makeRequest(
+      this.e + "/sajari.api.query.v1.Query/Search",
+      requestBody,
+      (err, response) => {
+        if (err) {
+          callback("Error during search: " + err);
+          return;
+        }
+        callback(null, makeSearchResponse(response));
+      }
+    );
   }
 
   /**
    * Performs a search using a pipeline.
-   * @param {string} pipeline The name of the pipeline to search with.
+   * @param {string} name The name of the pipeline to search with.
+   * @param {Object} values Value map for the pipeline.
    * @param {Tracking} tracking The tracking config for the search.
    * @param {function(err: string, res: Object)} callback The callback to call when a response is received.
-   * @returns {Promise} A promise of the pipeline search.
+   * @returns {XMLHttpRequest}
    */
   searchPipeline(name, values, tracking, callback) {
     assertString("pipeline name", name);
@@ -88,66 +138,40 @@ export class Client {
     Object.keys(values).forEach(k => {
       stringifiedValues[k] = String(values[k]);
     });
-    return fetch(this.e + "/sajari.api.pipeline.v1.Query/Search", {
-      method: "POST",
-      body: JSON.stringify({
-        request: {
-          pipeline: { name },
-          // eslint-disable-next-line no-param-reassign
-          tracking: {
-            type: tracking.type,
-            field: tracking.field,
-            sequence: tracking.s++, // Increment query sequence
-            query_id: tracking.i,
-            data: tracking.data
-          },
-          values: stringifiedValues
+
+    const requestBody = JSON.stringify({
+      request: {
+        pipeline: { name },
+        // eslint-disable-next-line no-param-reassign
+        tracking: {
+          type: tracking.type,
+          field: tracking.field,
+          sequence: tracking.s++, // Increment query sequence
+          query_id: tracking.i,
+          data: tracking.data
         },
-        metadata: {
-          project: [this.p],
-          collection: [this.c],
-          "user-agent": ["sajari-sdk-js " + VERSION]
+        values: stringifiedValues
+      },
+      metadata: {
+        project: [this.p],
+        collection: [this.c],
+        "user-agent": [userAgent]
+      }
+    });
+
+    return makeRequest(
+      this.e + "/sajari.api.pipeline.v1.Query/Search",
+      requestBody,
+      (err, response) => {
+        if (err) {
+          callback("Error during search: " + err);
+          return;
         }
-      })
-    })
-      .then(handleSearchResponse(callback))
-      .catch(err => callback("Error during fetch: " + err.message, null));
+        callback(null, makeSearchResponse(response));
+      }
+    );
   }
 }
-
-const handleSearchResponse = callback => res => {
-  if (res.ok) {
-    res.json().then(json => {
-      // Flatten single value / multiple values proto structure
-      const r = (json.searchResponse || {}).results;
-      if (r) {
-        for (let i = 0; i < r.length; i++) {
-          for (let f in r[i].values) {
-            r[i].values[f] =
-              r[i].values[f].single !== undefined
-                ? r[i].values[f].single
-                : r[i].values[f].repeated.values;
-          }
-          // Copy tokens into results
-          if (json.tokens) {
-            r[i].tokens = json.tokens[i];
-          }
-        }
-      } else {
-        // Set default proto values for empty response
-        json.searchResponse = {
-          results: [],
-          time: (json.searchResponse || {}).time,
-          totalResults: "0",
-          reads: "0"
-        };
-      }
-      callback(null, json);
-    });
-  } else {
-    res.text().then(errMsg => callback(errMsg, null));
-  }
-};
 
 /**
  * @typedef {Object} Body
