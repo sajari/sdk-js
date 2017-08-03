@@ -1,6 +1,6 @@
 # Sajari Javascript SDK (Browser only)
 
-[![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/sajari) ![docs](https://doc.esdoc.org/github.com/sajari/sajari-sdk-js/badge.svg) [![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/sajari) [![build status](https://travis-ci.org/sajari/sajari-sdk-js.svg?branch=master)](https://travis-ci.org/sajari/sajari-sdk-js) ![docs](https://doc.esdoc.org/github.com/sajari/sajari-sdk-js/badge.svg) [![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
 The Sajari Javascript SDK provides a basic API for querying Sajari search services from web browsers.
 
