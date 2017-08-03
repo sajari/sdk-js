@@ -25,7 +25,10 @@ const makeRequest = (address, body, callback) => {
     if (request.status === 200) {
       callback(null, JSON.parse(request.responseText));
     } else {
-      callback(request.response || request.responseText, null);
+      callback(
+        request.response || request.responseText || "error connecting",
+        null
+      );
     }
   };
   request.send(body);
