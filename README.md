@@ -1,10 +1,8 @@
-# Sajari Javascript SDK (Browser only)
-
-[![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/sajari) [![build status](https://travis-ci.org/sajari/sajari-sdk-js.svg?branch=master)](https://travis-ci.org/sajari/sajari-sdk-js) ![docs](https://doc.esdoc.org/github.com/sajari/sajari-sdk-js/badge.svg) [![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
+# Sajari Javascript SDK (Browser only) &middot; [![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/sajari) [![build status](https://travis-ci.org/sajari/sajari-sdk-js.svg?branch=master)](https://travis-ci.org/sajari/sajari-sdk-js) ![docs](https://doc.esdoc.org/github.com/sajari/sajari-sdk-js/badge.svg) [![license](http://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
 The Sajari Javascript SDK provides a basic API for querying Sajari search services from web browsers.
 
-If you are want to create a search UI for your website then you go to [Creating Website Search Interfaces](https://github.com/sajari/sajari-sdk-react/tree/master/examples/basic-site-integration).
+If you are want to create a search UI for your website then checkout our [React SDK](https://www.github.com/sajari/sajari-sdk-react) or generate a search interface from our [Console](https://www.sajari.com/console).
 
 ## Table of Contents
 
