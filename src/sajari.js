@@ -7,7 +7,7 @@
  */
 import profile from "sajari-website/src/js/profile";
 
-export const userAgent = "sdk-js-0.18.0";
+export const userAgent = "sdk-js-0.19.0";
 
 const assertString = (name, value) => {
   if (typeof value !== "string") {
