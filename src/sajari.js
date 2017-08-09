@@ -73,7 +73,7 @@ export class Client {
    * @param {string} [endpoint] A custom endpoint to send requests.
    * @returns {Client} Client object.
    */
-  constructor(project, collection, endpoint = "https://jsonapi.sajari.com") {
+  constructor(project, collection, endpoint = "https://jsonapi.sajari.net") {
     assertString("project", project);
     /** @private */
     this.p = project;
