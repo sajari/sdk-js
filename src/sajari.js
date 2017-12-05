@@ -26,7 +26,7 @@ const makeRequest = (address, body, callback) => {
       try {
         callback(null, JSON.parse(request.responseText));
       } catch (e) {
-        callback("Error parsing response", null);
+        callback("Error parsing response.", null);
       }
       return;
     }
