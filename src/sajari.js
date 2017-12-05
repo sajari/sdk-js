@@ -132,7 +132,7 @@ export class Client {
       requestBody,
       (err, response) => {
         if (err) {
-          callback(err);
+          callback(err, null);
           return;
         }
         callback(null, makeSearchResponse(response));
@@ -180,7 +180,7 @@ export class Client {
       requestBody,
       (err, response) => {
         if (err) {
-          callback(err);
+          callback(err, null);
           return;
         }
         callback(null, makeSearchResponse(response));
