@@ -15,6 +15,11 @@ const assertString = (name, value) => {
   }
 };
 
+const makeError = (message, code) => ({
+  message,
+  code
+});
+
 const makeRequest = (address, body, callback) => {
   const request = new XMLHttpRequest();
   request.open("POST", address, true);
@@ -22,14 +27,22 @@ const makeRequest = (address, body, callback) => {
   request.onreadystatechange = () => {
     if (request.readyState !== 4) return;
 
-    if (request.status === 200) {
-      callback(null, JSON.parse(request.responseText));
-    } else {
-      callback(
-        request.response || request.responseText || "error connecting",
-        null
-      );
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(request.responseText);
+    } catch (e) {
+      const error = makeError("error parsing response");
+      callback(error, null);
+      return;
     }
+
+    if (request.status === 200) {
+      callback(null, parsedResponse);
+      return;
+    }
+
+    const error = makeError(parsedResponse.message, request.status);
+    callback(error, null);
   };
   request.send(body);
   return request;
@@ -119,7 +132,7 @@ export class Client {
       requestBody,
       (err, response) => {
         if (err) {
-          callback("Error during search: " + err);
+          callback(err, null);
           return;
         }
         callback(null, makeSearchResponse(response));
@@ -167,7 +180,7 @@ export class Client {
       requestBody,
       (err, response) => {
         if (err) {
-          callback("Error during search: " + err);
+          callback(err, null);
           return;
         }
         callback(null, makeSearchResponse(response));
