@@ -27,7 +27,6 @@ const makeRequest = (address, body, callback) => {
         callback(null, JSON.parse(request.responseText));
       } catch (e) {
         callback("Error parsing response", null);
-        return;
       }
       return;
     }
