@@ -33,6 +33,7 @@ const makeRequest = (address, body, callback) => {
     } catch (e) {
       const error = makeError("error parsing response");
       callback(error, null);
+      return;
     }
 
     if (request.status === 200) {
