@@ -42,8 +42,10 @@ const makeRequest = (address, body, callback) => {
     if (request.responseText) {
       try {
         callback(JSON.parse(request.responseText).message, null);
-        return;
-      } catch (e) {} // eslint-disable-line no-empty
+      } catch (e) {
+        callback("Error parsing response.", null);
+      }
+      return;
     }
 
     callback(request.response || "An error occurred.", null);
