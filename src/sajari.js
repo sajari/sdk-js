@@ -15,6 +15,11 @@ const assertString = (name, value) => {
   }
 };
 
+const makeError = (message, code) => ({
+  message,
+  code
+});
+
 const makeRequest = (address, body, callback) => {
   const request = new XMLHttpRequest();
   request.open("POST", address, true);
@@ -26,7 +31,7 @@ const makeRequest = (address, body, callback) => {
     try {
       parsedResponse = JSON.parse(request.responseText);
     } catch (e) {
-      const error = { message: "Error parsing response" };
+      const error = makeError("error parsing response");
       callback(error, null);
     }
 
@@ -35,7 +40,7 @@ const makeRequest = (address, body, callback) => {
       return;
     }
 
-    const error = { message: parsedResponse.message, code: request.status };
+    const error = makeError(parsedResponse.message, request.status);
     callback(error, null);
   };
   request.send(body);
