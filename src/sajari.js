@@ -98,6 +98,39 @@ export class Client {
     assertString("endpoint", endpoint);
     /** @private */
     this.e = endpoint;
+
+    /** @private */
+    this.customMetadata = {};
+  }
+
+  /**
+   * Sets custom metadata on the Client to be sent along with search requests
+   * @param {Object} metadata A map of metadata values
+   */
+  setCustomMetadata(metadata) {
+    Object.keys(metadata).forEach(key => {
+      if (!(metadata[key] instanceof Array)) {
+        throw new Error(
+          `metadata values must be arrays, value of "${key}" is invalid`
+        );
+      }
+    });
+    this.customMetadata = metadata;
+  }
+
+  /**
+   * Gets metadata values, includes both Client default metadata and custom metadata
+   * @returns {Object}
+   */
+  getMetadata() {
+    const metadata = {};
+    Object.keys(this.customMetadata).forEach(key => {
+      metadata[key] = this.customMetadata[key];
+    });
+    metadata["project"] = [this.p];
+    metadata["collection"] = [this.c];
+    metadata["user-agent"] = [userAgent];
+    return metadata;
   }
 
   /**
@@ -120,11 +153,7 @@ export class Client {
           data: tracking.data
         }
       },
-      metadata: {
-        project: [this.p],
-        collection: [this.c],
-        "user-agent": [userAgent]
-      }
+      metadata: this.getMetadata()
     });
 
     return makeRequest(
@@ -168,11 +197,7 @@ export class Client {
         },
         values: stringifiedValues
       },
-      metadata: {
-        project: [this.p],
-        collection: [this.c],
-        "user-agent": [userAgent]
-      }
+      metadata: this.getMetadata()
     });
 
     return makeRequest(
