@@ -23,13 +23,31 @@ const makeRequest = (address, body, callback) => {
     if (request.readyState !== 4) return;
 
     if (request.status === 200) {
-      callback(null, JSON.parse(request.responseText));
-    } else {
+      try {
+        callback(null, JSON.parse(request.responseText));
+      } catch (e) {
+        callback("Error parsing response", null);
+        return;
+      }
+      return;
+    }
+
+    if (request.status === 403) {
       callback(
-        request.response || request.responseText || "error connecting",
+        "Authorisation for this request failed. Check your credentials.",
         null
       );
+      return;
     }
+
+    if (request.responseText) {
+      try {
+        callback(JSON.parse(request.responseText).message, null);
+        return;
+      } catch (e) {} // eslint-disable-line no-empty
+    }
+
+    callback(request.response || "An error occurred.", null);
   };
   request.send(body);
   return request;
