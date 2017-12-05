@@ -22,33 +22,21 @@ const makeRequest = (address, body, callback) => {
   request.onreadystatechange = () => {
     if (request.readyState !== 4) return;
 
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(request.responseText);
+    } catch (e) {
+      const error = { message: "Error parsing response" };
+      callback(error, null);
+    }
+
     if (request.status === 200) {
-      try {
-        callback(null, JSON.parse(request.responseText));
-      } catch (e) {
-        callback("Error parsing response.", null);
-      }
+      callback(null, parsedResponse);
       return;
     }
 
-    if (request.status === 403) {
-      callback(
-        "Authorisation for this request failed. Check your credentials.",
-        null
-      );
-      return;
-    }
-
-    if (request.responseText) {
-      try {
-        callback(JSON.parse(request.responseText).message, null);
-      } catch (e) {
-        callback("Error parsing response.", null);
-      }
-      return;
-    }
-
-    callback(request.response || "An error occurred.", null);
+    const error = { message: parsedResponse.message, code: request.status };
+    callback(error, null);
   };
   request.send(body);
   return request;
