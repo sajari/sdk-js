@@ -1,3 +1,5 @@
 /sajari.js
 node_modules/*
 coverage/*
+dist*/*
+.*/*
