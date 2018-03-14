@@ -12,8 +12,7 @@
     "README.md",
     "LICENSE",
     "sajari.js",
-    "dist*",
-    "src/"
+    "dist*"
   ],
   "repository": {
     "type": "git",
