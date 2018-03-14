@@ -12,6 +12,7 @@
     "README.md",
     "LICENSE",
     "sajari.js",
+    "dist*",
     "src/"
   ],
   "repository": {
