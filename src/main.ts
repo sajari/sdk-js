@@ -189,6 +189,9 @@ export interface Results {
   results: Result[];
 }
 
+/**
+ * valueFromProto unpacks a proto value.
+ */
 const valueFromProto = (proto: any): any => {
   if (proto.single !== undefined) {
     return proto.single;
@@ -199,6 +202,9 @@ const valueFromProto = (proto: any): any => {
   return null;
 };
 
+/**
+ * newResult constructs a Result from a proto Result.
+ */
 const newResult = (resultJSON: any): Result => {
   const values: ResultValues = {};
   Object.keys(resultJSON.values).forEach(k => {
@@ -212,6 +218,9 @@ const newResult = (resultJSON: any): Result => {
   };
 };
 
+/**
+ * newResults constructs a Results object from a search reponse and array of tokens.
+ */
 const newResults = (response: any, tokens: any = []): Results => {
   const results = (response.results || []).map((r: any, i: number) => {
     const result = newResult(r);
@@ -261,6 +270,9 @@ export interface SJRecord {
   [id: string]: any;
 }
 
+/**
+ * makeRequest makes a XMLHttpRequest and handles network and parsing errors.
+ */
 const makeRequest = (
   address: string,
   body: any,
@@ -308,7 +320,7 @@ export class Pipeline {
 
   /**
    * Search runs a search query defined by a pipline with the given values and
-   * tracking configuration. Returns the query results and returned values (which could have
+   * tracking configuration. Calls the callback with the query results and returned values (which could have
    * been modified in the pipeline).
    */
   public search(
