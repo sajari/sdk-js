@@ -316,41 +316,6 @@ export class Pipeline {
     session: Session,
     callback: SearchCallback
   ): void {
-    // const request = new XMLHttpRequest();
-    // request.open(
-    //   "POST",
-    //   this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
-    //   true
-    // );
-    // request.setRequestHeader("Accept", "application/json");
-    // request.onreadystatechange = () => {
-    //   if (request.readyState !== 4) return;
-
-    //   let parsedResponse;
-    //   try {
-    //     parsedResponse = JSON.parse(request.responseText);
-    //   } catch (e) {
-    //     callback(undefined, undefined, makeError("error parsing response"));
-    //     return;
-    //   }
-
-    //   if (request.status === 200) {
-    //     console.log(parsedResponse);
-    //     const results = newResults(
-    //       parsedResponse.searchResponse,
-    //       parsedResponse.tokens
-    //     );
-    //     callback(results, parsedResponse.values, undefined);
-    //     return;
-    //   }
-
-    //   callback(
-    //     undefined,
-    //     undefined,
-    //     makeError(parsedResponse.message, request.status)
-    //   );
-    // };
-
     const [tracking, error] = session.next(values);
     if (error) {
       callback(
@@ -360,6 +325,7 @@ export class Pipeline {
       );
       return;
     }
+
     const requestBody = JSON.stringify({
       request: {
         pipeline: { name: this.name },
@@ -381,8 +347,6 @@ export class Pipeline {
         callback(results, response.values, undefined);
       }
     );
-    // request.send(requestBody);
-    //return request;
   }
 
   /**
@@ -390,29 +354,14 @@ export class Pipeline {
    * to retrieve the respective record.
    */
   public add(values: Values, record: SJRecord, callback: AddCallback): void {
-    const request = new XMLHttpRequest();
-    request.open("POST", this.client.endpoint, true);
-    request.setRequestHeader("Accept", "application/json");
-    request.onreadystatechange = () => {
-      if (request.readyState !== 4) return;
-
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(request.responseText);
-      } catch (e) {
-        // const error = makeError("error parsing response");
-        // callback(error, null);
-        return;
+    const requestBody = "";
+    makeRequest(
+      this.client.endpoint + "sajari.api.pipeline.v1.Record/Add",
+      requestBody,
+      (response?: any, error?: SJError) => {
+        // const results = newResults(response.searchResponse, response.tokens);
+        // callback(results, response.values, undefined);
       }
-
-      if (request.status === 200) {
-        // callback(null, parsedResponse);
-        return;
-      }
-
-      // const error = makeError(parsedResponse.message, request.status);
-      // callback(error, null);
-    };
-    request.send(values);
+    );
   }
 }
