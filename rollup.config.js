@@ -8,8 +8,9 @@ export default {
       format: 'es'
     },
     {
-      file: 'dist.cjs/main.js',
-      format: 'cjs'
+      file: 'dist.umd/main.js',
+      format: 'umd',
+      name: "Sajari"
     }
   ],
   plugins: [
