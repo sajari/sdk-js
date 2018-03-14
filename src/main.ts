@@ -6,27 +6,29 @@
  * @module sajari
  */
 
+const UserAgent = "sdk-js-1.0.0";
+
 export interface Tracking {
-	// Tracking specifies which kind (if any) tokens should be generated and returned
-	// with the query results.
-	type: TrackingType;
+  // Tracking specifies which kind (if any) tokens should be generated and returned
+  // with the query results.
+  type: TrackingType;
 
-	// QueryID is a unique identifier for a single search query.  In the
-	// case of live querying this is defined to be multiple individual queries
-	// (i.e. as a user types the query is re-run).
-	queryID: string;
+  // QueryID is a unique identifier for a single search query.  In the
+  // case of live querying this is defined to be multiple individual queries
+  // (i.e. as a user types the query is re-run).
+  query_id: string;
 
-	// Sequence (i.e. sequential identifier) of this  in the context of a
-	// sequence of queries.
-	sequence: number;
+  // Sequence (i.e. sequential identifier) of this  in the context of a
+  // sequence of queries.
+  sequence: number;
 
-	// Field is the field to be used for adding identifier information to
-	// generated tokens (see TrackingType).
-	field: string;
+  // Field is the field to be used for adding identifier information to
+  // generated tokens (see TrackingType).
+  field: string;
 
-	// Data are values which will be recorded along with tracking data produced
-	// for the request.
-	data: Values;
+  // Data are values which will be recorded along with tracking data produced
+  // for the request.
+  data: Values;
 }
 
 export interface Values {
@@ -45,19 +47,19 @@ export const TrackingPosNeg: string = "POS_NEG";
 export const enum TrackingType {
   TrackingNone = "",
   TrackingClick = "CLICK",
-  TrackingPosNeg = "POS_NEG",
+  TrackingPosNeg = "POS_NEG"
 }
 
 // randString constructs a random string of 16 characters.
 const randString = (): string => {
-  let queryID = ""
+  let queryID = "";
   for (let i = 0; i < 16; i++) {
     queryID += "abcdefghijklmnopqrstuvwxyz0123456789".charAt(
       Math.floor(Math.random() * 36)
     );
   }
   return queryID;
-}
+};
 
 export class WebSearchSession implements Session {
   private queryLabel: string;
@@ -68,21 +70,21 @@ export class WebSearchSession implements Session {
     this.queryLabel = queryLabel;
     this.session = session;
   }
-  
+
   public next(values: Values): [Tracking | undefined, Error | undefined] {
     const text = values[this.queryLabel];
     if (text === undefined) {
       this.reset();
       return this.session.next(values);
     }
-    
+
     if (text !== this.lastQuery) {
-        this.reset();
+      this.reset();
     }
 
     return this.session.next(values);
   }
-  
+
   public reset(): void {
     this.session.reset();
   }
@@ -110,13 +112,16 @@ export class SessionType implements Session {
       this.sequence++;
     }
 
-    return [{
-      type: this.trackingType,
-      queryID: this.queryID,
-      sequence: this.sequence,
-      field: this.field,
-      data: this.sessionData
-    }, undefined];
+    return [
+      {
+        type: this.trackingType,
+        query_id: this.queryID,
+        sequence: this.sequence,
+        field: this.field,
+        data: this.sessionData
+      },
+      undefined
+    ];
   }
 
   public reset(): void {
@@ -133,7 +138,7 @@ export class Client {
   public constructor(project: string, collection: string) {
     this.project = project;
     this.collection = collection;
-    this.endpoint = "";
+    this.endpoint = "https://jsonapi.sajari.net/";
   }
 
   public pipeline(name: string): Pipeline {
@@ -151,16 +156,16 @@ export interface TokenValues {
 
 export interface Result {
   // Values are field values of records.
-	values: ResultValues;
+  values: ResultValues;
 
-	// Tokens contains any tokens associated with this Result.
-	tokens: TokenValues;
+  // Tokens contains any tokens associated with this Result.
+  tokens: TokenValues;
 
-	// Score is the overall score of this Result.
-	score: number;
+  // Score is the overall score of this Result.
+  score: number;
 
-	// IndexScore is the index-matched score of this Result.
-	indexScore: number;
+  // IndexScore is the index-matched score of this Result.
+  indexScore: number;
 }
 
 export interface AggregateValues {
@@ -169,33 +174,122 @@ export interface AggregateValues {
 
 export interface Results {
   // Reads is the total number of index values read.
-	reads: number;
+  reads: number;
 
-	// TotalResults is the total number of results for the query.
-	totalResults: number;
+  // TotalResults is the total number of results for the query.
+  totalResults: number;
 
-	// Time taken to perform the query.
-	time: string;
+  // Time in seconds taken to perform the query.
+  time: number;
 
-	// Aggregates computed on the query results (see Aggregate).
-	aggregates: AggregateValues;
+  // Aggregates computed on the query results (see Aggregate).
+  aggregates: AggregateValues;
 
-	// Results of the query.
-	results: Result[];
+  // Results of the query.
+  results: Result[];
 }
+
+const valueFromProto = (proto: any): any => {
+  if (proto.single !== undefined) {
+    return proto.single;
+  }
+  if (proto.repeated.values !== undefined) {
+    return proto.repeated.values;
+  }
+  return null;
+};
+
+const newResult = (resultJSON: any): Result => {
+  const values: ResultValues = {};
+  Object.keys(resultJSON.values).forEach(k => {
+    values[k] = valueFromProto(resultJSON.values[k]);
+  });
+  return {
+    values,
+    tokens: resultJSON.tokens,
+    score: parseFloat(resultJSON.score),
+    indexScore: parseFloat(resultJSON.indexScore)
+  };
+};
+
+const newResults = (response: any, tokens: any = []): Results => {
+  const results = (response.results || []).map((r: any, i: number) => {
+    const result = newResult(r);
+    if (tokens.length > 0) {
+      const token = tokens[i];
+      if (token.click !== undefined) {
+        result.tokens = { click: token.click };
+      } else if (token.posNeg !== undefined) {
+        result.tokens = { pos: token.posNeg.pos, neg: token.posNeg.neg };
+      }
+    }
+    return result;
+  });
+  return {
+    reads: parseInt(response.reads),
+    totalResults: parseInt(response.totalResults),
+    time: parseFloat(response.time),
+    aggregates: {},
+    results
+  };
+};
+
+export interface SJError {
+  message: string;
+  code?: number;
+}
+
+const makeError = (message: string, code?: number): SJError => ({
+  message,
+  code
+});
 
 export interface Key {
-	field: string;
-	value: any;
+  field: string;
+  value: any;
 }
 
-export type SearchCallback = (results: Results, values: Values, error: Error ) => void;
+export type SearchCallback = (
+  results?: Results,
+  values?: Values,
+  error?: SJError
+) => void;
 
-export type AddCallback = (key: Key, error: Error ) => void;
+export type AddCallback = (key: Key, error: SJError) => void;
 
 export interface SJRecord {
   [id: string]: any;
 }
+
+const makeRequest = (
+  address: string,
+  body: any,
+  callback: (response: any, error?: SJError) => void
+): void => {
+  const request = new XMLHttpRequest();
+  request.open("POST", address, true);
+  request.setRequestHeader("Accept", "application/json");
+  request.onreadystatechange = () => {
+    if (request.readyState !== 4) return;
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(request.responseText);
+    } catch (e) {
+      callback(undefined, makeError("error parsing response"));
+      return;
+    }
+
+    if (request.status === 200) {
+      callback(parsedResponse, undefined);
+      return;
+    }
+
+    callback(undefined, makeError(parsedResponse.message, request.status));
+  };
+
+  request.send(body);
+};
 
 /**
  * Pipeline is a client for performing searches and adds on a collection.
@@ -217,31 +311,77 @@ export class Pipeline {
    * tracking configuration. Returns the query results and returned values (which could have
    * been modified in the pipeline).
    */
-  public search(values: Values, tracking: Tracking, callback: SearchCallback): void {
-    const request = new XMLHttpRequest();
-    request.open("POST", this.client.endpoint, true);
-    request.setRequestHeader("Accept", "application/json");
-    request.onreadystatechange = () => {
-      if (request.readyState !== 4) return;
-  
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(request.responseText);
-      } catch (e) {
-        // const error = makeError("error parsing response");
-        // callback(error, null);
-        return;
+  public search(
+    values: Values,
+    session: Session,
+    callback: SearchCallback
+  ): void {
+    // const request = new XMLHttpRequest();
+    // request.open(
+    //   "POST",
+    //   this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
+    //   true
+    // );
+    // request.setRequestHeader("Accept", "application/json");
+    // request.onreadystatechange = () => {
+    //   if (request.readyState !== 4) return;
+
+    //   let parsedResponse;
+    //   try {
+    //     parsedResponse = JSON.parse(request.responseText);
+    //   } catch (e) {
+    //     callback(undefined, undefined, makeError("error parsing response"));
+    //     return;
+    //   }
+
+    //   if (request.status === 200) {
+    //     console.log(parsedResponse);
+    //     const results = newResults(
+    //       parsedResponse.searchResponse,
+    //       parsedResponse.tokens
+    //     );
+    //     callback(results, parsedResponse.values, undefined);
+    //     return;
+    //   }
+
+    //   callback(
+    //     undefined,
+    //     undefined,
+    //     makeError(parsedResponse.message, request.status)
+    //   );
+    // };
+
+    const [tracking, error] = session.next(values);
+    if (error) {
+      callback(
+        undefined,
+        undefined,
+        makeError("error getting next session: " + error)
+      );
+      return;
+    }
+    const requestBody = JSON.stringify({
+      request: {
+        pipeline: { name: this.name },
+        tracking,
+        values
+      },
+      metadata: {
+        project: [this.client.project],
+        collection: [this.client.collection],
+        "user-agent": [UserAgent]
       }
-  
-      if (request.status === 200) {
-        // callback(null, parsedResponse);
-        return;
+    });
+
+    makeRequest(
+      this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
+      requestBody,
+      (response?: any, error?: SJError) => {
+        const results = newResults(response.searchResponse, response.tokens);
+        callback(results, response.values, undefined);
       }
-  
-      // const error = makeError(parsedResponse.message, request.status);
-      // callback(error, null);
-    };
-    request.send(values);
+    );
+    // request.send(requestBody);
     //return request;
   }
 
@@ -255,7 +395,7 @@ export class Pipeline {
     request.setRequestHeader("Accept", "application/json");
     request.onreadystatechange = () => {
       if (request.readyState !== 4) return;
-  
+
       let parsedResponse;
       try {
         parsedResponse = JSON.parse(request.responseText);
@@ -264,7 +404,7 @@ export class Pipeline {
         // callback(error, null);
         return;
       }
-  
+
       if (request.status === 200) {
         // callback(null, parsedResponse);
         return;
