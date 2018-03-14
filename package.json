@@ -31,12 +31,6 @@
   ],
   "homepage": "https://github.com/sajari/sajari-sdk-js",
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
-  "contributors": [
-    {
-      "name": "Sajari Support <support@sajari.com>",
-      "url": "https://www.sajari.com"
-    }
-  ],
   "dependencies": {},
   "devDependencies": {
     "rimraf": "^2.6.2",
@@ -46,7 +40,11 @@
     "typedoc": "^0.11.1",
     "typescript": "^2.7.2"
   },
-  "author": [
+  "contributors": [
+    {
+      "name": "Sajari Support <support@sajari.com>",
+      "url": "https://www.sajari.com"
+    },
     {
       "name": "Trent Billington",
       "email": "tbillington@sajari.com",
