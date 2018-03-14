@@ -35,7 +35,7 @@ export interface Values {
   [id: string]: string;
 }
 
-export interface Session {
+export interface ISession {
   next(values: Values): [Tracking | undefined, Error | undefined];
   reset(): void;
 }
@@ -61,12 +61,12 @@ const randString = (): string => {
   return queryID;
 };
 
-export class WebSearchSession implements Session {
+export class TextSession implements ISession {
   private queryLabel: string;
-  private session: Session;
+  private session: ISession;
   private lastQuery: string = "";
 
-  public constructor(queryLabel: string, session: Session) {
+  public constructor(queryLabel: string, session: ISession) {
     this.queryLabel = queryLabel;
     this.session = session;
   }
@@ -90,7 +90,7 @@ export class WebSearchSession implements Session {
   }
 }
 
-export class SessionType implements Session {
+export class Session implements ISession {
   private queryID: string = "";
   private sequence: number = 0;
 
@@ -313,7 +313,7 @@ export class Pipeline {
    */
   public search(
     values: Values,
-    session: Session,
+    session: ISession,
     callback: SearchCallback
   ): void {
     const [tracking, error] = session.next(values);
