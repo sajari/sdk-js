@@ -212,7 +212,7 @@ const newResult = (resultJSON: any): Result => {
   });
   return {
     values,
-    tokens: resultJSON.tokens,
+    tokens: {},
     score: parseFloat(resultJSON.score),
     indexScore: parseFloat(resultJSON.indexScore)
   };
