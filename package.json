@@ -7,7 +7,7 @@
     "dev": "rollup -c -w"
   },
   "module": "dist.es/main.js",
-  "main": "dist.umd/main.js",
+  "main": "dist.cjs/main.js",
   "files": [
     "README.md",
     "LICENSE",
