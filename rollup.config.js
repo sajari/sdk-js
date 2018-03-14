@@ -25,6 +25,11 @@ export default [
       name: "Sajari",
       sourcemap: true
     },
-    plugins: [typescript(), uglify()]
+    plugins: [
+      typescript({
+        tsconfigOverride: { compilerOptions: { declaration: false } }
+      }),
+      uglify()
+    ]
   }
 ];
