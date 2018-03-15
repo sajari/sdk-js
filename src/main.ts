@@ -61,6 +61,10 @@ const randString = (): string => {
   return queryID;
 };
 
+/**
+ * TextSession creates a session based on text searches.
+ * It automatically resets once the value specified by the query label has changed in certain ways.
+ */
 export class TextSession implements ISession {
   private queryLabel: string;
   private session: ISession;
@@ -143,7 +147,7 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
 };
 
 /**
- * Client
+ * Client takes configuration and constructs pipelines clients
  */
 export class Client {
   public project: string;
@@ -159,6 +163,9 @@ export class Client {
     });
   }
 
+  /**
+   * pipeline returns a new pipeline client
+   */
   public pipeline(name: string): Pipeline {
     return new Pipeline(this, name);
   }
