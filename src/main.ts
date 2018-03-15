@@ -168,8 +168,21 @@ export interface Result {
   indexScore: number;
 }
 
-export interface AggregateValues {
-  [id: string]: any;
+export interface CountResponse {
+  [id: string]: number;
+}
+
+export interface BucketResponse {
+  name: string;
+  count: number;
+}
+
+export interface BucketsResponse {
+  [id: string]: BucketResponse;
+}
+
+export interface AggregateResponse {
+  [id: string]: CountResponse | BucketsResponse;
 }
 
 export interface Results {
@@ -183,7 +196,7 @@ export interface Results {
   time: number;
 
   // Aggregates computed on the query results (see Aggregate).
-  aggregates: AggregateValues;
+  aggregates: AggregateResponse;
 
   // Results of the query.
   results: Result[];
@@ -218,6 +231,17 @@ const newResult = (resultJSON: any): Result => {
   };
 };
 
+const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
+  Object.keys(aggregateJSON).reduce((prev: AggregateResponse, cur) => {
+    const [aggregateType, field] = cur.split(".");
+    if (aggregateType === "count") {
+      prev[cur] = aggregateJSON[cur].count.counts;
+    } else if (aggregateType === "bucket") {
+      // todo(tbillington): implement!
+    }
+    return prev;
+  }, {});
+
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
  */
@@ -238,7 +262,7 @@ const newResults = (response: any, tokens: any = []): Results => {
     reads: parseInt(response.reads) || 0, // sometimes reads is not returned
     totalResults: parseInt(response.totalResults),
     time: parseFloat(response.time),
-    aggregates: {},
+    aggregates: newAggregates(response.aggregates),
     results
   };
 };
