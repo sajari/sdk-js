@@ -27,7 +27,9 @@ export default [
     },
     plugins: [
       typescript({
-        tsconfigOverride: { compilerOptions: { declaration: false } }
+        tsconfigOverride: {
+          compilerOptions: { declaration: false, sourceMap: true }
+        }
       }),
       uglify()
     ]
