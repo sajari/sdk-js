@@ -307,9 +307,9 @@ export interface Key {
 }
 
 export type SearchCallback = (
+  error?: SJError,
   results?: Results,
-  values?: Values,
-  error?: SJError
+  values?: Values
 ) => void;
 
 export type AddCallback = (key: Key, error: SJError) => void;
@@ -379,9 +379,9 @@ export class Pipeline {
     const [tracking, error] = session.next(values);
     if (error) {
       callback(
+        makeError("error getting next session: " + error),
         undefined,
-        undefined,
-        makeError("error getting next session: " + error)
+        undefined        
       );
       return;
     }
@@ -404,7 +404,7 @@ export class Pipeline {
       requestBody,
       (response?: any, error?: SJError) => {
         const results = newResults(response.searchResponse, response.tokens);
-        callback(results, response.values, undefined);
+        callback(undefined, results, response.values);
       }
     );
   }

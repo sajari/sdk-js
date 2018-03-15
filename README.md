@@ -35,7 +35,7 @@ import { Client, TextSession, Session, TrackingClick } from "sajari";
 const client = new Client("sajariptyltd", "sajari-com").pipeline("website");
 const session = new TextSession("q", new Session(TrackingClick, "url", {}));
 
-client.search({ q: "hello world" }, session, (results, values, error) => {
+client.search({ q: "hello world" }, session, (error, results, values) => {
   if (error) {
     console.error(error);
     return;
