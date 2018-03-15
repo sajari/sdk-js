@@ -130,15 +130,27 @@ export class Session implements ISession {
   }
 }
 
+export type Opt = (client: Client) => void;
+
+export const withEndpoint = (endpoint: string) => (client: Client) => {
+  client.endpoint = endpoint;
+};
+
+/**
+ * Client
+ */
 export class Client {
   public project: string;
   public collection: string;
   public endpoint: string;
 
-  public constructor(project: string, collection: string) {
+  public constructor(project: string, collection: string, ...opts: Opt[]) {
     this.project = project;
     this.collection = collection;
     this.endpoint = "https://jsonapi.sajari.net/";
+    opts.forEach(opt => {
+      opt(this);
+    });
   }
 
   public pipeline(name: string): Pipeline {
