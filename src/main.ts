@@ -78,9 +78,15 @@ export class TextSession implements ISession {
       return this.session.next(values);
     }
 
-    if (text !== this.lastQuery) {
+    const shortenedPrevQ = this.lastQuery.substr(0, Math.min(text.length, 3));
+    const first3CharactersChanged = !(
+      text.substr(0, shortenedPrevQ.length) === shortenedPrevQ
+    );
+    const queryCleared = this.lastQuery.length > 0 && text.length === 0;
+    if (first3CharactersChanged || queryCleared) {
       this.reset();
     }
+    this.lastQuery = text;
 
     return this.session.next(values);
   }
