@@ -261,9 +261,8 @@ const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
     const [aggregateType, field] = cur.split(".");
     if (aggregateType === "count") {
       prev[cur] = aggregateJSON[cur].count.counts;
-    } else if (aggregateType === "bucket") {
-      // todo(tbillington): implement!
     }
+    // todo(tbillington): implement bucket
     return prev;
   }, {});
 
