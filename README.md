@@ -12,8 +12,17 @@ If you are want to create a search UI for your website then checkout our [React 
 * [License](#license)
 
 ## Install
+
+### NPM
+
 ```
 npm install --save sajari
+```
+
+### Browser
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/sajari@1.0.0/dist.iife/main.js"></script>
 ```
 
 ## Getting Started
@@ -21,24 +30,21 @@ npm install --save sajari
 A quick search example using the `website` search pipeline.
 
 ```javascript
-import { Client, Tracking } from "sajari";
+import { Client, TextSession, Session, TrackingClick } from "sajari";
 
-const client = new Client("<project>", "<collection>");
+const client = new Client("sajariptyltd", "sajari-com").pipeline("website");
+const session = new TextSession("q", new Session(TrackingClick, "url", {}));
 
-const tracking = new Tracking();
-tracking.clickTokens("url");
-
-client.searchPipeline(
-  "website",
-  { q: "Foo Bar", resultsPerPage: "10" },
-  tracking,
-  (err, res) => {
-    console.log(err || res);
+client.search({ q: "hello world" }, session, (results, values, error) => {
+  if (error) {
+    console.error(error);
+    return;
   }
-);
+  results.results.forEach(r => {
+    console.log(r);
+  });
+});
 ```
-
-The `Client` object handles making requests and callbacks.
 
 ## Documentation
 
