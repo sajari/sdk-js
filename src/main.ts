@@ -235,7 +235,7 @@ const newResults = (response: any, tokens: any = []): Results => {
     return result;
   });
   return {
-    reads: parseInt(response.reads),
+    reads: parseInt(response.reads) || 0, // sometimes reads is not returned
     totalResults: parseInt(response.totalResults),
     time: parseFloat(response.time),
     aggregates: {},
