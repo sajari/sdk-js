@@ -360,20 +360,4 @@ export class Pipeline {
       }
     );
   }
-
-  /**
-   * Add a record to a collection using a pipeline, returning the unique key which can be used
-   * to retrieve the respective record.
-   */
-  public add(values: Values, record: SJRecord, callback: AddCallback): void {
-    const requestBody = "";
-    makeRequest(
-      this.client.endpoint + "sajari.api.pipeline.v1.Record/Add",
-      requestBody,
-      (response?: any, error?: SJError) => {
-        // const results = newResults(response.searchResponse, response.tokens);
-        // callback(results, response.values, undefined);
-      }
-    );
-  }
 }
