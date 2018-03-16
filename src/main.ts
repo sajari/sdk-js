@@ -274,7 +274,7 @@ const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
  */
-const newResults = (response: any, tokens: any = []): Results => {
+const newResults = (response: any = {}, tokens: any = []): Results => {
   const results = (response.results || []).map((r: any, i: number) => {
     const result = newResult(r);
     if (tokens.length > 0) {
