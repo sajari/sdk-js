@@ -258,6 +258,9 @@ const newResult = (resultJSON: any): Result => {
   };
 };
 
+/**
+ * newAggregates constructs an AggregateResponse object from proto
+ */
 const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
   Object.keys(aggregateJSON).reduce((prev: AggregateResponse, cur) => {
     const [aggregateType, field] = cur.split(".");
