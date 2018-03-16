@@ -171,8 +171,10 @@ export class Client {
   }
 }
 
+export type ResultValue = string | number | boolean;
+
 export interface ResultValues {
-  [id: string]: any;
+  [id: string]: ResultValue | ResultValue[];
 }
 
 export interface TokenValues {
