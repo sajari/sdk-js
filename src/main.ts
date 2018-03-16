@@ -40,12 +40,12 @@ export interface ISession {
   reset(): void;
 }
 
-export const TrackingNone: string = "";
+export const TrackingNone: string = "NONE";
 export const TrackingClick: string = "CLICK";
 export const TrackingPosNeg: string = "POS_NEG";
 
 export const enum TrackingType {
-  TrackingNone = "",
+  TrackingNone = "NONE",
   TrackingClick = "CLICK",
   TrackingPosNeg = "POS_NEG"
 }
