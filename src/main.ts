@@ -114,7 +114,7 @@ export class Session implements ISession {
     this.sessionData = data;
   }
 
-  public next(): [Tracking | undefined, Error | undefined] {
+  public next(values: Values): [Tracking | undefined, Error | undefined] {
     if (this.queryID === "") {
       this.queryID = randString();
       this.sequence = 0;
