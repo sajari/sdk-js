@@ -289,7 +289,7 @@ const newResults = (response: any, tokens: any = []): Results => {
   });
   return {
     reads: parseInt(response.reads) || 0, // sometimes reads is not returned
-    totalResults: parseInt(response.totalResults),
+    totalResults: parseInt(response.totalResults) || 0, // sometimes totalResults is not returned
     time: parseFloat(response.time),
     aggregates: newAggregates(response.aggregates),
     results
