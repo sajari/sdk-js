@@ -329,7 +329,7 @@ export interface SJRecord {
 const makeRequest = (
   address: string,
   body: any,
-  callback: (response: any, error?: SJError) => void
+  callback: (error?: SJError, response?: any) => void
 ): void => {
   const request = new XMLHttpRequest();
   request.open("POST", address, true);
@@ -341,16 +341,16 @@ const makeRequest = (
     try {
       parsedResponse = JSON.parse(request.responseText);
     } catch (e) {
-      callback(undefined, makeError("error parsing response"));
+      callback(makeError("error parsing response"), undefined);
       return;
     }
 
     if (request.status === 200) {
-      callback(parsedResponse, undefined);
+      callback(undefined, parsedResponse);
       return;
     }
 
-    callback(undefined, makeError(parsedResponse.message, request.status));
+    callback(makeError(parsedResponse.message, request.status), undefined);
   };
 
   request.send(body);
@@ -386,7 +386,7 @@ export class Pipeline {
       callback(
         makeError("error getting next session: " + error),
         undefined,
-        undefined        
+        undefined
       );
       return;
     }
@@ -407,9 +407,16 @@ export class Pipeline {
     makeRequest(
       this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
       requestBody,
-      (response?: any, error?: SJError) => {
-        const results = newResults(response.searchResponse, response.tokens);
-        callback(undefined, results, response.values);
+      (error?: SJError, response?: any) => {
+        if (error !== undefined) {
+          callback(error, undefined, undefined);
+          return;
+        }
+        callback(
+          undefined,
+          newResults(response.searchResponse, response.tokens),
+          response.values
+        );
       }
     );
   }
