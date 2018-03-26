@@ -13,7 +13,7 @@
   "files": [
     "README.md",
     "LICENSE",
-    "dist*"
+    "dist*/+(main.js|main.d.ts)"
   ],
   "repository": {
     "type": "git",
