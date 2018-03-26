@@ -3,7 +3,8 @@
   "version": "0.20.0",
   "description": "JavaScript SDK for the Sajari search API",
   "scripts": {
-    "build": "rimraf dist* && rollup -c",
+    "prebuild": "rimraf dist*",
+    "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "jest"
   },
