@@ -26,6 +26,11 @@ const makeRequest = (address, body, callback) => {
   request.setRequestHeader("Accept", "application/json");
   request.onreadystatechange = () => {
     if (request.readyState !== 4) return;
+    
+    if (request.status === 0) {
+      callback(makeError("connection error", 0), null);
+      return;
+    }
 
     let parsedResponse;
     try {
