@@ -161,7 +161,7 @@ export class Client {
   public collection: string;
   public endpoint: string;
 
-  public constructor(project: string, collection: string, ...opts: Opt[]) {
+  public constructor(project: string, collection: string, opts: Opt[] = []) {
     this.project = project;
     this.collection = collection;
     this.endpoint = "https://jsonapi.sajari.net/";
