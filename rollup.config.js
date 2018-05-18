@@ -1,26 +1,36 @@
 import typescript from "rollup-plugin-typescript2";
 import uglify from "rollup-plugin-uglify";
 
-export default [
-  {
-    input: "src/main.ts",
-    output: [
-      {
-        file: "dist.es/main.js",
-        format: "es"
-      },
-      {
-        file: "dist.cjs/main.js",
-        format: "cjs",
-        name: "Sajari"
-      }
-    ],
-    plugins: [typescript()]
+const input = "main";
+const outputDir = "dist";
+const output = input;
+
+const outputs = {
+  es: {
+    target: "esnext"
   },
-  {
-    input: "src/main.ts",
+  cjs: {
+    target: "es5"
+  }
+};
+
+export default Object.entries(outputs)
+  .map(([format, config]) => ({
+    input: `src/${input}.ts`,
     output: {
-      file: "dist.iife/main.js",
+      file: `${outputDir}.${format}/${output}.js`,
+      format
+    },
+    plugins: [
+      typescript({
+        tsconfigOverride: { compilerOptions: { target: config.target } }
+      })
+    ]
+  }))
+  .concat({
+    input: `src/${input}.ts`,
+    output: {
+      file: `${outputDir}.iife/${output}.js`,
       format: "iife",
       name: "Sajari",
       sourcemap: true
@@ -33,5 +43,4 @@ export default [
       }),
       uglify()
     ]
-  }
-];
+  });
