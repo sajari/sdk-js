@@ -1,7 +1,7 @@
 import typescript from "rollup-plugin-typescript2";
-import uglify from "rollup-plugin-uglify";
+import { uglify } from "rollup-plugin-uglify";
 
-const input = "main";
+const input = "index";
 const outputDir = "dist";
 const output = input;
 

@@ -14,7 +14,7 @@
   "files": [
     "README.md",
     "LICENSE",
-    "dist*/+(main.js|main.d.ts)"
+    "dist*/*+(.js|.d.ts)"
   ],
   "repository": {
     "type": "git",
