@@ -1,4 +1,4 @@
-import { Result, ResultValues, AggregateResponse, Results } from "./main";
+import { Result, ResultValues, AggregateResponse, Results } from "./results";
 
 /**
  * valueFromProto unpacks a proto value.
