@@ -1,6 +1,6 @@
 {
-  "name": "sajari",
-  "version": "0.20.0",
+  "name": "@sajari/sdk-js",
+  "version": "1.0.0-alpha",
   "description": "JavaScript SDK for the Sajari search API",
   "scripts": {
     "prebuild": "rimraf dist*",

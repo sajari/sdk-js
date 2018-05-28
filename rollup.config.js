@@ -7,7 +7,7 @@ const output = input;
 
 const outputs = {
   es: {
-    target: "esnext"
+    target: "es6"
   },
   cjs: {
     target: "es5"
