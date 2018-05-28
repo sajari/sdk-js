@@ -16,13 +16,13 @@ If you are want to create a search UI for your website then checkout our [React 
 ### NPM
 
 ```
-npm install --save sajari
+npm install --save @sajari/sdk-js
 ```
 
 ### Browser
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/sajari@1.0.0/dist.iife/main.js"></script>
+<script src="https://unpkg.com/@sajari/sdk-js/dist.iife/main.js"></script>
 ```
 
 ## Getting Started
@@ -30,7 +30,7 @@ npm install --save sajari
 A quick search example using the `website` search pipeline.
 
 ```javascript
-import { Client, TextSession, Session, TrackingClick } from "sajari";
+import { Client, TextSession, Session, TrackingClick } from "@sajari/sdk-js";
 
 const client = new Client("sajariptyltd", "sajari-com").pipeline("website");
 const session = new TextSession("q", new Session(TrackingClick, "url", {}));
