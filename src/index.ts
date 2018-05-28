@@ -221,6 +221,11 @@ const makeRequest = (
   request.onreadystatechange = () => {
     if (request.readyState !== 4) return;
 
+    if (request.status === 0) {
+      callback(makeError("connection error", 0), null);
+      return;
+    }
+
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(request.responseText);
