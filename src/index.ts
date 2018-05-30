@@ -312,9 +312,5 @@ export interface Pipeline {
    * });
    * ```
    */
-  search(
-    values: Values,
-    session: ISession,
-    callback: SearchCallback
-  ): void;
+  search(values: Values, session: Session, callback: SearchCallback): void;
 }
