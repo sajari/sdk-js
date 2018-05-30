@@ -182,7 +182,7 @@ export class Client {
   ) {
     this.project = project;
     this.collection = collection;
-    this.endpoint = "https://jsonapi.sajari.net/";
+    this.endpoint = "https://jsonapi.sajari.net";
     opts.forEach(opt => {
       opt(this);
     });
@@ -256,8 +256,8 @@ class PipelineImpl {
       }
     });
 
-      this.client.endpoint + this.endpoint,
     newRequest(
+      `${this.client.endpoint}/${this.endpoint}`,
       requestBody,
       (err?: SearchError, response?: any) => {
         if (err !== undefined) {
