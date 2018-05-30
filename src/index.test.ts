@@ -6,7 +6,6 @@ import {
   withEndpoint
 } from "./index";
 import { createServer } from "http";
-const listen = require("test-listen");
 
 const srv = createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -55,21 +54,4 @@ describe("Pipeline", () => {
   test("Pipeline", () => {
     new Client("", "").pipeline("");
   });
-
-  // test("search", async done => {
-  //   const url = await listen(srv);
-  //   const c = new Client("", "", /*[withEndpoint(url)]*/).pipeline("");
-  //   (c as any).endpoint = "";
-  //   c.search(
-  //     {},
-  //     new Session(TrackingType.TrackingNone, "", {}),
-  //     (err, results, values) => {
-  //       console.log(err)
-  //       console.log(results);
-  //       console.log(values);
-  //       // expect(err).toBeUndefined();
-  //       done();
-  //     }
-  //   );
-  // });
 });
