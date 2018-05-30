@@ -189,7 +189,7 @@ export class Client {
   }
 
   /**
-   * pipeline returns a new pipeline client
+   * pipeline returns a new [[Pipeline]].
    */
   public pipeline(name: string): Pipeline {
     return new PipelineImpl(this, name);
