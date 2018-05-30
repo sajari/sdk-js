@@ -5,12 +5,6 @@ import {
   Client,
   withEndpoint
 } from "./index";
-import { createServer } from "http";
-
-const srv = createServer((req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.end("1");
-});
 
 describe("Session", () => {
   test("Session", () => {
