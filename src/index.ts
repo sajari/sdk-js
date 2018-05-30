@@ -148,6 +148,9 @@ export class BaseSession implements Session {
 
 export type ClientOption = (client: Client) => void;
 
+/**
+ * withEndpoint constructs a [[ClientOption]] that modifies the endpoint used by the client.
+ */
 export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
 };
