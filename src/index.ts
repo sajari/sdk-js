@@ -256,8 +256,8 @@ class PipelineImpl {
       }
     });
 
-    makeRequest(
       this.client.endpoint + this.endpoint,
+    newRequest(
       requestBody,
       (err?: SearchError, response?: any) => {
         if (err !== undefined) {
