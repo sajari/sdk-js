@@ -1,8 +1,8 @@
 import {
-  valueFromProto,
-  newResult,
   newAggregates,
-  newResults
+  newResult,
+  newResults,
+  valueFromProto
 } from "./constructors";
 
 describe("valueFromProto", () => {

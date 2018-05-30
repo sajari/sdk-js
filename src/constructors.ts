@@ -1,4 +1,4 @@
-import { Result, ResultValues, AggregateResponse, Results } from "./results";
+import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 /**
  * valueFromProto unpacks a proto value.
@@ -59,8 +59,8 @@ export const newResults = (response: any = {}, tokens: any = []): Results => {
     return result;
   });
   return {
-    reads: parseInt(response.reads) || 0, // sometimes reads is not returned
-    totalResults: parseInt(response.totalResults) || 0, // sometimes totalResults is not returned
+    reads: parseInt(response.reads, 10) || 0, // sometimes reads is not returned
+    totalResults: parseInt(response.totalResults, 10) || 0, // sometimes totalResults is not returned
     time: parseFloat(response.time),
     aggregates: newAggregates(response.aggregates),
     results

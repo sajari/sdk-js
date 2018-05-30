@@ -6,13 +6,13 @@
  * @module sajari
  */
 
-import { Result, ResultValues, AggregateResponse, Results } from "./results";
+import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 import {
-  valueFromProto,
-  newResult,
   newAggregates,
-  newResults
+  newResult,
+  newResults,
+  valueFromProto
 } from "./constructors";
 
 const UserAgent = "sdk-js-1.0.0";
@@ -138,7 +138,7 @@ export class Session implements ISession {
         sequence: this.sequence,
         field: this.field,
         data: this.sessionData
-      },
+      } as Tracking,
       undefined
     ];
   }
@@ -219,7 +219,9 @@ const makeRequest = (
   request.open("POST", address, true);
   request.setRequestHeader("Accept", "application/json");
   request.onreadystatechange = () => {
-    if (request.readyState !== 4) return;
+    if (request.readyState !== 4) {
+      return;
+    }
 
     if (request.status === 0) {
       callback(makeError("connection error", 0), null);
@@ -281,24 +283,26 @@ export class Pipeline {
     }
 
     const requestBody = JSON.stringify({
-      request: {
-        pipeline: { name: this.name },
-        tracking,
-        values
-      },
+      // tslint:disable:object-literal-sort-keys
       metadata: {
         project: [this.client.project],
         collection: [this.client.collection],
         "user-agent": [UserAgent]
+      },
+      // tslint:enable:object-literal-sort-keys
+      request: {
+        tracking,
+        values,
+        pipeline: { name: this.name }
       }
     });
 
     makeRequest(
       this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
       requestBody,
-      (error?: SJError, response?: any) => {
-        if (error !== undefined) {
-          callback(error, undefined, undefined);
+      (err?: SJError, response?: any) => {
+        if (err !== undefined) {
+          callback(err, undefined, undefined);
           return;
         }
         callback(
