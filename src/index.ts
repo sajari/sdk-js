@@ -159,7 +159,19 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
 };
 
 /**
- * Client takes configuration and constructs pipelines clients
+ * Client takes configuration and constructs pipelines clients.
+ *
+ * ```javascript
+ * const client = new Client("<project>", "<collection>");
+ * const webPipeline = client.pipeline("website");
+ * // webPipeline.search(...);
+ * ```
+ *
+ * An optional array of [[ClientOption]] may be given to the client constructor to modify it's behaviour.
+ *
+ * ```javascript
+ * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));
+ * ```
  */
 export class Client {
   public project: string;
