@@ -6,7 +6,7 @@
 
 The Sajari Javascript SDK provides a basic API for querying Sajari search services from web browsers.
 
-If you are want to create a search UI for your website then checkout our [React SDK](https://www.github.com/sajari/sajari-sdk-react) or generate a search interface from our [Console](https://www.sajari.com/console).
+If you want to quickly create a search UI for your website then we recommend checking out our [React SDK](https://www.github.com/sajari/sajari-sdk-react) or generating a search interface from our [Console](https://www.sajari.com/console).
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ If you are want to create a search UI for your website then checkout our [React 
 
 ## Install
 
-### NPM
+### NPM/Yarn
 
 ```
 npm install --save @sajari/sdk-js
@@ -26,27 +26,25 @@ npm install --save @sajari/sdk-js
 ### Browser
 
 ```html
-<script src="https://unpkg.com/@sajari/sdk-js/dist.iife/main.js"></script>
+<script src="https://unpkg.com/@sajari/sdk-js@1.0.0/dist.iife/main.js"></script>
 ```
 
 ## Getting Started
 
-A quick search example using the `website` search pipeline.
+Here's a quick example that searches for a webpage.
 
 ```javascript
-import { Client, TextSession, Session, TrackingClick } from "@sajari/sdk-js";
+import { Client, BaseSession, TextSession, TrackingClick } from "@sajari/sdk-js";
 
 const client = new Client("sajariptyltd", "sajari-com").pipeline("website");
-const session = new TextSession("q", new Session(TrackingClick, "url", {}));
+const session = new TextSession("q", new BaseSession(TrackingClick, "url", {}));
 
-client.search({ q: "hello world" }, session, (error, results, values) => {
+client.search({ q: "FAQ" }, session, (error, results, values) => {
   if (error) {
     console.error(error);
     return;
   }
-  results.results.forEach(r => {
-    console.log(r);
-  });
+  console.log(results, values);
 });
 ```
 
