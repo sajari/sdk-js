@@ -49,7 +49,7 @@ export interface Values {
   [id: string]: string;
 }
 
-export interface ISession {
+export interface Session {
   next(values: Values): [Tracking, undefined] | [undefined, Error];
   reset(): void;
 }
@@ -68,12 +68,12 @@ export const enum TrackingType {
  * TextSession creates a session based on text searches.
  * It automatically resets once the value specified by the query label has changed in certain ways.
  */
-export class TextSession implements ISession {
+export class TextSession implements Session {
   private queryLabel: string;
-  private session: ISession;
+  private session: Session;
   private lastQuery: string = "";
 
-  public constructor(queryLabel: string, session: ISession) {
+  public constructor(queryLabel: string, session: Session) {
     this.queryLabel = queryLabel;
     this.session = session;
   }
@@ -103,7 +103,10 @@ export class TextSession implements ISession {
   }
 }
 
-export class Session implements ISession {
+/**
+ * Session holds state about a series of searches.
+ */
+export class BaseSession implements Session {
   private queryID: string = "";
   private sequence: number = 0;
 
@@ -222,7 +225,7 @@ class PipelineImpl {
 
   public search(
     values: Values,
-    session: ISession,
+    session: Session,
     callback: SearchCallback
   ): void {
     const [tracking, error] = session.next(values);
