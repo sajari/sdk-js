@@ -77,3 +77,44 @@ export const newQueryID = (): string => {
   }
   return queryID;
 };
+
+/**
+ * newRequest makes a XMLHttpRequest and handles network and parsing errors.
+ */
+export const newRequest = (
+  address: string,
+  body: any,
+  callback: (error?: SearchError, response?: any) => void
+): void => {
+  const request = new XMLHttpRequest();
+  request.open("POST", address, true);
+  request.setRequestHeader("Accept", "application/json");
+  request.setRequestHeader("Content-Type", "application/json");
+  request.onreadystatechange = () => {
+    if (request.readyState !== XMLHttpRequest.DONE) {
+      return;
+    }
+
+    if (request.status === 0) {
+      callback(makeError("connection error", 0), null);
+      return;
+    }
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(request.responseText);
+    } catch (e) {
+      callback(makeError("error parsing response"), undefined);
+      return;
+    }
+
+    if (request.status === 200) {
+      callback(undefined, parsedResponse);
+      return;
+    }
+
+    callback(makeError(parsedResponse.message, request.status), undefined);
+  };
+
+  request.send(body);
+};
