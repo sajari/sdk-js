@@ -195,7 +195,7 @@ export class Client {
    * pipeline returns a new pipeline client
    */
   public pipeline(name: string): Pipeline {
-    return new Pipeline(this, name);
+    return new PipelineImpl(this, name);
   }
 }
 
@@ -267,25 +267,18 @@ const makeRequest = (
 };
 
 /**
- * Pipeline is a client for performing searches and adds on a collection.
+ * PipelineImpl is private to prevent users constructing it themselves.
  */
-export class Pipeline {
-  private client: Client;
-  private name: string;
+class PipelineImpl {
+  public client: Client;
+  public name: string;
+  public endpoint: string = "sajari.api.pipeline.v1.Query/Search";
 
-  /**
-   * Create a pipeline
-   */
   public constructor(client: Client, name: string) {
     this.client = client;
     this.name = name;
   }
 
-  /**
-   * Search runs a search query defined by a pipline with the given values and
-   * tracking configuration. Calls the callback with the query results and returned values (which could have
-   * been modified in the pipeline).
-   */
   public search(
     values: Values,
     session: ISession,
@@ -332,4 +325,49 @@ export class Pipeline {
       }
     );
   }
+}
+
+/**
+ * Pipeline is a client for performing searches and adds on a collection.
+ *
+ * Create a Pipeline cia [[Client.pipeline]].
+ *
+ * ```javascript
+ * // const client = new Client(...);
+ * const pipeline = client.pipeline("website");
+ * ```
+ *
+ * From there we can perform searches on the pipeline.
+ * We'll need [[Values]], an [[ISession]], and a [[SearchCallback]].
+ * See [[Pipeline.search]] for a more detailed answer.
+ *
+ * ```javascript
+ * pipeline.search(values, session, callback);
+ * ```
+ */
+export interface Pipeline {
+  client: Client;
+  name: string;
+  endpoint: string;
+
+  /**
+   * Search runs a search query defined by a pipline with the given values and
+   * session configuration. Calls the callback with the query results and returned values (which could have
+   * been modified in the pipeline).
+   *
+   * ```javascript
+   * pipeline.search({ q: "<search query>" }, session, (error, results, values) => {
+   *   if (error) {
+   *     console.error(error);
+   *     return;
+   *   }
+   *   console.log(results, values);
+   * });
+   * ```
+   */
+  search(
+    values: Values,
+    session: ISession,
+    callback: SearchCallback
+  ): void;
 }
