@@ -23,7 +23,8 @@ export default Object.entries(outputs)
     },
     plugins: [
       typescript({
-        tsconfigOverride: { compilerOptions: { target: config.target } }
+        tsconfigOverride: { compilerOptions: { target: config.target } },
+        useTsconfigDeclarationDir: true
       })
     ]
   }))
