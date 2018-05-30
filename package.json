@@ -10,8 +10,8 @@
     "lint": "tslint -p tsconfig.json -c tslint.json --fix \"src/**/*.ts\"",
     "test": "jest"
   },
-  "main": "dist.cjs/main.js",
-  "module": "dist.es/main.js",
+  "main": "dist.cjs/index.js",
+  "module": "dist.es/index.js",
   "files": [
     "README.md",
     "LICENSE",
