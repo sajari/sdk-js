@@ -40,6 +40,9 @@ export interface Tracking {
   data: Values;
 }
 
+/**
+ * Values is a plan object with only string values.
+ */
 export interface Values {
   [id: string]: string;
 }
