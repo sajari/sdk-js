@@ -66,3 +66,14 @@ export const newResults = (response: any = {}, tokens: any = []): Results => {
     results
   };
 };
+
+// newQueryID constructs a new ID for a query.
+export const newQueryID = (): string => {
+  let queryID = "";
+  for (let i = 0; i < 16; i++) {
+    queryID += "abcdefghijklmnopqrstuvwxyz0123456789".charAt(
+      Math.floor(Math.random() * 36)
+    );
+  }
+  return queryID;
+};

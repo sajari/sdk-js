@@ -10,6 +10,7 @@ import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 import {
   newAggregates,
+  newQueryID,
   newResult,
   newResults,
   valueFromProto
@@ -61,17 +62,6 @@ export const enum TrackingType {
   TrackingClick = "CLICK",
   TrackingPosNeg = "POS_NEG"
 }
-
-// randString constructs a random string of 16 characters.
-const randString = (): string => {
-  let queryID = "";
-  for (let i = 0; i < 16; i++) {
-    queryID += "abcdefghijklmnopqrstuvwxyz0123456789".charAt(
-      Math.floor(Math.random() * 36)
-    );
-  }
-  return queryID;
-};
 
 /**
  * TextSession creates a session based on text searches.
@@ -128,7 +118,7 @@ export class Session implements ISession {
 
   public next(values: Values): [Tracking, undefined] | [undefined, Error] {
     if (this.queryID === "") {
-      this.queryID = randString();
+      this.queryID = newQueryID();
       this.sequence = 0;
     } else {
       this.sequence++;
