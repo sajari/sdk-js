@@ -16,6 +16,7 @@ import {
   newResults,
   valueFromProto
 } from "./constructors";
+import { makeError, SearchError } from "./error";
 
 const UserAgent = "sdk-js-1.0.0";
 
@@ -190,28 +191,18 @@ export class Client {
   }
 }
 
-export interface SJError {
-  message: string;
-  code?: number;
-}
-
-const makeError = (message: string, code?: number): SJError => ({
-  message,
-  code
-});
-
 export interface Key {
   field: string;
   value: any;
 }
 
 export type SearchCallback = (
-  error?: SJError,
-  results?: Results,
-  values?: Values
+  error: SearchError | undefined,
+  results: Results | undefined,
+  values: Values | undefined
 ) => void;
 
-export type AddCallback = (key: Key, error: SJError) => void;
+export type AddCallback = (key: Key, error: SearchError) => void;
 
 export interface SJRecord {
   [id: string]: any;
@@ -263,7 +254,7 @@ class PipelineImpl {
     makeRequest(
       this.client.endpoint + this.endpoint,
       requestBody,
-      (err?: SJError, response?: any) => {
+      (err?: SearchError, response?: any) => {
         if (err !== undefined) {
           callback(err, undefined, undefined);
           return;
