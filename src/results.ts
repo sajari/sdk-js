@@ -1,4 +1,4 @@
-export type ResultValue = string | number | boolean;
+export type ResultValue = string | number | boolean | null;
 
 export interface ResultValues {
   [id: string]: ResultValue | ResultValue[];

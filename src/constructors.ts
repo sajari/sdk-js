@@ -3,7 +3,7 @@ import { AggregateResponse, Result, Results, ResultValues } from "./results";
 /**
  * valueFromProto unpacks a proto value.
  */
-export const valueFromProto = (proto: any): any => {
+export const valueFromProto = (proto: any): string | string[] | null => {
   if (proto.single !== undefined) {
     return proto.single;
   }
