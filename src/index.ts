@@ -310,7 +310,7 @@ class PipelineImpl {
     });
 
     makeRequest(
-      this.client.endpoint + "sajari.api.pipeline.v1.Query/Search",
+      this.client.endpoint + this.endpoint,
       requestBody,
       (err?: SJError, response?: any) => {
         if (err !== undefined) {
