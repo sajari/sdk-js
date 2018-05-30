@@ -238,7 +238,7 @@ const makeRequest = (
   request.open("POST", address, true);
   request.setRequestHeader("Accept", "application/json");
   request.onreadystatechange = () => {
-    if (request.readyState !== 4) {
+    if (request.readyState !== XMLHttpRequest.DONE) {
       return;
     }
 
