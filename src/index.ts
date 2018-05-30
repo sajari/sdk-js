@@ -152,7 +152,7 @@ export class Session implements ISession {
   }
 }
 
-export type Opt = (client: Client) => void;
+export type ClientOption = (client: Client) => void;
 
 export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
@@ -166,7 +166,11 @@ export class Client {
   public collection: string;
   public endpoint: string;
 
-  public constructor(project: string, collection: string, opts: Opt[] = []) {
+  public constructor(
+    project: string,
+    collection: string,
+    opts: ClientOption[] = []
+  ) {
     this.project = project;
     this.collection = collection;
     this.endpoint = "https://jsonapi.sajari.net/";
