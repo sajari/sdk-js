@@ -48,7 +48,7 @@ export interface Values {
 }
 
 export interface ISession {
-  next(values: Values): [Tracking | undefined, Error | undefined];
+  next(values: Values): [Tracking, undefined] | [undefined, Error];
   reset(): void;
 }
 
@@ -87,7 +87,7 @@ export class TextSession implements ISession {
     this.session = session;
   }
 
-  public next(values: Values): [Tracking | undefined, Error | undefined] {
+  public next(values: Values): [Tracking, undefined] | [undefined, Error] {
     const text = values[this.queryLabel];
     if (text === undefined) {
       this.reset();
@@ -126,7 +126,7 @@ export class Session implements ISession {
     this.sessionData = data;
   }
 
-  public next(values: Values): [Tracking | undefined, Error | undefined] {
+  public next(values: Values): [Tracking, undefined] | [undefined, Error] {
     if (this.queryID === "") {
       this.queryID = randString();
       this.sequence = 0;
