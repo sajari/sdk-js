@@ -1,5 +1,5 @@
 import {
-  Session,
+  BaseSession,
   TextSession,
   TrackingType,
   Client,
@@ -14,7 +14,7 @@ const srv = createServer((req, res) => {
 
 describe("Session", () => {
   test("Session", () => {
-    const s = new Session(TrackingType.TrackingNone, "", {});
+    const s = new BaseSession(TrackingType.TrackingNone, "", {});
     let [_, err] = s.next({});
     expect(err).toBeUndefined();
     [_, err] = s.next({});
@@ -25,7 +25,7 @@ describe("Session", () => {
   test("TextSession", () => {
     const s = new TextSession(
       "q",
-      new Session(TrackingType.TrackingClick, "", {})
+      new BaseSession(TrackingType.TrackingClick, "", {})
     );
     let [_, err] = s.next({ q: "foo" });
     expect(err).toBeUndefined();
