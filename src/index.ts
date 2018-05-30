@@ -16,7 +16,7 @@ import {
   newResults,
   valueFromProto
 } from "./constructors";
-import { makeError, SearchError } from "./error";
+import { newError, SearchError } from "./error";
 
 const UserAgent = "sdk-js-1.0.0";
 
@@ -229,7 +229,7 @@ class PipelineImpl {
     const [tracking, error] = session.next(values);
     if (error) {
       callback(
-        makeError("error getting next session: " + error),
+        newError("error getting next session: " + error),
         undefined,
         undefined
       );

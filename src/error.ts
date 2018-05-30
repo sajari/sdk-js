@@ -3,7 +3,7 @@ export interface SearchError extends Error {
   code?: number;
 }
 
-export const makeError = (message: string, code?: number): SearchError => {
+export const newError = (message: string, code?: number): SearchError => {
   const error = new Error(message) as SearchError;
   if (code !== undefined) {
     error.code = code;

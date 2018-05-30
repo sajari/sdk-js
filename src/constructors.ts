@@ -1,3 +1,4 @@
+import { newError, SearchError } from "./error";
 import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 /**
@@ -96,7 +97,7 @@ export const newRequest = (
     }
 
     if (request.status === 0) {
-      callback(makeError("connection error", 0), null);
+      callback(newError("connection error", 0), null);
       return;
     }
 
@@ -104,7 +105,7 @@ export const newRequest = (
     try {
       parsedResponse = JSON.parse(request.responseText);
     } catch (e) {
-      callback(makeError("error parsing response"), undefined);
+      callback(newError("error parsing response"), undefined);
       return;
     }
 
@@ -113,7 +114,7 @@ export const newRequest = (
       return;
     }
 
-    callback(makeError(parsedResponse.message, request.status), undefined);
+    callback(newError(parsedResponse.message, request.status), undefined);
   };
 
   request.send(body);
