@@ -6,8 +6,6 @@
  * @module sajari
  */
 
-import { AggregateResponse, Result, Results, ResultValues } from "./results";
-
 import {
   newRequest,
   newAggregates,
@@ -17,6 +15,7 @@ import {
   valueFromProto
 } from "./constructors";
 import { newError, SearchError } from "./error";
+import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 const UserAgent = "sdk-js-1.0.0";
 
