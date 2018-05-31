@@ -6,7 +6,7 @@
     "prebuild": "rimraf dist*",
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "docs": "typedoc src  --mode file --out docs --exclude \"**/*+(.test).ts\"",
+    "docs": "typedoc src --mode file --out docs --exclude \"**/*+(.test).ts\"",
     "lint": "tslint -p tsconfig.json -c tslint.json --fix \"src/**/*.ts\"",
     "test": "jest"
   },

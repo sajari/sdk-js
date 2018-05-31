@@ -1,4 +1,3 @@
-import { newRequestError, RequestError } from "./error";
 import {
   AggregateResponse,
   Result,
@@ -55,7 +54,10 @@ export const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
  */
-export const newResults = (response: any = {}, tokens: any = []): Results => {
+export const processSearchResponse = (
+  response: any = {},
+  tokens: any = []
+): Results => {
   const results = (response.results || []).map((r: any, i: number) => {
     const result = newResult(r);
     if (tokens.length > 0) {
@@ -75,61 +77,4 @@ export const newResults = (response: any = {}, tokens: any = []): Results => {
     aggregates: newAggregates(response.aggregates),
     results
   };
-};
-
-// newQueryID constructs a new ID for a query.
-export const newQueryID = (): string => {
-  let queryID = "";
-  for (let i = 0; i < 16; i++) {
-    queryID += "abcdefghijklmnopqrstuvwxyz0123456789".charAt(
-      Math.floor(Math.random() * 36)
-    );
-  }
-  return queryID;
-};
-
-export type RequestCallback = (
-  error: RequestError | null,
-  response?: any
-) => void;
-
-/**
- * newRequest makes a XMLHttpRequest and handles network and parsing errors.
- */
-export const newRequest = (
-  address: string,
-  body: any,
-  callback: RequestCallback
-): void => {
-  const request = new XMLHttpRequest();
-  request.open("POST", address, true);
-  request.setRequestHeader("Accept", "application/json");
-  request.setRequestHeader("Content-Type", "application/json");
-  request.onreadystatechange = () => {
-    if (request.readyState !== XMLHttpRequest.DONE) {
-      return;
-    }
-
-    if (request.status === 0) {
-      callback(newRequestError("connection error", 0));
-      return;
-    }
-
-    let parsedResponse;
-    try {
-      parsedResponse = JSON.parse(request.responseText);
-    } catch (e) {
-      callback(newRequestError("error parsing response"));
-      return;
-    }
-
-    if (request.status === 200) {
-      callback(null, parsedResponse);
-      return;
-    }
-
-    callback(newRequestError(parsedResponse.message, request.status));
-  };
-
-  request.send(body);
 };

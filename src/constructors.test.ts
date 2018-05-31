@@ -1,7 +1,7 @@
 import {
   newAggregates,
   newResult,
-  newResults,
+  processSearchResponse,
   valueFromProto
 } from "./constructors";
 
@@ -56,7 +56,7 @@ describe("newAggregates", () => {
   });
 });
 
-describe("newResults", () => {
+describe("processSearchResponse", () => {
   test("basic", () => {
     const singleValue = "single-val";
     const repeatedValue = ["repeated-val"];
@@ -85,7 +85,7 @@ describe("newResults", () => {
       }
     ];
 
-    const results = newResults(protoResponse, protoTokens);
+    const results = processSearchResponse(protoResponse, protoTokens);
     expect(results.results).toContainEqual({
       values: { body: singleValue, tags: repeatedValue },
       score,
