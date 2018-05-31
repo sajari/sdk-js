@@ -196,22 +196,11 @@ export class Client {
   }
 }
 
-export interface Key {
-  field: string;
-  value: any;
-}
-
 export type SearchCallback = (
   error: SearchError | undefined,
   results: Results | undefined,
   values: Values | undefined
 ) => void;
-
-export type AddCallback = (key: Key, error: SearchError) => void;
-
-export interface SJRecord {
-  [id: string]: any;
-}
 
 /**
  * PipelineImpl is private to prevent users constructing it themselves.
