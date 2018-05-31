@@ -59,9 +59,9 @@ export const TrackingClick: string = "CLICK";
 export const TrackingPosNeg: string = "POS_NEG";
 
 export const enum TrackingType {
-  TrackingNone = "NONE",
-  TrackingClick = "CLICK",
-  TrackingPosNeg = "POS_NEG"
+  None = "NONE",
+  Click = "CLICK",
+  PosNeg = "POS_NEG"
 }
 
 /**
