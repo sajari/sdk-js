@@ -6,6 +6,33 @@ import {
   withEndpoint
 } from "./index";
 
+const mockXMLHttpRequest = () => {
+  class XMLMock {
+    readyState: number;
+    status: number;
+    responseText: string;
+    send() {
+      this.readyState = XMLHttpRequest.DONE;
+      this.status = 200;
+      this.responseText = JSON.stringify({
+        searchResponse: {
+          results: [],
+          reads: "0",
+          totalResults: "0",
+          time: "0"
+        },
+        values: {}
+      });
+      this.onreadystatechange();
+    }
+    open() {}
+    setRequestHeader() {}
+    onreadystatechange() {}
+  }
+
+  (window as any).XMLHttpRequest = jest.fn(() => new XMLMock());
+};
+
 describe("Session", () => {
   test("Session", () => {
     const s = new BaseSession(TrackingType.TrackingNone, "", {});
@@ -47,5 +74,19 @@ describe("Client", () => {
 describe("Pipeline", () => {
   test("Pipeline", () => {
     new Client("", "").pipeline("");
+  });
+
+  test("search", done => {
+    mockXMLHttpRequest();
+    new Client("", "")
+      .pipeline("")
+      .search(
+        {},
+        new BaseSession(TrackingType.TrackingClick, "", {}),
+        (err, res, vals) => {
+          console.log(err, res, vals);
+          done();
+        }
+      );
   });
 });
