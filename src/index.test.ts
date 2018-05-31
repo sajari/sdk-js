@@ -35,7 +35,7 @@ const mockXMLHttpRequest = () => {
 
 describe("Session", () => {
   test("Session", () => {
-    const s = new BaseSession(TrackingType.TrackingNone, "", {});
+    const s = new BaseSession(TrackingType.None, "", {});
     let [_, err] = s.next({});
     expect(err).toBeUndefined();
     [_, err] = s.next({});
@@ -46,7 +46,7 @@ describe("Session", () => {
   test("TextSession", () => {
     const s = new TextSession(
       "q",
-      new BaseSession(TrackingType.TrackingClick, "", {})
+      new BaseSession(TrackingType.Click, "", {})
     );
     let [_, err] = s.next({ q: "foo" });
     expect(err).toBeUndefined();
@@ -82,7 +82,7 @@ describe("Pipeline", () => {
       .pipeline("")
       .search(
         {},
-        new BaseSession(TrackingType.TrackingClick, "", {}),
+        new BaseSession(TrackingType.Click, "", {}),
         (err, res, vals) => {
           console.log(err, res, vals);
           done();
