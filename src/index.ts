@@ -33,8 +33,7 @@ export interface Tracking {
   // sequence of queries.
   sequence: number;
 
-  // Field is the field to be used for adding identifier information to
-  // generated tokens (see TrackingType).
+  // Field is a unique field on each result used to associate tracking information to the result.
   field: string;
 
   // Data are values which will be recorded along with tracking data produced
@@ -43,7 +42,7 @@ export interface Tracking {
 }
 
 /**
- * Values is a plan object with only string values.
+ * Values is a plain object with only string values.
  */
 export interface Values {
   [id: string]: string;
@@ -66,7 +65,11 @@ export const enum TrackingType {
 
 /**
  * TextSession creates a session based on text searches.
- * It automatically resets once the value specified by the query label has changed in certain ways.
+ * It resets once the value specified by the query label has changed in any of 3 ways:
+ * 
+ * - Supplied as `undefined`.
+ * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`) or a subtraction (`ab` -> `a`).
+ * - Query is now empty where it previously wasn't.
  */
 export class TextSession implements Session {
   private queryLabel: string;
