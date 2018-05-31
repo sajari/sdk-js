@@ -42,8 +42,8 @@ export const enum TrackingType {
  * It resets once the value specified by the query label has changed in any of 3 ways:
  *
  * - Supplied as `undefined`.
- * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`) or a subtraction (`ab` -> `a`).
- * - Query is now empty where it previously wasn't.
+ * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`)
+ * - Query length empty from previously non-empty.
  */
 export class TextSession implements Session {
   private queryLabel: string;
