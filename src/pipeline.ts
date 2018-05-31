@@ -1,9 +1,9 @@
-import { request, newRequestError, RequestError } from "./lib/request";
 import { Client } from "./client";
-import { Values } from "./types";
-import { Session } from "./session";
-import { Results } from "./results";
 import { processSearchResponse } from "./constructors";
+import { newRequestError, request, RequestError } from "./lib/request";
+import { Results } from "./results";
+import { Session } from "./session";
+import { Values } from "./types";
 
 const UserAgent = "sdk-js-1.0.0";
 
