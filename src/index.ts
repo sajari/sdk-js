@@ -20,7 +20,7 @@ import { AggregateResponse, Result, Results, ResultValues } from "./results";
 const UserAgent = "sdk-js-1.0.0";
 
 export interface Tracking {
-  // Tracking specifies which kind (if any) tokens should be generated and returned
+  // Tracking specifies which kind of tokens (if any) tokens should be generated and returned
   // with the query results.
   type: TrackingType;
 
