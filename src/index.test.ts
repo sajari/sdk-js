@@ -48,9 +48,12 @@ describe("Session", () => {
       "q",
       new BaseSession(TrackingType.Click, "", {})
     );
-    let [_, err] = s.next({ q: "foo" });
+    let [values, err] = s.next({ q: "foo" });
+    let qid = values.query_id;
     expect(err).toBeUndefined();
-    [_, err] = s.next({ q: "" });
+    [values, err] = s.next({ q: "" });
+    expect(values.query_id).not.toBe(qid);
+    qid = values.query_id;
     expect(err).toBeUndefined();
     s.reset();
   });
