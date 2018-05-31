@@ -44,10 +44,7 @@ describe("Session", () => {
   });
 
   test("TextSession", () => {
-    const s = new TextSession(
-      "q",
-      new BaseSession(TrackingType.Click, "", {})
-    );
+    const s = new TextSession("q", new BaseSession(TrackingType.Click, "", {}));
     let [values, err] = s.next({ q: "foo" });
     let qid = values.query_id;
     expect(err).toBeUndefined();

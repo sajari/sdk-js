@@ -39,7 +39,7 @@ describe("newResult", () => {
       values: { description, title, url },
       score,
       indexScore,
-      tokens: {}
+      token: {}
     });
   });
 });
@@ -90,7 +90,7 @@ describe("newResults", () => {
       values: { body: singleValue, tags: repeatedValue },
       score,
       indexScore,
-      tokens: { click: { token: tokenValue } }
+      token: { click: tokenValue }
     });
   });
 });

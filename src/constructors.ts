@@ -1,5 +1,11 @@
-import { newError, SearchError } from "./error";
-import { AggregateResponse, Result, Results, ResultValues } from "./results";
+import { newRequestError, RequestError } from "./error";
+import {
+  AggregateResponse,
+  Result,
+  Results,
+  ResultValues,
+  Token
+} from "./results";
 
 /**
  * valueFromProto unpacks a proto value.
@@ -20,11 +26,14 @@ export const valueFromProto = (proto: any): string | string[] | null => {
 export const newResult = (resultJSON: any): Result => {
   const values: ResultValues = {};
   Object.keys(resultJSON.values).forEach(k => {
-    values[k] = valueFromProto(resultJSON.values[k]);
+    const val = valueFromProto(resultJSON.values[k]);
+    if (val !== null) {
+      values[k] = val;
+    }
   });
   return {
     values,
-    tokens: {},
+    token: {} as Token,
     score: parseFloat(resultJSON.score),
     indexScore: parseFloat(resultJSON.indexScore)
   };
@@ -52,9 +61,9 @@ export const newResults = (response: any = {}, tokens: any = []): Results => {
     if (tokens.length > 0) {
       const token = tokens[i];
       if (token.click !== undefined) {
-        result.tokens = { click: token.click };
+        result.token = { click: token.click.token };
       } else if (token.posNeg !== undefined) {
-        result.tokens = { pos: token.posNeg.pos, neg: token.posNeg.neg };
+        result.token = { pos: token.posNeg.pos, neg: token.posNeg.neg };
       }
     }
     return result;
@@ -79,13 +88,18 @@ export const newQueryID = (): string => {
   return queryID;
 };
 
+export type RequestCallback = (
+  error: RequestError | null,
+  response?: any
+) => void;
+
 /**
  * newRequest makes a XMLHttpRequest and handles network and parsing errors.
  */
 export const newRequest = (
   address: string,
   body: any,
-  callback: (error?: SearchError, response?: any) => void
+  callback: RequestCallback
 ): void => {
   const request = new XMLHttpRequest();
   request.open("POST", address, true);
@@ -97,7 +111,7 @@ export const newRequest = (
     }
 
     if (request.status === 0) {
-      callback(newError("connection error", 0), null);
+      callback(newRequestError("connection error", 0));
       return;
     }
 
@@ -105,16 +119,16 @@ export const newRequest = (
     try {
       parsedResponse = JSON.parse(request.responseText);
     } catch (e) {
-      callback(newError("error parsing response"), undefined);
+      callback(newRequestError("error parsing response"));
       return;
     }
 
     if (request.status === 200) {
-      callback(undefined, parsedResponse);
+      callback(null, parsedResponse);
       return;
     }
 
-    callback(newError(parsedResponse.message, request.status), undefined);
+    callback(newRequestError(parsedResponse.message, request.status));
   };
 
   request.send(body);

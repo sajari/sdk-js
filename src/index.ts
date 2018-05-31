@@ -14,7 +14,7 @@ import {
   newResults,
   valueFromProto
 } from "./constructors";
-import { newError, SearchError } from "./error";
+import { newRequestError, RequestError } from "./error";
 import { AggregateResponse, Result, Results, ResultValues } from "./results";
 
 const UserAgent = "sdk-js-1.0.0";
@@ -66,7 +66,7 @@ export const enum TrackingType {
 /**
  * TextSession creates a session based on text searches.
  * It resets once the value specified by the query label has changed in any of 3 ways:
- * 
+ *
  * - Supplied as `undefined`.
  * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`) or a subtraction (`ab` -> `a`).
  * - Query is now empty where it previously wasn't.
@@ -200,18 +200,15 @@ export class Client {
 }
 
 export type SearchCallback = (
-  error: SearchError | undefined,
-  results: Results | undefined,
-  values: Values | undefined
+  error: RequestError | null,
+  results?: Results,
+  values?: Values
 ) => void;
 
-/**
- * PipelineImpl is private to prevent users constructing it themselves.
- */
 class PipelineImpl {
-  public client: Client;
-  public name: string;
-  public endpoint: string = "sajari.api.pipeline.v1.Query/Search";
+  private client: Client;
+  private name: string;
+  private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
 
   public constructor(client: Client, name: string) {
     this.client = client;
@@ -225,11 +222,7 @@ class PipelineImpl {
   ): void {
     const [tracking, error] = session.next(values);
     if (error) {
-      callback(
-        newError("error getting next session: " + error),
-        undefined,
-        undefined
-      );
+      callback(newRequestError("error getting next session: " + error));
       return;
     }
 
@@ -251,13 +244,13 @@ class PipelineImpl {
     newRequest(
       `${this.client.endpoint}/${this.endpoint}`,
       requestBody,
-      (err?: SearchError, response?: any) => {
-        if (err !== undefined) {
-          callback(err, undefined, undefined);
+      (err: RequestError | null, response?: any) => {
+        if (err) {
+          callback(err);
           return;
         }
         callback(
-          undefined,
+          null,
           newResults(response.searchResponse, response.tokens),
           response.values
         );
@@ -285,10 +278,6 @@ class PipelineImpl {
  * ```
  */
 export interface Pipeline {
-  client: Client;
-  name: string;
-  endpoint: string;
-
   /**
    * Search runs a search query defined by a pipline with the given values and
    * session configuration. Calls the callback with the query results and returned values (which could have
