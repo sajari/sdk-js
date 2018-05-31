@@ -1,5 +1,5 @@
 /**
- * @fileOverview Exports the Sajari javascript api.
+ * @fileOverview Exports the Sajari JS SDK.
  * @name index.ts
  * @author Sajari
  * @license MIT
