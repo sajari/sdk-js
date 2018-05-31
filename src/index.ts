@@ -54,12 +54,12 @@ export interface Session {
   reset(): void;
 }
 
-export const TrackingNone: string = "NONE";
+export const TrackingNone: string = "";
 export const TrackingClick: string = "CLICK";
 export const TrackingPosNeg: string = "POS_NEG";
 
 export const enum TrackingType {
-  None = "NONE",
+  None = "",
   Click = "CLICK",
   PosNeg = "POS_NEG"
 }
