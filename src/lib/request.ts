@@ -42,10 +42,8 @@ export const request = (
 
     let parsedResponse;
     try {
-      console.log(req.responseText);
       parsedResponse = JSON.parse(req.responseText);
     } catch (e) {
-      console.log(e);
       callback(newRequestError("error parsing response"));
       return;
     }
