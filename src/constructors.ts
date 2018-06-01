@@ -92,7 +92,7 @@ export const processSearchResponse = (
   return {
     reads: parseInt(response.reads, 10) || 0, // sometimes reads is not returned
     totalResults: parseInt(response.totalResults, 10) || 0, // sometimes totalResults is not returned
-    time: parseFloat(response.time),
+    time: parseFloat(response.time) || 0, // sometimes time is not returned
     aggregates: newAggregates(response.aggregates),
     results
   };
