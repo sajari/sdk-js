@@ -1,3 +1,5 @@
+const HTTP_STATUS_OK: number = 200;
+
 export interface RequestError extends Error {
   code?: number;
 }
@@ -49,7 +51,7 @@ export const request = (
       return;
     }
 
-    if (req.status === 200) {
+    if (req.status === HTTP_STATUS_OK) {
       callback(null, parsedResponse);
       return;
     }
