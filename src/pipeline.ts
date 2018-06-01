@@ -5,42 +5,39 @@ import { Results } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
 
+// UserAgent to be sent along with requests identifying this sdk as the one making contact.
 const UserAgent = "sdk-js-1.0.0";
 
-/**
- * Pipeline is a client for performing searches on a collection.
- *
- * Create a new Pipeline via [[Client.pipeline]].
- *
- * ```javascript
- * // const client = new Client(...);
- * const pipeline = client.pipeline("website");
- * ```
- *
- * From there we can perform searches on the pipeline.
- * We'll need [[Values]], an [[Session]], and a [[SearchCallback]].
- * See [[Pipeline.search]] for a more details.
- *
- * ```javascript
- * pipeline.search(values, session, callback);
- * ```
- */
+// Pipeline is a client for performing searches on a collection.
+//
+// Create a new Pipeline via [[Client.pipeline]].
+//
+// ```javascript
+// // const client = new Client(...);
+// const pipeline = client.pipeline("website");
+// ```
+//
+// From there we can perform searches on the pipeline.
+// We'll need [[Values]], an [[Session]], and a [[SearchCallback]].
+// See [[Pipeline.search]] for a more details.
+//
+// ```javascript
+// pipeline.search(values, session, callback);
+// ```
 export interface Pipeline {
-  /**
-   * Search runs a search query defined by a pipline with the given values and
-   * session configuration. Calls the callback with the query results and returned values (which could have
-   * been modified in the pipeline).
-   *
-   * ```javascript
-   * pipeline.search({ q: "<search query>" }, session, (error, results, values) => {
-   *   if (error) {
-   *     console.error(error);
-   *     return;
-   *   }
-   *   console.log(results, values);
-   * });
-   * ```
-   */
+  // Search runs a search query defined by a pipline with the given values and
+  // session configuration. Calls the callback with the query results and returned values (which could have
+  // been modified in the pipeline).
+  //
+  // ```javascript
+  // pipeline.search({ q: "<search query>" }, session, (error, results, values) => {
+  //   if (error) {
+  //     console.error(error);
+  //     return;
+  //   }
+  //   console.log(results, values);
+  // });
+  // ```
   search(values: Values, session: Session, callback: SearchCallback): void;
 }
 

@@ -21,9 +21,7 @@ export type RequestCallback = (
   response?: any
 ) => void;
 
-/**
- * request makes a XMLHttpRequest and handles network and parsing errors.
- */
+// request makes a XMLHttpRequest and handles network and parsing errors.
 export const request = (
   address: string,
   body: any,
