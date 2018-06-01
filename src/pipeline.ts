@@ -1,6 +1,6 @@
 import { Client } from "./client";
 import { processSearchResponse } from "./constructors";
-import { newRequestError, request, RequestError } from "./lib/request";
+import { request, RequestError } from "./lib/request";
 import { Results } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
@@ -67,7 +67,9 @@ export class PipelineImpl implements Pipeline {
   ): void {
     const [tracking, error] = session.next(values);
     if (error) {
-      callback(newRequestError("error getting next session: " + error));
+      const e = new Error("could not get next session: " + error);
+      e.name = "SessionError";
+      callback(e);
       return;
     }
 

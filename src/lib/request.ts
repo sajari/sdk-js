@@ -7,6 +7,7 @@ export const newRequestError = (
   code?: number
 ): RequestError => {
   const error = new Error(message) as RequestError;
+  error.name = "RequestError";
   if (code !== undefined) {
     error.code = code;
   }
