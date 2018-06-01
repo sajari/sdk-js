@@ -74,14 +74,19 @@ export const processSearchResponse = (
 ): Results => {
   const results = (response.results || []).map((r: any, i: number) => {
     const result = newResult(r);
-    if (tokens.length > 0) {
-      const token = tokens[i];
-      if (token.click !== undefined) {
-        result.token = { click: token.click.token };
-      } else if (token.posNeg !== undefined) {
-        result.token = { pos: token.posNeg.pos, neg: token.posNeg.neg };
-      }
+    const token = tokens[i];
+    if (token === undefined) {
+      return result;
     }
+    if (token.click !== undefined) {
+      result.token = { click: token.click.token };
+      return result;
+    }
+    if (token.posNeg !== undefined) {
+      result.token = { pos: token.posNeg.pos, neg: token.posNeg.neg };
+      return result;
+    }
+    // this leaves room for future token types
     return result;
   });
   return {
