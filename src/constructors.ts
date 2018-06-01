@@ -15,10 +15,10 @@ export interface ProtoRepeatedValue {
 export interface ProtoNullValue {
   null: boolean;
 }
-// ProtoValue describes a proto value received in a search response.
+/** ProtoValue describes a proto value received in a search response. */
 export type ProtoValue = ProtoSingleValue | ProtoRepeatedValue | ProtoNullValue;
 
-// valueFromProto unpacks a proto value.
+/** valueFromProto unpacks a proto value. */
 export const valueFromProto = (proto: ProtoValue): string | string[] | null => {
   if ((proto as ProtoSingleValue).single !== undefined) {
     return (proto as ProtoSingleValue).single;
@@ -29,7 +29,7 @@ export const valueFromProto = (proto: ProtoValue): string | string[] | null => {
   return null;
 };
 
-// newResult constructs a Result from a proto Result.
+/** newResult constructs a Result from a proto Result. */
 export const newResult = (resultJSON: any): Result => {
   const values: ResultValues = {};
   Object.keys(resultJSON.values).forEach(k => {
@@ -46,7 +46,7 @@ export const newResult = (resultJSON: any): Result => {
   };
 };
 
-// newAggregates constructs an AggregateResponse object from proto
+/** newAggregates constructs an AggregateResponse object from proto */
 export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
   Object.keys(aggregateProto).reduce((agg: AggregateResponse, key) => {
     const type = key.split(".")[0];
@@ -67,7 +67,7 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
     return agg;
   }, {});
 
-// newResults constructs a Results object from a search reponse and array of tokens.
+/** newResults constructs a Results object from a search reponse and array of tokens. */
 export const processSearchResponse = (
   response: any = {},
   tokens: any = []

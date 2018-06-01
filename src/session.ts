@@ -2,70 +2,77 @@
 
 import { Values } from "./types";
 
-// Tracking defines the values sent with a search request related to tracking.
+/** Tracking defines the values sent with a search request related to tracking. */
 export interface Tracking { 
-  // type specifies which kind of tokens (if any) tokens should be generated and returned
-  // with the query results.
+  /*
+   * type specifies which kind of tokens (if any) tokens should be generated and returned
+   * with the query results.
+   */
   type: TrackingType;
 
-  // query_id is a unique identifier for a single search query.  In the
-  // case of live querying this is defined to be multiple individual queries
-  // (i.e. as a user types the query is re-run).
-  // To identify the individual queries use the [[Tracking.sequence]] number.
+  /*
+   * query_id is a unique identifier for a single search query.  In the
+   * case of live querying this is defined to be multiple individual queries
+   * (i.e. as a user types the query is re-run).
+   * To identify the individual queries use the [[Tracking.sequence]] number.
+   */
   query_id: string;
 
-  // sequence (i.e. sequential identifier) of this  in the context of a
-  // sequence of queries.
+  /** sequence (i.e. sequential identifier) of this  in the context of a sequence of queries. */
   sequence: number;
 
-  // field is a unique field on each result used to associate tracking information to the result.
+  /** field is a unique field on each result used to associate tracking information to the result. */
   field: string;
 
-  // data are values which will be recorded along with tracking data produced
-  // for the request.
+  /** data are values which will be recorded along with tracking data produced for the request. */
   data: Values;
 }
-
-// Session takes query values, maintains session state, and returns tracking data
-// to be sent with search requests.
+/**
+ * Session takes query values, maintains session state, and returns tracking data
+ * to be sent with search requests.
+ */
 export interface Session {
   next(values: Values): [Tracking, undefined] | [undefined, Error];
   reset(): void;
 }
 
-// TrackingNone informs the server not to perform tracking for the session.
+/** TrackingNone informs the server not to perform tracking for the session. */
 export const TrackingNone: string = "";
-// TrackingClick informs the server to perform click tracking for the session.
+/** TrackingClick informs the server to perform click tracking for the session. */
 export const TrackingClick: string = "CLICK";
-// TrackingPosNeg informs the server to perform pos neg tracking for the session.
+/** TrackingPosNeg informs the server to perform pos neg tracking for the session. */
 export const TrackingPosNeg: string = "POS_NEG";
 
-// TrackingType defines the set of possible tracking to be used by [[BaseSession]]
+/** TrackingType defines the set of possible tracking to be used by [[BaseSession]] */
 export const enum TrackingType {
   None = "",
   Click = "CLICK",
   PosNeg = "POS_NEG"
 }
 
-// TextSession creates a session based on text searches.
-// It resets once the value specified by the query label has changed in any of 3 ways:
-//
-// - Supplied as `undefined`.
-// - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`)
-// - Query length empty from previously non-empty.
+/**
+ * TextSession creates a session based on text searches.
+ * It resets once the value specified by the query label has changed in any of 3 ways:
+ *
+ * - Supplied as `undefined`.
+ * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`)
+ * - Query length empty from previously non-empty.
+ */
 export class TextSession implements Session {
   private queryLabel: string;
   private session: Session;
   private lastQuery: string = "";
 
-  // Construts an instance of TextSession.
+  /** Construts an instance of TextSession. */
   public constructor(queryLabel: string, session: Session) {
     this.queryLabel = queryLabel;
     this.session = session;
   }
 
-  // next merges new values into the session and returns tracking data to be sent with search requests.
-  // The behaviour follows the steps described in the class documentation above.
+  /**
+   * next merges new values into the session and returns tracking data to be sent with search requests.
+   * The behaviour follows the steps described in the class documentation above.
+   */
   public next(values: Values): [Tracking, undefined] | [undefined, Error] {
     const text = values[this.queryLabel];
     if (text === undefined) {
@@ -86,13 +93,13 @@ export class TextSession implements Session {
     return this.session.next(values);
   }
 
-  // reset resets the session instance to it's empty state.
+  /** reset resets the session instance to it's empty state. */
   public reset(): void {
     this.session.reset();
   }
 }
 
-// BaseSession holds state about a sequence of searches.
+/**BaseSession holds state about a sequence of searches. */
 export class BaseSession implements Session {
   private queryID: string = "";
   private sequence: number = 0;
@@ -101,14 +108,14 @@ export class BaseSession implements Session {
   private field: string;
   private sessionData: Values;
 
-  // Constructs an instance of BaseSession.
+  /** Constructs an instance of BaseSession. */
   public constructor(trackingType: TrackingType, field: string, data: Values) {
     this.trackingType = trackingType;
     this.field = field;
     this.sessionData = data;
   }
 
-  // next merges new values into the session and returns tracking data to be sent with search requests.
+  /** next merges new values into the session and returns tracking data to be sent with search requests. */
   public next(values: Values): [Tracking, undefined] | [undefined, Error] {
     if (this.queryID === "") {
       this.queryID = newQueryID();
@@ -129,14 +136,14 @@ export class BaseSession implements Session {
     ];
   }
 
-  // reset resets the session instance to it's empty state.
+  /** reset resets the session instance to it's empty state. */
   public reset(): void {
     this.queryID = "";
     this.sequence = 0;
   }
 }
 
-// newQueryID constructs a new ID for a query.
+/** newQueryID constructs a new ID for a query. */
 const newQueryID = (): string => {
   let queryID = "";
   for (let i = 0; i < 16; i++) {
