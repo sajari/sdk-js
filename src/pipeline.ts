@@ -50,58 +50,60 @@ export type SearchCallback = (
   values?: Values
 ) => void;
 
-export class PipelineImpl implements Pipeline {
-  private client: Client;
-  private name: string;
-  private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
+export namespace Internal {
+  export class Pipeline implements Pipeline {
+    private client: Client;
+    private name: string;
+    private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
 
-  public constructor(client: Client, name: string) {
-    this.client = client;
-    this.name = name;
-  }
-
-  public search(
-    values: Values,
-    session: Session,
-    callback: SearchCallback
-  ): void {
-    const [tracking, error] = session.next(values);
-    if (error) {
-      const e = new Error("could not get next session: " + error);
-      e.name = "SessionError";
-      callback(e);
-      return;
+    public constructor(client: Client, name: string) {
+      this.client = client;
+      this.name = name;
     }
 
-    const requestBody = JSON.stringify({
-      // tslint:disable:object-literal-sort-keys
-      metadata: {
-        project: [this.client.project],
-        collection: [this.client.collection],
-        "user-agent": [UserAgent]
-      },
-      // tslint:enable:object-literal-sort-keys
-      request: {
-        tracking,
-        values,
-        pipeline: { name: this.name }
+    public search(
+      values: Values,
+      session: Session,
+      callback: SearchCallback
+    ): void {
+      const [tracking, error] = session.next(values);
+      if (error) {
+        const e = new Error("could not get next session: " + error);
+        e.name = "SessionError";
+        callback(e);
+        return;
       }
-    });
 
-    request(
-      `${this.client.endpoint}/${this.endpoint}`,
-      requestBody,
-      (err: RequestError | null, response?: any) => {
-        if (err) {
-          callback(err);
-          return;
+      const requestBody = JSON.stringify({
+        // tslint:disable:object-literal-sort-keys
+        metadata: {
+          project: [this.client.project],
+          collection: [this.client.collection],
+          "user-agent": [UserAgent]
+        },
+        // tslint:enable:object-literal-sort-keys
+        request: {
+          tracking,
+          values,
+          pipeline: { name: this.name }
         }
-        callback(
-          null,
-          processSearchResponse(response.searchResponse, response.tokens),
-          response.values
-        );
-      }
-    );
+      });
+
+      request(
+        `${this.client.endpoint}/${this.endpoint}`,
+        requestBody,
+        (err: RequestError | null, response?: any) => {
+          if (err) {
+            callback(err);
+            return;
+          }
+          callback(
+            null,
+            processSearchResponse(response.searchResponse, response.tokens),
+            response.values
+          );
+        }
+      );
+    }
   }
 }

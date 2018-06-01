@@ -1,4 +1,4 @@
-import { Pipeline, PipelineImpl } from "./pipeline";
+import { Pipeline, Internal } from "./pipeline";
 
 export type ClientOption = (client: Client) => void;
 
@@ -46,6 +46,6 @@ export class Client {
    * pipeline returns a new [[Pipeline]].
    */
   public pipeline(name: string): Pipeline {
-    return new PipelineImpl(this, name);
+    return new Internal.Pipeline(this, name);
   }
 }
