@@ -1,5 +1,6 @@
 import { pipeline, Pipeline } from "./pipeline";
 
+// ClientOption defines a function which modifies a [[Client]] during it's construction.
 export type ClientOption = (client: Client) => void;
 
 // withEndpoint constructs a [[ClientOption]] that modifies the endpoint used by the client.
@@ -25,6 +26,7 @@ export class Client {
   public collection: string;
   public endpoint: string;
 
+  // Constructs an instance of Client.
   public constructor(
     project: string,
     collection: string,
@@ -38,7 +40,7 @@ export class Client {
     });
   }
 
-  // pipeline returns a new [[Pipeline]].
+  // pipeline returns a new [[Pipeline]] instance using this client for configuration.
   public pipeline(name: string): Pipeline {
     return new pipeline(this, name);
   }

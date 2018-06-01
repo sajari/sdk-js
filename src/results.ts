@@ -2,11 +2,13 @@ export interface ResultValues {
   [id: string]: string | string[];
 }
 
+// PosNegToken defines the token received upon making a request with [[TrackingType.PosNeg]].
 export interface PosNegToken {
   pos: string;
   neg: string;
 }
 
+// ClickToken defines the token received upon making a request with [[TrackingType.Click]].
 export interface ClickToken {
   click: string;
 }

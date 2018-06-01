@@ -1,9 +1,13 @@
+// HTTP_STATUS_OK defines a constant for the http OK status.
 const HTTP_STATUS_OK: number = 200;
 
+// RequestError defines an error occuring from a request.
+// It can include the http status code returned from the server.
 export interface RequestError extends Error {
   code?: number;
 }
 
+// newRequestError constructs a [[RequestError]].
 export const newRequestError = (
   message: string,
   code?: number

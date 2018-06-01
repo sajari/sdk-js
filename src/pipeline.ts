@@ -41,12 +41,15 @@ export interface Pipeline {
   search(values: Values, session: Session, callback: SearchCallback): void;
 }
 
+// SearchCallback defines the callback supplied to a [[Pipeline.search]] that is called with
+// the error and results from the search.
 export type SearchCallback = (
   error: RequestError | null,
   results?: Results,
   values?: Values
 ) => void;
 
+// Internal implementation of [[Pipeline]]
 // tslint:disable-next-line:class-name
 export class pipeline implements Pipeline {
   private client: Client;
