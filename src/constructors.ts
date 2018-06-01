@@ -47,14 +47,24 @@ export const newResult = (resultJSON: any): Result => {
 };
 
 // newAggregates constructs an AggregateResponse object from proto
-export const newAggregates = (aggregateJSON: any = {}): AggregateResponse =>
-  Object.keys(aggregateJSON).reduce((prev: AggregateResponse, cur) => {
-    const [aggregateType, field] = cur.split(".");
-    if (aggregateType === "count") {
-      prev[cur] = aggregateJSON[cur].count.counts;
+export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
+  Object.keys(aggregateProto).reduce((agg: AggregateResponse, key) => {
+    const type = key.split(".")[0];
+    switch (type) {
+      case "bucket":
+        agg[key] = aggregateProto[key].buckets.buckets;
+        break;
+      case "count":
+        agg[key] = aggregateProto[key].count.counts;
+        break;
+      case "date":
+        agg[key] = aggregateProto[key].date.dates;
+        break;
+      case "metric":
+        agg[key] = aggregateProto[key].metric.value;
+        break;
     }
-    // todo(tbillington): implement bucket
-    return prev;
+    return agg;
   }, {});
 
 // newResults constructs a Results object from a search reponse and array of tokens.
