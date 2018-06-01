@@ -6,14 +6,26 @@ import {
   Token
 } from "./results";
 
+export interface ProtoSingleValue {
+  single: string;
+}
+export interface ProtoRepeatedValue {
+  repeated: { values: string[] };
+}
+export interface ProtoNullValue {
+  null: boolean;
+}
+// ProtoValue describes a proto value received in a search response.
+export type ProtoValue = ProtoSingleValue | ProtoRepeatedValue | ProtoNullValue;
+
 // valueFromProto unpacks a proto value.
-export const valueFromProto = (proto: any): string | string[] | null => {
-  if (proto.single !== undefined) {
-    return proto.single;
+export const valueFromProto = (proto: ProtoValue): string | string[] | null => {
+  if ((proto as ProtoSingleValue).single !== undefined) {
+    return (proto as ProtoSingleValue).single;
   }
-  if (proto.repeated.values !== undefined) {
-    return proto.repeated.values;
-  }
+  if ((proto as ProtoRepeatedValue).repeated instanceof Object) {
+    return (proto as ProtoRepeatedValue).repeated.values;
+  }  
   return null;
 };
 
