@@ -40,6 +40,6 @@ export class Client {
 
   // pipeline returns a new [[Pipeline]].
   public pipeline(name: string): Pipeline {
-    return new Internal.Pipeline(this, name);
+    return new pipeline(this, name);
   }
 }

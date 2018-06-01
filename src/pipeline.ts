@@ -47,60 +47,57 @@ export type SearchCallback = (
   values?: Values
 ) => void;
 
-export namespace Internal {
-  export class Pipeline implements Pipeline {
-    private client: Client;
-    private name: string;
-    private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
+// tslint:disable-next-line:class-name
+export class pipeline implements Pipeline {
+  private client: Client;
+  private name: string;
+  private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
 
-    public constructor(client: Client, name: string) {
-      this.client = client;
-      this.name = name;
+  public constructor(client: Client, name: string) {
+    this.client = client;
+    this.name = name;
+  }
+
+  public search(
+    values: Values,
+    session: Session,
+    callback: SearchCallback
+  ): void {
+    const [tracking, error] = session.next(values);
+    if (error) {
+      const e = new Error("could not get next session: " + error);
+      e.name = "SessionError";
+      callback(e);
+      return;
     }
 
-    public search(
-      values: Values,
-      session: Session,
-      callback: SearchCallback
-    ): void {
-      const [tracking, error] = session.next(values);
-      if (error) {
-        const e = new Error("could not get next session: " + error);
-        e.name = "SessionError";
-        callback(e);
-        return;
+    const requestBody = JSON.stringify({
+      metadata: {
+        collection: [this.client.collection],
+        project: [this.client.project],
+        "user-agent": [UserAgent]
+      },
+      request: {
+        tracking,
+        values,
+        pipeline: { name: this.name }
       }
+    });
 
-      const requestBody = JSON.stringify({
-        // tslint:disable:object-literal-sort-keys
-        metadata: {
-          project: [this.client.project],
-          collection: [this.client.collection],
-          "user-agent": [UserAgent]
-        },
-        // tslint:enable:object-literal-sort-keys
-        request: {
-          tracking,
-          values,
-          pipeline: { name: this.name }
+    request(
+      `${this.client.endpoint}/${this.endpoint}`,
+      requestBody,
+      (err: RequestError | null, response?: any) => {
+        if (err) {
+          callback(err);
+          return;
         }
-      });
-
-      request(
-        `${this.client.endpoint}/${this.endpoint}`,
-        requestBody,
-        (err: RequestError | null, response?: any) => {
-          if (err) {
-            callback(err);
-            return;
-          }
-          callback(
-            null,
-            processSearchResponse(response.searchResponse, response.tokens),
-            response.values
-          );
-        }
-      );
-    }
+        callback(
+          null,
+          processSearchResponse(response.searchResponse, response.tokens),
+          response.values
+        );
+      }
+    );
   }
 }
