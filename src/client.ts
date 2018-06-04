@@ -10,25 +10,28 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
 
 /**
  * Client takes configuration and constructs pipelines clients.
- *
- * ```javascript
- * const client = new Client("<project>", "<collection>");
- * const webPipeline = client.pipeline("website");
- * // webPipeline.search(...);
- * ```
- *
- * An optional array of [[ClientOption]] may be given to the client constructor to modify it's behaviour.
- *
- * ```javascript
- * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));
- * ```
  */
 export class Client {
   public project: string;
   public collection: string;
   public endpoint: string;
 
-  /** Constructs an instance of Client. */
+  /**
+   * Constructs an instance of Client using the project and collection from your Sajari accouint.
+   * You can find your project and collection in the Sajari console https://www.sajari.com/console/.
+   * 
+   * ```javascript
+   * const client = new Client("<project>", "<collection>");
+   * const webPipeline = client.pipeline("website");
+   * // webPipeline.search(...);
+   * ```
+   *
+   * An optional array of [[ClientOption]] may be given to the client constructor to modify it's behaviour.
+   *
+   * ```javascript
+   * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));
+   * ```
+   */
   public constructor(
     project: string,
     collection: string,
