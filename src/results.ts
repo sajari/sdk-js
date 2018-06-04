@@ -47,8 +47,14 @@ export interface BucketsResponse {
   [id: string]: BucketResponse;
 }
 
+export type MetricResponse = number;
+
+export interface DateResponse {
+  [id: string]: number;
+}
+
 export interface AggregateResponse {
-  [id: string]: CountResponse | BucketsResponse;
+  [id: string]: CountResponse | BucketsResponse | DateResponse | MetricResponse;
 }
 
 export interface Results {
