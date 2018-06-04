@@ -37,7 +37,7 @@
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^22.2.3",
+    "@types/jest": "^23.0.0",
     "jest": "^23.1.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.59.1",
