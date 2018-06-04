@@ -16,7 +16,7 @@ export interface ClickToken {
 export type Token = PosNegToken | ClickToken;
 
 export interface Result {
-  /** Values are field values of records. */
+  /** Values is an object of field-value pairs. */
   values: ResultValues;
 
   /** Token contains the token associated with this Result (if any). */
@@ -38,7 +38,7 @@ export interface BucketResponse {
   /** Name of the bucket. */
   name: string;
 
-  /** Number of records. */
+  /** Number of records in the bucket. */
   count: number;
 }
 
@@ -61,7 +61,7 @@ export interface Results {
   /** Reads is the total number of index values read. */
   reads: number;
 
-  /** TotalResults is the total number of results for the query. */
+  /** TotalResults is the total number of results. */
   totalResults: number;
 
   /** Time in seconds taken to perform the query. */

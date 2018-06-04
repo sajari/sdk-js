@@ -51,19 +51,20 @@ export const enum TrackingType {
 }
 
 /**
- * TextSession creates a session based on text searches.
+ * InteractiveSession creates a session based on text searches and is recommended
+ * for use in search-as-you-type style interfaces.
  * It resets once the value specified by the query label has changed in any of 3 ways:
  *
  * - Supplied as `undefined`.
  * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`)
  * - Query length empty from previously non-empty.
  */
-export class TextSession implements Session {
+export class InteractiveSession implements Session {
   private queryLabel: string;
   private session: Session;
   private lastQuery: string = "";
 
-  /** Construts an instance of TextSession. */
+  /** Construts an instance of InteractiveSession. */
   public constructor(queryLabel: string, session: Session) {
     this.queryLabel = queryLabel;
     this.session = session;
@@ -99,8 +100,8 @@ export class TextSession implements Session {
   }
 }
 
-/**BaseSession holds state about a sequence of searches. */
-export class BaseSession implements Session {
+/** DefaultSession holds state about a sequence of searches. */
+export class DefaultSession implements Session {
   private queryID: string = "";
   private sequence: number = 0;
 
@@ -108,7 +109,7 @@ export class BaseSession implements Session {
   private field: string;
   private sessionData: Values;
 
-  /** Constructs an instance of BaseSession. */
+  /** Constructs an instance of DefaultSession. */
   public constructor(trackingType: TrackingType, field: string, data: Values) {
     this.trackingType = trackingType;
     this.field = field;

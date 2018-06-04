@@ -34,15 +34,16 @@ npm install --save @sajari/sdk-js
 
 ## Getting Started
 
-Here's a quick example that searches for a webpage.
+Here's a quick example that performs a search using the query "FAQ".
 
 ```javascript
-import { Client, BaseSession, TextSession, TrackingClick } from "@sajari/sdk-js";
+import { Client, DefaultSession, TrackingClick } from "@sajari/sdk-js";
 
-const client = new Client("sajariptyltd", "sajari-com").pipeline("website");
-const session = new TextSession("q", new BaseSession(TrackingClick, "url", {}));
+const pipeline = new Client("", "sajari-com").pipeline("website");
+// Tracking disabled due to not handling the results.
+const session = new DefaultSession(TrackingNone, "url", {});
 
-client.search({ q: "FAQ" }, session, (error, results, values) => {
+pipeline.search({ q: "FAQ" }, session, (error, results, values) => {
   if (error) {
     console.error(error);
     return;
@@ -53,7 +54,7 @@ client.search({ q: "FAQ" }, session, (error, results, values) => {
 
 ## Documentation
 
-Full documentation can be found at [https://sajari.github.io/sajari-sdk-js/](https://sajari.github.io/sajari-sdk-js/).
+For full documentation, see [https://sajari.github.io/sajari-sdk-js/](https://sajari.github.io/sajari-sdk-js/).
 
 ## License
 

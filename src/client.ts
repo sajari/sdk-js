@@ -1,9 +1,13 @@
 import { pipeline, Pipeline } from "./pipeline";
 
-/** ClientOption defines a function which modifies a [[Client]] during its construction.*/
-export type ClientOption = (client: Client) => void;
+/**
+ * Option defines a function which modifies a [[Client]] during its construction
+ */
+export type Option = (client: Client) => void;
 
-/** withEndpoint constructs a [[ClientOption]] that modifies the endpoint used by the client.*/
+/**
+ * withEndpoint constructs a [[Option]] that sets the endpoint used by the client
+ */
 export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
 };
@@ -26,17 +30,13 @@ export class Client {
    * // webPipeline.search(...);
    * ```
    *
-   * An optional array of [[ClientOption]] may be given to the client constructor to modify its behaviour.
+   * An optional array of [[Option]] may be given to the client constructor to modify its behaviour.
    *
    * ```javascript
    * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));
    * ```
    */
-  public constructor(
-    project: string,
-    collection: string,
-    opts: ClientOption[] = []
-  ) {
+  public constructor(project: string, collection: string, opts: Option[] = []) {
     this.project = project;
     this.collection = collection;
     this.endpoint = "https://jsonapi.sajari.net";

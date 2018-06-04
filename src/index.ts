@@ -10,8 +10,8 @@ export { Client } from "./client";
 export { Pipeline } from "./pipeline";
 export {
   Session,
-  TextSession,
-  BaseSession,
+  InteractiveSession,
+  DefaultSession,
   Tracking,
   TrackingType,
   TrackingNone,

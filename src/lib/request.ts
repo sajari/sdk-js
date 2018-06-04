@@ -1,29 +1,22 @@
 /** HTTP_STATUS_OK defines a constant for the http OK status. */
 const HTTP_STATUS_OK: number = 200;
 
+export enum TransportError {
+  None,
+  Connection,
+  ParseResponse
+}
+
 /**
  * RequestError defines an error occuring from a request.
  * It can include the http status code returned from the server.
  */
 export interface RequestError extends Error {
-  code?: number;
+  /** httpStatusCode is the returned HTTP status code. */
+  httpStatusCode?: number;
+  /** transportErrorCode is the internal error type. */
+  transportErrorCode?: TransportError;
 }
-
-/**
- * newRequestError constructs a [[RequestError]].
- * @hidden
- */
-export const newRequestError = (
-  message: string,
-  code?: number
-): RequestError => {
-  const error = new Error(message) as RequestError;
-  error.name = "RequestError";
-  if (code !== undefined) {
-    error.code = code;
-  }
-  return error;
-};
 
 export type RequestCallback = (
   error: RequestError | null,
@@ -49,7 +42,10 @@ export const request = (
     }
 
     if (req.status === 0) {
-      callback(newRequestError("connection error", 0));
+      const error = new Error("connection error") as RequestError;
+      error.transportErrorCode = TransportError.Connection;
+
+      callback(error);
       return;
     }
 
@@ -57,16 +53,23 @@ export const request = (
     try {
       parsedResponse = JSON.parse(req.responseText);
     } catch (e) {
-      callback(newRequestError("error parsing response"));
+      const error = new Error("error parsing response") as RequestError;
+      error.httpStatusCode = req.status;
+      error.transportErrorCode = TransportError.ParseResponse;
+
+      callback(error);
       return;
     }
 
-    if (req.status === HTTP_STATUS_OK) {
-      callback(null, parsedResponse);
+    if (req.status !== HTTP_STATUS_OK) {
+      const error = new Error(parsedResponse.message) as RequestError;
+      error.httpStatusCode = req.status;
+
+      callback(error);
       return;
     }
 
-    callback(newRequestError(parsedResponse.message, req.status));
+    callback(null, parsedResponse);
   };
 
   req.send(body);

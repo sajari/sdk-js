@@ -47,7 +47,7 @@ export interface Pipeline {
 
 /**
  * SearchCallback defines the callback supplied to a [[Pipeline.search]] that is called with
- * the error and results from the search.
+ * the error, results, and pipeline values from the search.
  */
 export type SearchCallback = (
   error: RequestError | null,
@@ -61,9 +61,10 @@ export type SearchCallback = (
  */
 // tslint:disable-next-line:class-name
 export class pipeline implements Pipeline {
+  public static readonly searchEndpoint = "sajari.api.pipeline.v1.Query/Search";
+
   private client: Client;
   private name: string;
-  private endpoint: string = "sajari.api.pipeline.v1.Query/Search";
 
   public constructor(client: Client, name: string) {
     this.client = client;
@@ -77,8 +78,9 @@ export class pipeline implements Pipeline {
   ): void {
     const [tracking, error] = session.next(values);
     if (error) {
-      const e = new Error("could not get next session: " + error);
+      const e = new Error("could not get next tracking data: " + error);
       e.name = "SessionError";
+
       callback(e);
       return;
     }
@@ -97,7 +99,7 @@ export class pipeline implements Pipeline {
     });
 
     request(
-      `${this.client.endpoint}/${this.endpoint}`,
+      `${this.client.endpoint}/${pipeline.searchEndpoint}`,
       requestBody,
       (err: RequestError | null, response?: any) => {
         if (err) {
