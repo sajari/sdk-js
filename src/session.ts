@@ -3,7 +3,7 @@
 import { Values } from "./types";
 
 /** Tracking defines the values sent with a search request related to tracking. */
-export interface Tracking { 
+export interface Tracking {
   /*
    * type specifies which kind of tokens (if any) tokens should be generated and returned
    * with the query results.
@@ -93,7 +93,7 @@ export class TextSession implements Session {
     return this.session.next(values);
   }
 
-  /** reset resets the session instance to it's empty state. */
+  /** reset resets the session instance to its empty state. */
   public reset(): void {
     this.session.reset();
   }
@@ -136,7 +136,7 @@ export class BaseSession implements Session {
     ];
   }
 
-  /** reset resets the session instance to it's empty state. */
+  /** reset resets the session instance to its empty state. */
   public reset(): void {
     this.queryID = "";
     this.sequence = 0;

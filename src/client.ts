@@ -1,6 +1,6 @@
 import { pipeline, Pipeline } from "./pipeline";
 
-/** ClientOption defines a function which modifies a [[Client]] during it's construction.*/
+/** ClientOption defines a function which modifies a [[Client]] during its construction.*/
 export type ClientOption = (client: Client) => void;
 
 /** withEndpoint constructs a [[ClientOption]] that modifies the endpoint used by the client.*/
@@ -19,14 +19,14 @@ export class Client {
   /**
    * Constructs an instance of Client using the project and collection from your Sajari accouint.
    * You can find your project and collection in the Sajari console https://www.sajari.com/console/.
-   * 
+   *
    * ```javascript
    * const client = new Client("<project>", "<collection>");
    * const webPipeline = client.pipeline("website");
    * // webPipeline.search(...);
    * ```
    *
-   * An optional array of [[ClientOption]] may be given to the client constructor to modify it's behaviour.
+   * An optional array of [[ClientOption]] may be given to the client constructor to modify its behaviour.
    *
    * ```javascript
    * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));

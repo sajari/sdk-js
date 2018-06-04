@@ -6,7 +6,10 @@
 
 The Sajari Javascript SDK provides a basic API for querying Sajari search services from web browsers.
 
-If you want to quickly create a search UI for your website then we recommend checking out our [React SDK](https://www.github.com/sajari/sajari-sdk-react) or generating a search interface from our [Console](https://www.sajari.com/console).
+If you are writing a React Application we recommend you look at our [React SDK](https://www.github.com/sajari/sajari-sdk-react), which provides a series of React components
+for building search interfaces.
+
+We also provide the ability to generate a search interface from our [Console](https://www.sajari.com/console).
 
 ## Table of Contents
 

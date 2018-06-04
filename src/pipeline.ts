@@ -55,7 +55,10 @@ export type SearchCallback = (
   values?: Values
 ) => void;
 
-/** Internal implementation of [[Pipeline]] */
+/**
+ * Internal implementation of [[Pipeline]]
+ * @hidden
+ */
 // tslint:disable-next-line:class-name
 export class pipeline implements Pipeline {
   private client: Client;
