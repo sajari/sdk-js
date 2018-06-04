@@ -4,22 +4,21 @@ import { mockXMLHttpRequest } from "./__mocks__/XMLHttpRequest";
 
 describe("Client", () => {
   test("Client", () => {
-    new Client("", "");
+    expect(() => new Client("", "")).not.toThrow();
   });
 
   test("withEndpoint", () => {
-    new Client("", "", [withEndpoint("")]);
+    expect(() => new Client("", "", [withEndpoint("")])).not.toThrow();
   });
 
   test("pipeline", () => {
-    const c = new Client("", "");
-    c.pipeline("");
+    expect(() => new Client("", "").pipeline("")).not.toThrow();
   });
 });
 
 describe("Pipeline", () => {
   test("Pipeline", () => {
-    new Client("", "").pipeline("");
+    expect(() => new Client("", "").pipeline("")).not.toThrow();
   });
 
   test("search", done => {
