@@ -36,17 +36,13 @@ export interface Session {
   reset(): void;
 }
 
-/** TrackingNone informs the server not to perform tracking for the session. */
-export const TrackingNone: string = "";
-/** TrackingClick informs the server to perform click tracking for the session. */
-export const TrackingClick: string = "CLICK";
-/** TrackingPosNeg informs the server to perform pos neg tracking for the session. */
-export const TrackingPosNeg: string = "POS_NEG";
-
 /** TrackingType defines the set of possible tracking to be used by [[BaseSession]] */
-export const enum TrackingType {
-  None = "",
+export enum TrackingType {
+  /** None informs the server not to perform tracking for the session. */
+  None = "NONE",
+  /** Click informs the server to perform click tracking for the session. */
   Click = "CLICK",
+  /** PosNeg informs the server to perform pos neg tracking for the session. */
   PosNeg = "POS_NEG"
 }
 

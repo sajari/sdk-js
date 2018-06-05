@@ -14,10 +14,7 @@ export {
   InteractiveSession,
   DefaultSession,
   Tracking,
-  TrackingType,
-  TrackingNone,
-  TrackingClick,
-  TrackingPosNeg
+  TrackingType
 } from "./session";
 export { Values } from "./types";
 export {
