@@ -1,6 +1,6 @@
 {
   "name": "@sajari/sdk-js",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.5",
   "description": "Sajari JavaScript SDK",
   "scripts": {
     "prebuild": "rimraf dist*",
@@ -11,7 +11,8 @@
     "lint": "tslint -p tsconfig.json -c tslint.json --fix \"src/**/*.ts\"",
     "type-check": "tsc --noEmit",
     "pretest": "npm-run-all type-check",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm-run-all type-check build"
   },
   "main": "dist.cjs/index.js",
   "module": "dist.es/index.js",

@@ -1,7 +1,7 @@
 import { Client } from "./client";
 import { processSearchResponse } from "./constructors";
 import { request, RequestError } from "./lib/request";
-import { Results } from "./results";
+import { Response } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
 
@@ -51,7 +51,7 @@ export interface Pipeline {
  */
 export type SearchCallback = (
   error: RequestError | null,
-  results?: Results,
+  response?: Response,
   values?: Values
 ) => void;
 
