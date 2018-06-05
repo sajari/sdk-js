@@ -1,10 +1,4 @@
-import {
-  AggregateResponse,
-  Result,
-  Results,
-  ResultValues,
-  Token
-} from "./results";
+import { AggregateResponse, Result, Response, Token } from "./results";
 
 /** @hidden */
 export interface ProtoSingleValue {
@@ -45,13 +39,17 @@ export const valueFromProto = (proto: ProtoValue): string | string[] | null => {
  * @hidden
  */
 export const newResult = (resultJSON: any): Result => {
-  const values: ResultValues = {};
+  const values: {
+    [id: string]: string | string[];
+  } = {};
+
   Object.keys(resultJSON.values).forEach(k => {
     const val = valueFromProto(resultJSON.values[k]);
     if (val !== null) {
       values[k] = val;
     }
   });
+
   return {
     values,
     token: {} as Token,
@@ -91,7 +89,7 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
 export const processSearchResponse = (
   response: any = {},
   tokens: any = []
-): Results => {
+): Response => {
   const results = (response.results || []).map((r: any, i: number) => {
     const result = newResult(r);
     const token = tokens[i];

@@ -20,4 +20,16 @@ export {
   TrackingPosNeg
 } from "./session";
 export { Values } from "./types";
-export { Results } from "./results";
+export {
+  Response,
+  Result,
+  Token,
+  ClickToken,
+  PosNegToken,
+  AggregateResponse,
+  BucketsResponse,
+  BucketResponse,
+  CountResponse,
+  DateResponse,
+  MetricResponse
+} from "./results";

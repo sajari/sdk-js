@@ -1,7 +1,3 @@
-export interface ResultValues {
-  [id: string]: string | string[];
-}
-
 /** PosNegToken defines the token received upon making a request with [[TrackingType.PosNeg]]. */
 export interface PosNegToken {
   pos: string;
@@ -17,7 +13,9 @@ export type Token = PosNegToken | ClickToken;
 
 export interface Result {
   /** Values is an object of field-value pairs. */
-  values: ResultValues;
+  values: {
+    [id: string]: string | string[];
+  };
 
   /** Token contains the token associated with this Result (if any). */
   token: Token;
@@ -57,7 +55,7 @@ export interface AggregateResponse {
   [id: string]: CountResponse | BucketsResponse | DateResponse | MetricResponse;
 }
 
-export interface Results {
+export interface Response {
   /** Reads is the total number of index values read. */
   reads: number;
 
