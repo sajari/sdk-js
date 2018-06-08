@@ -32,7 +32,7 @@ export interface Tracking {
  * to be sent with search requests.
  */
 export interface Session {
-  next(values: Values): [Tracking, undefined] | [undefined, Error];
+  next(values: Values): [Tracking, null] | [undefined, Error];
   reset(): void;
 }
 
@@ -70,7 +70,7 @@ export class InteractiveSession implements Session {
    * next merges new values into the session and returns tracking data to be sent with search requests.
    * The behaviour follows the steps described in the class documentation above.
    */
-  public next(values: Values): [Tracking, undefined] | [undefined, Error] {
+  public next(values: Values): [Tracking, null] | [undefined, Error] {
     const text = values[this.queryLabel];
     if (text === undefined) {
       this.reset();
@@ -113,7 +113,7 @@ export class DefaultSession implements Session {
   }
 
   /** next merges new values into the session and returns tracking data to be sent with search requests. */
-  public next(values: Values): [Tracking, undefined] | [undefined, Error] {
+  public next(values: Values): [Tracking, null] | [undefined, Error] {
     if (this.queryID === "") {
       this.queryID = newQueryID();
       this.sequence = 0;
@@ -129,7 +129,7 @@ export class DefaultSession implements Session {
         field: this.field,
         data: this.sessionData
       } as Tracking,
-      undefined
+      null
     ];
   }
 

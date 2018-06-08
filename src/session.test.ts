@@ -5,9 +5,9 @@ describe("Session", () => {
     test("BaseSession", () => {
       const s = new DefaultSession(TrackingType.None, "", {});
       let [_, err] = s.next({});
-      expect(err).toBeUndefined();
+      expect(err).toBeNull();
       [_, err] = s.next({});
-      expect(err).toBeUndefined();
+      expect(err).toBeNull();
       s.reset();
     });
   });
@@ -29,11 +29,11 @@ describe("Session", () => {
           new DefaultSession(TrackingType.Click, "", {})
         );
         let [values, err] = s.next({ q: from });
-        expect(err).toBeUndefined();
+        expect(err).toBeNull();
         let qid = values.query_id;
 
         [values, err] = s.next({ q: to });
-        expect(err).toBeUndefined();
+        expect(err).toBeNull();
 
         if (reset) {
           expect(values.query_id).not.toBe(qid);

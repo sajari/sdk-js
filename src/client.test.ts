@@ -34,6 +34,7 @@ describe("Pipeline", () => {
         values: {}
       }
     });
+
     new Client("", "")
       .pipeline("")
       .search(
@@ -59,6 +60,7 @@ describe("Pipeline", () => {
         message: "ERROR!!!"
       }
     });
+
     new Client("", "")
       .pipeline("")
       .search(
