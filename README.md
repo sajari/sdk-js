@@ -38,18 +38,17 @@ npm install --save @sajari/sdk-js
 Here's a quick example that performs a search using the query "FAQ".
 
 ```javascript
-import { Client, DefaultSession, TrackingClick } from "@sajari/sdk-js";
+import { Client, DefaultSession, TrackingNone } from "@sajari/sdk-js";
 
-const pipeline = new Client("", "sajari-com").pipeline("website");
-// Tracking disabled due to not handling the results.
+const pipeline = new Client("<project>", "<collection>").pipeline("website");
+// Tracking is disabled due to not handling the results.
 const session = new DefaultSession(TrackingNone, "url", {});
 
 pipeline.search({ q: "FAQ" }, session, (error, results, values) => {
   if (error) {
-    console.error(error);
-    return;
+    // handle error ...
   }
-  console.log(results, values);
+  // handle results and values ...
 });
 ```
 
