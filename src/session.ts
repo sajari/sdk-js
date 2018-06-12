@@ -2,31 +2,37 @@
 
 import { Values } from "./types";
 
-/** Tracking defines the values sent with a search request related to tracking. */
+/** 
+ * Tracking defines behaviour for handling search sessions and result interactions.
+ */
 export interface Tracking {
   /*
-   * type specifies which kind of tokens (if any) tokens should be generated and returned
+   * type specifies which kind of tokens (if any) should be generated and returned
    * with the query results.
    */
   type: TrackingType;
 
   /*
    * query_id is a unique identifier for a single search query.  In the
-   * case of live querying this is defined to be multiple individual queries
-   * (i.e. as a user types the query is re-run).
+   * case of search-as-you-type style interactions, this is defined to be multiple
+   * individual queries (i.e. as a user types the query is re-run).
    * To identify the individual queries use the [[Tracking.sequence]] number.
    */
   query_id: string;
 
-  /** sequence (i.e. sequential identifier) of this  in the context of a sequence of queries. */
+  /* 
+   * sequence (i.e. sequential identifier) in the context of a sequence of queries with
+   * the same query_id.
+   */
   sequence: number;
 
   /** field is a unique field on each result used to associate tracking information to the result. */
   field: string;
 
-  /** data are values which will be recorded along with tracking data produced for the request. */
+  /** data values which will be recorded along with query requests. */
   data: Values;
 }
+
 /**
  * Session takes query values, maintains session state, and returns tracking data
  * to be sent with search requests.
@@ -36,24 +42,25 @@ export interface Session {
   reset(): void;
 }
 
-/** TrackingType defines the set of possible tracking to be used by [[BaseSession]] */
+/** TrackingType defines the possible result-interaction tracking types used by [[BaseSession]] */
 export enum TrackingType {
-  /** None informs the server not to perform tracking for the session. */
+  /** None disables tracking. */
   None = "NONE",
-  /** Click informs the server to perform click tracking for the session. */
+  /** Click generates click tracking tokens. */
   Click = "CLICK",
-  /** PosNeg informs the server to perform pos neg tracking for the session. */
+  /** PosNeg creates pos/neg tracking tokens. */
   PosNeg = "POS_NEG"
 }
 
 /**
  * InteractiveSession creates a session based on text searches and is recommended
  * for use in search-as-you-type style interfaces.
- * It resets once the value specified by the query label has changed in any of 3 ways:
+ * 
+ * It resets the session if the search query value:
  *
- * - Supplied as `undefined`.
- * - Any of the first 3 characters have changed as the result of an in place replacement (`aa` -> `ab`)
- * - Query length empty from previously non-empty.
+ * - Is `undefined`.
+ * - First 3 characters have changed (i.e. from a direct replacement)
+ * - Cleared after being non-empty (i.e. from a delete)
  */
 export class InteractiveSession implements Session {
   private queryLabel: string;
@@ -96,7 +103,7 @@ export class InteractiveSession implements Session {
   }
 }
 
-/** DefaultSession holds state about a sequence of searches. */
+/** DefaultSession holds state of a sequence of searches. */
 export class DefaultSession implements Session {
   private queryID: string = "";
   private sequence: number = 0;

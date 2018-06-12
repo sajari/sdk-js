@@ -1,11 +1,3 @@
-/**
- * @fileOverview Exports the Sajari JS SDK.
- * @name index.ts
- * @author Sajari
- * @license MIT
- * @module sajari
- */
-
 export { Client, withEndpoint } from "./client";
 export { Pipeline } from "./pipeline";
 export { RequestError } from "./lib/request";

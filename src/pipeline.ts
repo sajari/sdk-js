@@ -5,11 +5,11 @@ import { Response } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
 
-/** UserAgent to be sent along with requests identifying this sdk as the one making contact. */
 const UserAgent = "sdk-js-1.0.0";
 
 /**
- * Pipeline is a client for performing searches on a collection.
+ * Pipeline is a client for running query pipelines on a collection.  See
+ * [[Pipeline.search]] for more details.
  *
  * Create a new Pipeline via [[Client.pipeline]].
  *
@@ -17,20 +17,13 @@ const UserAgent = "sdk-js-1.0.0";
  * // const client = new Client(...);
  * const pipeline = client.pipeline("website");
  * ```
- *
- * From there we can perform searches on the pipeline.
- * We'll need [[Values]], an [[Session]], and a [[SearchCallback]].
- * See [[Pipeline.search]] for a more details.
- *
- * ```javascript
- * pipeline.search(values, session, callback);
- * ```
  */
 export interface Pipeline {
   /**
-   * Search runs a search query defined by a pipline with the given values and
-   * session configuration. Calls the callback with the query results and returned values (which could have
-   * been modified in the pipeline).
+   * Search runs a search query defined by a pipeline with the given values and
+   * session configuration. The callback is executed with the query results and
+   * any values that have been modified/created by the pipeline.  If an error
+   * occurs this will be passed to the callback as a [[ResultError]].
    *
    * ```javascript
    * pipeline.search({ q: "<search query>" }, session, (error, results, values) => {
@@ -46,8 +39,8 @@ export interface Pipeline {
 }
 
 /**
- * SearchCallback defines the callback supplied to a [[Pipeline.search]] that is called with
- * the error, results, and pipeline values from the search.
+ * SearchCallback defines the callback supplied to a [[Pipeline.search]]. See [[Pipeline.search]]
+ * for more details.
  */
 export type SearchCallback = (
   error: RequestError | null,

@@ -1,10 +1,10 @@
-/** PosNegToken defines the token received upon making a request with [[TrackingType.PosNeg]]. */
+/** PosNegToken defines a pos/neg token pair. See [[TrackingType.PosNeg]] for more details. */
 export interface PosNegToken {
   pos: string;
   neg: string;
 }
 
-/** ClickToken defines the token received upon making a request with [[TrackingType.Click]]. */
+/** ClickToken defines a click token.  See [[TrackingType.Click]] for more details. */
 export interface ClickToken {
   click: string;
 }
@@ -17,7 +17,7 @@ export interface Result {
     [id: string]: string | string[];
   };
 
-  /** Token contains the token associated with this Result (if any). */
+  /** Token is the token associated with this Result (if any). */
   token: Token;
 
   /** Score is the overall score of this Result. */
@@ -65,7 +65,7 @@ export interface Response {
   /** Time in seconds taken to perform the query. */
   time: number;
 
-  /** Aggregates computed on the query results (see Aggregate). */
+  /** Aggregates computed on the query results (see [[AggregateResponse]]). */
   aggregates: AggregateResponse;
 
   /** Results of the query. */

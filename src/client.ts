@@ -1,12 +1,13 @@
 import { pipeline, Pipeline } from "./pipeline";
 
 /**
- * Option defines a function which modifies a [[Client]] during its construction
+ * Option is a function type which defines functions for setting config options
+ * on a [[Client]].  See [[Client.constructor]] for more details.
  */
 export type Option = (client: Client) => void;
 
 /**
- * withEndpoint constructs a [[Option]] that sets the endpoint used by the client
+ * withEndpoint constructs an [[Option]] that sets the endpoint used by the client.
  */
 export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
@@ -15,7 +16,7 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
 const defaultEndpoint = "https://jsonapi.sajari.net";
 
 /**
- * Client takes configuration and constructs pipelines clients.
+ * Client constructs a client for interacting with the Sajari API.
  */
 export class Client {
   public project: string;
@@ -23,8 +24,7 @@ export class Client {
   public endpoint: string;
 
   /**
-   * Constructs an instance of Client using the project and collection from your Sajari accouint.
-   * You can find your project and collection in the Sajari console https://www.sajari.com/console/.
+   * Constructs an instance of Client for a specific project and collection.
    *
    * ```javascript
    * const client = new Client("<project>", "<collection>");
@@ -32,10 +32,11 @@ export class Client {
    * // webPipeline.search(...);
    * ```
    *
-   * An optional array of [[Option]] may be given to the client constructor to modify its behaviour.
+   * An optional array of [[Option]] may be given to the client constructor to
+   * set config options.
    *
    * ```javascript
-   * const client = new Client("<project>", "<collection>", withEndpoint("https://example.com"));
+   * const client = new Client("<project>", "<collection>");
    * ```
    */
   public constructor(project: string, collection: string, opts: Option[] = []) {
@@ -47,7 +48,7 @@ export class Client {
     });
   }
 
-  /** pipeline returns a new [[Pipeline]] instance using this client for configuration. */
+  /** pipeline returns a new [[Pipeline]] instance that inherits config from the Client. */
   public pipeline(name: string): Pipeline {
     return new pipeline(this, name);
   }
