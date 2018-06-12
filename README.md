@@ -1,8 +1,7 @@
-# Sajari Javascript SDK &middot;
+# Sajari Javascript SDK
 [![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
 [![build status](https://img.shields.io/travis/sajari/sajari-sdk-js/master.svg?style=flat-square)](https://travis-ci.org/sajari/sajari-sdk-js)
 [![build size](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)
-[![docs](https://sajari.github.io/sajari-sdk-js/badge.svg)](https://sajari.github.io/sajari-sdk-js/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
 This SDK is a lightweight JavaScript client for querying the Sajari API.
@@ -72,7 +71,7 @@ websitePipeline.search({ q: "FAQ" }, clickTrackedSession, (error, response, valu
 ## Handling results
 
 Now we're going to add a basic rendering of the results to the page with integrated click tracking.
-This will redirect the user through the Sajari token endpoint to the real page identified by the result, registering their "click".
+This will redirect the user through the Sajari token endpoint to the real page identified by the result, registering their "click" on the way through.
 
 ```javascript
 websitePipeline.search({ q: "FAQ" }, trackedSession, (error, response, values) => {
