@@ -12,6 +12,8 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
 };
 
+const defaultEndpoint = "https://jsonapi.sajari.net";
+
 /**
  * Client takes configuration and constructs pipelines clients.
  */
@@ -39,7 +41,7 @@ export class Client {
   public constructor(project: string, collection: string, opts: Option[] = []) {
     this.project = project;
     this.collection = collection;
-    this.endpoint = "https://jsonapi.sajari.net";
+    this.endpoint = defaultEndpoint;
     opts.forEach(opt => {
       opt(this);
     });
