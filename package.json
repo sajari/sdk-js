@@ -1,7 +1,26 @@
 {
   "name": "@sajari/sdk-js",
-  "version": "1.0.0-rc.6",
   "description": "Sajari JavaScript SDK",
+  "license": "MIT",
+  "contributors": [
+    "Ben Hinchley <bhinchley@sajari.com> (https://www.sajari.com)",
+    "David Howden <dhowden@sajari.com> (https://www.sajari.com)",
+    "Sajari Support <support@sajari.com> (https://www.sajari.com)",
+    "Trent Billington <tbillington@sajari.com> (https://www.sajari.com)"
+  ],
+  "homepage": "https://github.com/sajari/sajari-sdk-js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sajari/sajari-sdk-js.git"
+  },
+  "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
+  "version": "1.0.0",
+  "main": "dist.cjs/index.js",
+  "module": "dist.es/index.js",
+  "types": "dist.types/index.d.ts",
+  "files": [
+    "dist*"
+  ],
   "scripts": {
     "prebuild": "rimraf dist*",
     "build": "rollup -c",
@@ -9,36 +28,11 @@
     "docs": "typedoc src/index.ts --mode file --out docs --exclude \"**/*+(.test).ts\"",
     "prelint": "npm-run-all type-check",
     "lint": "tslint -p tsconfig.json -c tslint.json --fix \"src/**/*.ts\"",
-    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm-run-all test build",
     "pretest": "npm-run-all type-check",
     "test": "jest",
-    "prepublishOnly": "npm-run-all type-check build"
+    "type-check": "tsc --noEmit"
   },
-  "main": "dist.cjs/index.js",
-  "module": "dist.es/index.js",
-  "types": "dist.types/index.d.ts",
-  "files": [
-    "README.md",
-    "LICENSE",
-    "dist*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/sajari/sajari-sdk-js.git"
-  },
-  "keywords": [
-    "sajari",
-    "search",
-    "search api",
-    "match",
-    "recommend",
-    "realtime",
-    "autocomplete",
-    "instant",
-    "hosted"
-  ],
-  "homepage": "https://github.com/sajari/sajari-sdk-js",
-  "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.0.0",
@@ -54,28 +48,17 @@
     "typedoc": "^0.11.1",
     "typescript": "^2.9.1"
   },
-  "contributors": [
-    {
-      "name": "Sajari Support <support@sajari.com>",
-      "url": "https://www.sajari.com"
-    },
-    {
-      "name": "Trent Billington",
-      "email": "tbillington@sajari.com",
-      "url": "https://www.sajari.com"
-    },
-    {
-      "name": "David Howden",
-      "email": "dhowden@sajari.com",
-      "url": "https://www.sajari.com"
-    },
-    {
-      "name": "Ben Hinchley",
-      "email": "bhinchley@sajari.com",
-      "url": "https://www.sajari.com"
-    }
+  "keywords": [
+    "autocomplete",
+    "hosted",
+    "instant",
+    "match",
+    "realtime",
+    "recommend",
+    "sajari",
+    "search",
+    "search api"
   ],
-  "license": "MIT",
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
