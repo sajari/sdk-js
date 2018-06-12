@@ -1,16 +1,15 @@
-# Sajari Javascript SDK (Browser only) &middot;
+# Sajari Javascript SDK &middot;
 [![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
 [![build status](https://img.shields.io/travis/sajari/sajari-sdk-js/master.svg?style=flat-square)](https://travis-ci.org/sajari/sajari-sdk-js)
 [![build size](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)
 [![docs](https://sajari.github.io/sajari-sdk-js/badge.svg)](https://sajari.github.io/sajari-sdk-js/)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
-The Sajari Javascript SDK provides a basic API for querying Sajari search services from web browsers.
+This SDK is a lightweight JavaScript client for querying the Sajari API.
 
-If you are writing a React Application we recommend you look at our [React SDK](https://www.github.com/sajari/sajari-sdk-react), which provides a series of React components
-for building search interfaces.
+To create advanced search interfaces we recommend using our [ReactJS SDK](https://www.github.com/sajari/sajari-sdk-react), which includes UI components, styling, examples and much more.
 
-We also provide the ability to generate a search interface from our [Console](https://www.sajari.com/console).
+Search interface JavaScript can also be automatically generated from the [Sajari](https://www.sajari.com/console) admin console.
 
 ## Table of Contents
 
@@ -27,28 +26,64 @@ We also provide the ability to generate a search interface from our [Console](ht
 npm install --save @sajari/sdk-js
 ```
 
+Usage within your application:
+
+```javascript
+import { Client, DefaultSession, TrackingClick, etc... } from "@sajari/sdk-js";
+
+// new Client("project", "collection")...
+```
+
 ### Browser
+
+Note that when using the SDK via a `<script>` tag in a browser, all components will live under `window.SajariSearch`:
 
 ```html
 <script src="https://unpkg.com/@sajari/sdk-js@1.0.0/dist.iife/main.js"></script>
+<script>
+  // new SajariSearch.Client("project", "collection")...
+</script>
 ```
 
 ## Getting Started
 
-Here's a quick example that performs a search using the query "FAQ".
+Create a `Client` for interacting with our API, and then initialise a pipeline to be used for searching. The pipeline determines how the ranking is performed when performing a search.
+
+*If you don't have a Sajari account you can sign up [here](https://www.sajari.com/console/sign-up).*
 
 ```javascript
-import { Client, DefaultSession, TrackingNone } from "@sajari/sdk-js";
+const websitePipeline = new Client("<project>", "<collection>").pipeline("website");
+```
 
-const pipeline = new Client("<project>", "<collection>").pipeline("website");
-// Tracking is disabled due to not handling the results.
-const session = new DefaultSession(TrackingNone, "url", {});
+Create a session to track the queries being performed via click tracking. In this case we're using `q` to store the query on the `InteractiveSession`.
 
-pipeline.search({ q: "FAQ" }, session, (error, results, values) => {
-  if (error) {
-    // handle error ...
-  }
-  // handle results and values ...
+```javascript
+const clickTrackedSession = new InteractiveSession("q", new DefaultSession(TrackingClick, "url", {}));
+```
+
+Perform a search on the specified pipeline and handle the results. Here we're searching our collection using the `website` pipeline with our tracked session.
+
+```javascript
+websitePipeline.search({ q: "FAQ" }, clickTrackedSession, (error, response, values) => {
+  // Handle response here
+});
+```
+
+## Handling results
+
+Now we're going to add a basic rendering of the results to the page with integrated click tracking.
+This will redirect the user through the Sajari token endpoint to the real page identified by the result, registering their "click".
+
+```javascript
+websitePipeline.search({ q: "FAQ" }, trackedSession, (error, response, values) => {
+  // Check for error
+  response.results.forEach(r => {
+    const title = document.createElement("a");
+    title.textContent = r.values.title;
+    title.href = "https://www.sajari.com/token/" + r.token.click;
+
+    document.body.appendChild(title);
+  });
 });
 ```
 
