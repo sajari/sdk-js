@@ -28,7 +28,7 @@ npm install --save @sajari/sdk-js
 Usage within your application:
 
 ```javascript
-import { Client, DefaultSession, TrackingClick, etc... } from "@sajari/sdk-js";
+import { Client, DefaultSession, TrackingType, etc... } from "@sajari/sdk-js";
 
 // new Client("project", "collection")...
 ```
@@ -38,7 +38,7 @@ import { Client, DefaultSession, TrackingClick, etc... } from "@sajari/sdk-js";
 Note that when using the SDK via a `<script>` tag in a browser, all components will live under `window.SajariSearch`:
 
 ```html
-<script src="https://unpkg.com/@sajari/sdk-js@1.0.0/dist.iife/main.js"></script>
+<script src="https://unpkg.com/@sajari/sdk-js/dist.iife/index.js"></script>
 <script>
   // new SajariSearch.Client("project", "collection")...
 </script>
@@ -57,7 +57,7 @@ const websitePipeline = new Client("<project>", "<collection>").pipeline("websit
 Create a session to track the queries being performed via click tracking. In this case we're using `q` to store the query on the `InteractiveSession`.
 
 ```javascript
-const clickTrackedSession = new InteractiveSession("q", new DefaultSession(TrackingClick, "url", {}));
+const clickTrackedSession = new InteractiveSession("q", new DefaultSession(TrackingType.Click, "url", {}));
 ```
 
 Perform a search on the specified pipeline and handle the results. Here we're searching our collection using the `website` pipeline with our tracked session.
