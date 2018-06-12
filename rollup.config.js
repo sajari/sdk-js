@@ -33,7 +33,7 @@ export default Object.entries(outputs)
     output: {
       file: `${outputDir}.iife/${output}.js`,
       format: "iife",
-      name: "Sajari",
+      name: "SajariSearch",
       sourcemap: true
     },
     plugins: [
