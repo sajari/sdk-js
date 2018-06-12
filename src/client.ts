@@ -13,6 +13,9 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
   client.endpoint = endpoint;
 };
 
+/**
+ * @hidden
+ */
 const defaultEndpoint = "https://jsonapi.sajari.net";
 
 /**

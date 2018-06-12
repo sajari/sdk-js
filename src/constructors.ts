@@ -82,6 +82,9 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
     return agg;
   }, {});
 
+/**
+ * @hidden
+ */
 export const tokenURL = "https://www.sajari.com/token/";
 
 /**

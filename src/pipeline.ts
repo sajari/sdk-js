@@ -5,6 +5,9 @@ import { Response } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
 
+/**
+ * @hidden
+ */
 const UserAgent = "sdk-js-1.0.0";
 
 /**
@@ -23,7 +26,7 @@ export interface Pipeline {
    * Search runs a search query defined by a pipeline with the given values and
    * session configuration. The callback is executed with the query results and
    * any values that have been modified/created by the pipeline.  If an error
-   * occurs this will be passed to the callback as a [[ResultError]].
+   * occurs this will be passed to the callback as a [[RequestError]].
    *
    * ```javascript
    * pipeline.search({ q: "<search query>" }, session, (error, results, values) => {

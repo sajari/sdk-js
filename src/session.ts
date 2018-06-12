@@ -2,7 +2,7 @@
 
 import { Values } from "./types";
 
-/** 
+/**
  * Tracking defines behaviour for handling search sessions and result interactions.
  */
 export interface Tracking {
@@ -42,7 +42,7 @@ export interface Session {
   reset(): void;
 }
 
-/** TrackingType defines the possible result-interaction tracking types used by [[BaseSession]] */
+/** TrackingType defines the possible result-interaction tracking types used by [[DefaultSession]] */
 export enum TrackingType {
   /** None disables tracking. */
   None = "NONE",
@@ -55,7 +55,7 @@ export enum TrackingType {
 /**
  * InteractiveSession creates a session based on text searches and is recommended
  * for use in search-as-you-type style interfaces.
- * 
+ *
  * It resets the session if the search query value:
  *
  * - Is `undefined`.
@@ -147,7 +147,10 @@ export class DefaultSession implements Session {
   }
 }
 
-/** newQueryID constructs a new ID for a query. */
+/**
+ * newQueryID constructs a new ID for a query.
+ * @hidden
+ */
 const newQueryID = (): string => {
   let queryID = "";
   for (let i = 0; i < 16; i++) {

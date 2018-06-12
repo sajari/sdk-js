@@ -1,4 +1,7 @@
-/** HTTP_STATUS_OK defines a constant for the http OK status. */
+/**
+ * HTTP_STATUS_OK defines a constant for the http OK status.
+ * @hidden
+ */
 const HTTP_STATUS_OK: number = 200;
 
 export enum TransportError {
