@@ -79,7 +79,10 @@ websitePipeline.search({ q: "FAQ" }, clickTrackedSession, (error, response, valu
   response.results.forEach(r => {
     const title = document.createElement("a");
     title.textContent = r.values.title;
-    title.href = r.token.click;
+    title.href = r.values.url;
+    title.onmousedown = () => {
+      title.href = r.token.click;
+    }
 
     document.body.appendChild(title);
   });
