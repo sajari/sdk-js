@@ -2,7 +2,8 @@ import {
   newAggregates,
   newResult,
   processSearchResponse,
-  valueFromProto
+  valueFromProto,
+  tokenURL
 } from "./constructors";
 
 describe("valueFromProto", () => {
@@ -110,15 +111,15 @@ describe("processSearchResponse", () => {
       values: { body: singleValue, tags: repeatedValue },
       score,
       indexScore,
-      token: { click: tokenValue }
+      token: { click: tokenURL + tokenValue }
     });
   });
   test("posNeg tokens", () => {
     const protoResponse = {
       results: [{ values: {}, score: 0, indexScore: 0 }]
     };
-    const token = { pos: "a", neg: "b" };
-    const protoTokens = [{ posNeg: token }];
+    const token = { pos: tokenURL + "a", neg: tokenURL + "b" };
+    const protoTokens = [{ posNeg: { pos: "a", neg: "b" } }];
     expect(
       processSearchResponse(protoResponse, protoTokens).results
     ).toContainEqual({ values: {}, score: 0, indexScore: 0, token });
@@ -127,9 +128,12 @@ describe("processSearchResponse", () => {
     const protoResponse = {
       results: [{ values: {}, score: 0, indexScore: 0 }]
     };
-    expect(
-      processSearchResponse(protoResponse, []).results
-    ).toContainEqual({ values: {}, score: 0, indexScore: 0, token: {} });
+    expect(processSearchResponse(protoResponse, []).results).toContainEqual({
+      values: {},
+      score: 0,
+      indexScore: 0,
+      token: {}
+    });
   });
   test("unknown token type not erroring", () => {
     const protoResponse = {

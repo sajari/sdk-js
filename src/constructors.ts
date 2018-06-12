@@ -82,6 +82,8 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
     return agg;
   }, {});
 
+export const tokenURL = "https://www.sajari.com/token/";
+
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
  * @hidden
@@ -97,11 +99,14 @@ export const processSearchResponse = (
       return result;
     }
     if (token.click !== undefined) {
-      result.token = { click: token.click.token };
+      result.token = { click: tokenURL + token.click.token };
       return result;
     }
     if (token.posNeg !== undefined) {
-      result.token = { pos: token.posNeg.pos, neg: token.posNeg.neg };
+      result.token = {
+        pos: tokenURL + token.posNeg.pos,
+        neg: tokenURL + token.posNeg.neg
+      };
       return result;
     }
     // this leaves room for future token types

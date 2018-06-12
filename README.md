@@ -6,13 +6,13 @@
 
 This SDK is a lightweight JavaScript client for querying the Sajari API.
 
-To create advanced search interfaces we recommend using our [ReactJS SDK](https://www.github.com/sajari/sajari-sdk-react), which includes UI components, styling, examples and much more.
+Checkout our [React SDK](https://www.github.com/sajari/sajari-sdk-react), for a complete set of customisable UI components, and more.
 
-Search interface JavaScript can also be automatically generated from the [Sajari](https://www.sajari.com/console) admin console.
+You can also quickly generate search interfaces from the [Sajari](https://www.sajari.com/console) admin console.
 
 ## Table of Contents
 
-* [Install](#intall)
+* [Install](#install)
 * [Getting Started](#getting-started)
 * [Documentation](#documentation)
 * [License](#license)
@@ -21,7 +21,7 @@ Search interface JavaScript can also be automatically generated from the [Sajari
 
 ### NPM/Yarn
 
-```
+```shell
 npm install --save @sajari/sdk-js
 ```
 
@@ -74,12 +74,12 @@ Now we're going to add a basic rendering of the results to the page with integra
 This will redirect the user through the Sajari token endpoint to the real page identified by the result, registering their "click" on the way through.
 
 ```javascript
-websitePipeline.search({ q: "FAQ" }, trackedSession, (error, response, values) => {
+websitePipeline.search({ q: "FAQ" }, clickTrackedSession, (error, response, values) => {
   // Check for error
   response.results.forEach(r => {
     const title = document.createElement("a");
     title.textContent = r.values.title;
-    title.href = "https://www.sajari.com/token/" + r.token.click;
+    title.href = r.token.click;
 
     document.body.appendChild(title);
   });
