@@ -88,7 +88,7 @@ websitePipeline.search({ q: "FAQ" }, clickTrackedSession, (error, response, valu
 
 ## Documentation
 
-For full documentation, see [https://sajari.github.io/sajari-sdk-js/](https://sajari.github.io/sajari-sdk-js/).
+For full documentation, see [https://sajari-sdk-js.netlify.com/](https://sajari-sdk-js.netlify.com/).
 
 ## License
 
