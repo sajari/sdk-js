@@ -1,5 +1,5 @@
 # Sajari Javascript SDK
-[![npm](https://img.shields.io/npm/v/sajari.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
+[![npm (scoped)](https://img.shields.io/npm/v/@sajari/sdk-js.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
 [![build status](https://img.shields.io/travis/sajari/sajari-sdk-js/master.svg?style=flat-square)](https://travis-ci.org/sajari/sajari-sdk-js)
 [![build size](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
