@@ -1,6 +1,6 @@
 export { Client, withEndpoint } from "./client";
 export { Pipeline } from "./pipeline";
-export { RequestError } from "./lib/request";
+export { RequestError, TransportError } from "./lib/request";
 export {
   Session,
   InteractiveSession,

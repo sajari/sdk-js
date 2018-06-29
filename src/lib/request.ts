@@ -35,6 +35,14 @@ export const request = (
   body: any,
   callback: RequestCallback
 ): void => {
+  if (!navigator.onLine) {
+    const error = new Error("connection appears to be offline") as RequestError;
+    error.transportErrorCode = TransportError.Connection;
+
+    callback(error);
+    return;
+  }
+
   const req = new XMLHttpRequest();
   req.open("POST", address, true);
   req.setRequestHeader("Accept", "application/json");
