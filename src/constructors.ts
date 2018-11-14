@@ -85,7 +85,7 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
 /**
  * @hidden
  */
-export const tokenURL = "https://www.sajari.com/token/";
+export const clickTokenURL = "https://www.sajari.com/token/";
 
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
@@ -102,13 +102,13 @@ export const processSearchResponse = (
       return result;
     }
     if (token.click !== undefined) {
-      result.token = { click: tokenURL + token.click.token };
+      result.token = { click: clickTokenURL + token.click.token };
       return result;
     }
     if (token.posNeg !== undefined) {
       result.token = {
-        pos: tokenURL + token.posNeg.pos,
-        neg: tokenURL + token.posNeg.neg
+        pos: token.posNeg.pos,
+        neg: token.posNeg.neg
       };
       return result;
     }

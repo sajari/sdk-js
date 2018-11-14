@@ -3,7 +3,7 @@ import {
   newResult,
   processSearchResponse,
   valueFromProto,
-  tokenURL
+  clickTokenURL
 } from "./constructors";
 
 describe("valueFromProto", () => {
@@ -111,14 +111,14 @@ describe("processSearchResponse", () => {
       values: { body: singleValue, tags: repeatedValue },
       score,
       indexScore,
-      token: { click: tokenURL + tokenValue }
+      token: { click: clickTokenURL + tokenValue }
     });
   });
   test("posNeg tokens", () => {
     const protoResponse = {
       results: [{ values: {}, score: 0, indexScore: 0 }]
     };
-    const token = { pos: tokenURL + "a", neg: tokenURL + "b" };
+    const token = { pos: "a", neg: "b" };
     const protoTokens = [{ posNeg: { pos: "a", neg: "b" } }];
     expect(
       processSearchResponse(protoResponse, protoTokens).results
