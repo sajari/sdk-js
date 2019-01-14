@@ -1,37 +1,26 @@
 import typescript from "rollup-plugin-typescript2";
 import { uglify } from "rollup-plugin-uglify";
 
-const input = "index";
-const outputDir = "dist";
-const output = input;
-
-const outputs = {
-  es: {
-    target: "es6"
-  },
-  cjs: {
-    target: "es5"
-  }
-};
-
-export default Object.entries(outputs)
-  .map(([format, config]) => ({
-    input: `src/${input}.ts`,
+export default [
+  {
+    input: "src/index.ts",
     output: {
-      file: `${outputDir}.${format}/${output}.js`,
-      format
+      file: "dist.umd/index.js",
+      format: "umd",
+      name: "SajariSearch"
     },
     plugins: [
       typescript({
-        tsconfigOverride: { compilerOptions: { target: config.target } },
+        tsconfigOverride: { compilerOptions: { target: "es5" } },
         useTsconfigDeclarationDir: true
-      })
+      }),
+      uglify()
     ]
-  }))
-  .concat({
-    input: `src/${input}.ts`,
+  },
+  {
+    input: "src/index.ts",
     output: {
-      file: `${outputDir}.iife/${output}.js`,
+      file: "dist.iife/index.js",
       format: "iife",
       name: "SajariSearch",
       sourcemap: true
@@ -44,4 +33,5 @@ export default Object.entries(outputs)
       }),
       uglify()
     ]
-  });
+  }
+];
