@@ -4,6 +4,6 @@ node_js:
 
 install: yarn install
 script:
-  - yarn test
-  - yarn build
-after_script: yarn docs
+  - npm test
+  - npm run build
+after_script: npm run docs

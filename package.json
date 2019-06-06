@@ -14,39 +14,6 @@
     "url": "git://github.com/sajari/sajari-sdk-js.git"
   },
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
-  "version": "1.0.5",
-  "main": "dist.umd/index.js",
-  "types": "dist.types/index.d.ts",
-  "files": [
-    "dist*"
-  ],
-  "scripts": {
-    "prebuild": "rimraf dist*",
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "docs": "typedoc src/index.ts --mode file --out docs --exclude \"**/*+(.test).ts\"",
-    "prelint": "npm-run-all type-check",
-    "lint": "tslint -p tsconfig.json -c tslint.json --fix \"src/**/*.ts\"",
-    "prepublishOnly": "npm-run-all test build",
-    "pretest": "npm-run-all type-check",
-    "test": "jest",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/jest": "^23.0.0",
-    "jest": "^23.1.0",
-    "npm-run-all": "^4.1.3",
-    "rimraf": "^2.6.2",
-    "rollup": "^0.59.1",
-    "rollup-plugin-typescript2": "^0.14.0",
-    "rollup-plugin-uglify": "^4.0.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.10.0",
-    "tslint-config-prettier": "^1.13.0",
-    "typedoc": "^0.11.1",
-    "typescript": "^2.9.1"
-  },
   "keywords": [
     "autocomplete",
     "hosted",
@@ -58,22 +25,43 @@
     "search",
     "search api"
   ],
+  "version": "2.0.0-alpha",
+  "main": "dist/index.js",
+  "umd:main": "dist/sajarisdk.umd.production.js",
+  "module": "dist/sajarisdk.esm.production.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsdx watch --format cjs,esm,umd --name SajariSDK",
+    "prebuild": "node scripts/gen-useragent",
+    "build": "tsdx build --format cjs,esm,umd --name SajariSDK",
+    "test": "tsdx test",
+    "test:coverage": "tsdx test --coverage",
+    "prepublishOnly": "npm-run-all test build",
+    "docs": "typedoc --out docs --mode file"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.ts"
+    "automock": false,
+    "setupFiles": [
+      "./setupJest.ts"
     ]
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.17",
+    "husky": "^3.0.3",
+    "jest-fetch-mock": "^2.1.2",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
+    "tsdx": "^0.7.2",
+    "tslib": "^1.10.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.5.3"
   }
 }
