@@ -134,7 +134,10 @@ export class Client {
    * the specific pipeline name.
    * @param name pipeline name
    */
-  async listPipelines(name: string): Promise<Pipeline[]> {
+  async listPipelines(
+    name: string,
+    type: PipelineType = PipelineType.Query
+  ): Promise<Pipeline[]> {
     let nextPageToken = "";
     let pipelines: Pipeline[] = [];
 
@@ -143,7 +146,7 @@ export class Client {
         "/sajari.pipeline.v2.PipelineAdmin/ListPipelines",
         {
           pipeline: {
-            type: 1,
+            type,
             identifier: { name }
           },
           pageToken: nextPageToken
@@ -209,6 +212,39 @@ export class Client {
     }
     return pipelines;
   }
+
+  /**
+   * getDefaultPipelineVersion returns the default pipeline version for the given
+   * pipeline name.
+   */
+  async getDefaultPipelineVersion(
+    name: string,
+    type: PipelineType = PipelineType.Query
+  ): Promise<PipelineIdentifier> {
+    const resp = await this.call<{
+      pipeline: { type: PipelineType; identifier: PipelineIdentifier };
+    }>("/sajari.pipeline.v2.PipelineAdmin/GetDefaultPipeline", {
+      pipeline: {
+        type,
+        identifier: { name }
+      }
+    });
+    return resp.pipeline.identifier;
+  }
+}
+
+/**
+ * Type of pipeline.
+ */
+export enum PipelineType {
+  /**
+   * Query pipeline.
+   */
+  Query = 1,
+  /**
+   * Record pipeline.
+   */
+  Record = 2
 }
 
 /**
