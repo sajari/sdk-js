@@ -41,7 +41,7 @@ Note that when using the SDK via a `<script>` tag in a browser, all components w
 ```html
 <script src="https://unpkg.com/@sajari/sdk-js/dist/sajarisdk.umd.production.min.js"></script>
 <script>
-  // new SajariSearch.Client("project", "collection")...
+  // new SajariSDK.Client("project", "collection")...
 </script>
 ```
 

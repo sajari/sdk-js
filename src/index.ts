@@ -63,8 +63,6 @@ export class Client {
 
   /**
    * call executes a request to the Sajari API
-   * @param path api endpoint path
-   * @param request request object to send
    */
   async call<Response = any>(
     path: string,
@@ -230,6 +228,23 @@ export class Client {
       }
     });
     return resp.pipeline.identifier;
+  }
+
+  /**
+   * interactionConsume consumes an interaction token.
+   */
+  async interactionConsume(
+    token: string,
+    identifier: string,
+    weight: number,
+    data: Record<string, string> = {}
+  ) {
+    return this.call<void>("/sajari.interaction.v2.Interaction/ConsumeToken", {
+      token,
+      identifier,
+      weight,
+      data
+    });
   }
 }
 
