@@ -106,6 +106,31 @@ websitePipeline
   });
 ```
 
+## Consuming an interaction token
+
+On each result when using TrackingType.Click or TrackingType.PosNeg, there is a
+set of tokens. These tokens allow you to provide feedback to the ranking system.
+When a user interacts with a result, you can send back the token with some extra
+information.
+
+```js
+const { Client } = require("@sajari/sdk-js");
+
+const client = new Client("<project>", "<collection>", {
+  key: "<key from console>",
+  secret: "<secret from console>"
+});
+
+/*
+The following invocation of the consume function, is noting that this particular
+interaction was a "purchase" and the user purchasing the item was 20 years old
+(this information coming from some system that you operate.)
+*/
+client.interactionConsume(token, "purchase", 1.0, {
+  age: "20"
+});
+```
+
 ## Documentation
 
 For full documentation, see [https://sajari-sdk-js.netlify.com/](https://sajari-sdk-js.netlify.com/).
