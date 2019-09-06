@@ -23,7 +23,10 @@ You can also quickly generate search interfaces from the [Sajari](https://www.sa
 ### NPM/Yarn
 
 ```shell
-npm install --save @sajari/sdk-js
+npm install --save @sajari/sdk-js@next
+
+# or with yarn
+yarn add @sajari/sdk-js@next
 ```
 
 Usage within your application:
