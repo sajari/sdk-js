@@ -46,7 +46,7 @@ export const request = (
   const req = new XMLHttpRequest();
   req.open("POST", address, true);
   req.setRequestHeader("Accept", "application/json");
-  req.setRequestHeader("Content-Type", "application/json");
+  req.setRequestHeader("Content-Type", "text/plain");
   req.onreadystatechange = () => {
     if (req.readyState !== XMLHttpRequest.DONE) {
       return;
