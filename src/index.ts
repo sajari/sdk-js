@@ -1042,12 +1042,13 @@ export class Values extends EventEmitter {
     this.internal = initial;
   }
 
-  update(values: Record<string, ValueType>) {
+  update(values: Record<string, ValueType | undefined>) {
     Object.keys(values).forEach(key => {
-      if (values[key] === undefined) {
+      const value = values[key];
+      if (value === undefined) {
         delete this.internal[key];
       } else {
-        this.internal[key] = values[key];
+        this.internal[key] = value;
       }
     });
     this.emit(EVENT_VALUES_UPDATED, values);
