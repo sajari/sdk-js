@@ -69,9 +69,15 @@ describe("newAggregates", () => {
     const protoAggregate = { [name]: { date: { dates } } };
     expect(newAggregates(protoAggregate)).toEqual({ [name]: dates });
   });
-  test("metric", () => {
-    const name = "metric.somefield";
+  test("min", () => {
+    const name = "min.somefield";
     const value = 5;
+    const protoAggregate = { [name]: { metric: { value } } };
+    expect(newAggregates(protoAggregate)).toEqual({ [name]: value });
+  });
+  test("max", () => {
+    const name = "max.somefield";
+    const value = 10;
     const protoAggregate = { [name]: { metric: { value } } };
     expect(newAggregates(protoAggregate)).toEqual({ [name]: value });
   });

@@ -69,13 +69,17 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
       case "bucket":
         agg[key] = aggregateProto[key].buckets.buckets;
         break;
+
       case "count":
         agg[key] = aggregateProto[key].count.counts;
         break;
+
       case "date":
         agg[key] = aggregateProto[key].date.dates;
         break;
-      case "metric":
+
+      case "min":
+      case "max":
         agg[key] = aggregateProto[key].metric.value;
         break;
     }
