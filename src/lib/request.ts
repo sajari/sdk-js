@@ -4,6 +4,12 @@
  */
 const HTTP_STATUS_OK: number = 200;
 
+/**
+ * HTTP_STATUS_UNAUTHORIZED defines a constant for the http UNAUTHORIZED status.
+ * @hidden
+ */
+const HTTP_STATUS_UNAUTHORIZED: number = 403;
+
 export enum TransportError {
   None,
   Connection,
@@ -19,6 +25,8 @@ export interface RequestError extends Error {
   httpStatusCode?: number;
   /** transportErrorCode is the internal error type. */
   transportErrorCode?: TransportError;
+  /** error holds the underlaying error */
+  error?: Error;
 }
 
 export type RequestCallback = (
@@ -36,7 +44,9 @@ export const request = (
   callback: RequestCallback
 ): void => {
   if (!navigator.onLine) {
-    const error = new Error("connection appears to be offline") as RequestError;
+    const error = new Error(
+      "Search request failed due to a network error. Please check your network connection."
+    ) as RequestError;
     error.transportErrorCode = TransportError.Connection;
 
     callback(error);
@@ -53,7 +63,9 @@ export const request = (
     }
 
     if (req.status === 0) {
-      const error = new Error("connection error") as RequestError;
+      const error = new Error(
+        "Search request failed due to a network error. Please check your network connection."
+      ) as RequestError;
       error.transportErrorCode = TransportError.Connection;
 
       callback(error);
@@ -64,7 +76,7 @@ export const request = (
     try {
       parsedResponse = JSON.parse(req.responseText);
     } catch (e) {
-      const error = new Error("error parsing response") as RequestError;
+      const error = new Error("Failed to parse response") as RequestError;
       error.httpStatusCode = req.status;
       error.transportErrorCode = TransportError.ParseResponse;
 
@@ -72,9 +84,23 @@ export const request = (
       return;
     }
 
-    if (req.status !== HTTP_STATUS_OK) {
-      const error = new Error(parsedResponse.message) as RequestError;
+    if (req.status === HTTP_STATUS_UNAUTHORIZED) {
+      const error = new Error(
+        "This domain is not authorized to make this search request."
+      ) as RequestError;
       error.httpStatusCode = req.status;
+      error.error = new Error(parsedResponse.message);
+
+      callback(error);
+      return;
+    }
+
+    if (req.status !== HTTP_STATUS_OK) {
+      const error = new Error(
+        "Search request failed due to a configuration error."
+      ) as RequestError;
+      error.httpStatusCode = req.status;
+      error.error = new Error(parsedResponse.message);
 
       callback(error);
       return;
