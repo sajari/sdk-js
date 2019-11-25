@@ -19,10 +19,12 @@ export class NetworkError extends Error {
  */
 export class RequestError extends Error {
   statusCode: number;
+  error?: Error;
 
-  constructor(statusCode: number, message: string) {
+  constructor(statusCode: number, message: string, error?: Error) {
     super(message);
     this.statusCode = statusCode;
+    this.error = error;
   }
 }
 
@@ -100,18 +102,19 @@ export class Client {
         let response = await resp.json();
         message = response.message;
       } catch (_) {}
-      console.error(resp.status, message);
 
       if (resp.status === 403) {
         throw new RequestError(
           resp.status,
-          "This domain is not authorized to make this search request."
+          "This domain is not authorized to make this search request.",
+          new Error(message)
         );
       }
 
       throw new RequestError(
         resp.status,
-        "Search request failed due to a configuration error."
+        "Search request failed due to a configuration error.",
+        new Error(message)
       );
     }
 
@@ -532,14 +535,6 @@ class QueryPipeline extends EventEmitter {
       (jsonProto.searchResponse && jsonProto.searchResponse.results) ||
       []
     ).map(({ indexScore, score, values }, index) => {
-      let vs: Record<string, string | string[]> = {};
-      Object.keys(values).forEach(key => {
-        let v = valueFromProto(values[key]);
-        if (v !== null) {
-          vs[key] = v;
-        }
-      });
-
       let t: Token | undefined = undefined;
       const token = (jsonProto.tokens || [])[index];
       if (token !== undefined) {
@@ -553,7 +548,7 @@ class QueryPipeline extends EventEmitter {
       return {
         indexScore,
         score,
-        values: vs,
+        values: processProtoValues(values),
         token: t
       };
     });
@@ -678,6 +673,20 @@ type ValueProto =
   | { single: string }
   | { repeated: { values: string[] } }
   | { null: boolean };
+
+/**
+ * @hidden
+ */
+function processProtoValues(values: Record<string, ValueProto>) {
+  let vs: Record<string, string | string[]> = {};
+  Object.keys(values).forEach(key => {
+    let v = valueFromProto(values[key]);
+    if (v !== null) {
+      vs[key] = v;
+    }
+  });
+  return vs;
+}
 
 /**
  * @hidden
@@ -1042,7 +1051,7 @@ export class Values extends EventEmitter {
     this.internal = initial;
   }
 
-  update(values: Record<string, ValueType | undefined>) {
+  _internalUpdate(values: Record<string, ValueType | undefined>) {
     Object.keys(values).forEach(key => {
       const value = values[key];
       if (value === undefined) {
@@ -1051,7 +1060,11 @@ export class Values extends EventEmitter {
         this.internal[key] = value;
       }
     });
-    this.emit(EVENT_VALUES_UPDATED, values);
+  }
+
+  update(values: Record<string, ValueType | undefined>) {
+    this._internalUpdate(values);
+    this.emit(EVENT_VALUES_UPDATED, values, this._internalUpdate);
   }
 
   get(): Record<string, string> {
