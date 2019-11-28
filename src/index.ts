@@ -1064,7 +1064,12 @@ export class Values extends EventEmitter {
 
   update(values: Record<string, ValueType | undefined>) {
     this._internalUpdate(values);
-    this.emit(EVENT_VALUES_UPDATED, values, this._internalUpdate);
+    this.emit(
+      EVENT_VALUES_UPDATED,
+      values,
+      (values: Record<string, ValueType | undefined>) =>
+        this._internalUpdate(values)
+    );
   }
 
   get(): Record<string, string> {
