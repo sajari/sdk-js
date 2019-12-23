@@ -84,16 +84,16 @@ export class Client {
         Accept: "application/json",
         // XXX: This is to remove the need for the OPTIONS request
         // https://stackoverflow.com/questions/29954037/why-is-an-options-request-sent-and-can-i-disable-it
-        "Content-Type": "text/plain",
+        "Content-Type": "text/plain"
       },
       body: JSON.stringify({
         metadata: {
           project: [this.project],
           collection: [this.collection],
-          "user-agent": [USER_AGENT],
+          "user-agent": [USER_AGENT]
         },
-        request,
-      }),
+        request
+      })
     });
 
     if (resp.status !== 200) {
@@ -148,19 +148,19 @@ export class Client {
         {
           pipeline: {
             type,
-            identifier: { name },
+            identifier: { name }
           },
-          pageToken: nextPageToken,
+          pageToken: nextPageToken
         }
       );
 
       pipelines = pipelines.concat(
-        resp.pipelines?.map((pipeline) => {
+        resp.pipelines?.map(pipeline => {
           const preStepsProto = pipeline.steps.find(
-            (step) => step.stepType === "PRE_STEP"
+            step => step.stepType === "PRE_STEP"
           ) || { steps: undefined };
           const postStepsProto = pipeline.steps.find(
-            (step) => step.stepType === "POST_STEP"
+            step => step.stepType === "POST_STEP"
           ) || { steps: undefined };
 
           let preSteps: Step[] = [];
@@ -172,7 +172,7 @@ export class Client {
                 description: step.description,
                 condition: step.condition,
                 parameters: paramConfigToParam(step.parameterConfigs),
-                constants: constConfigToParam(step.constantConfigs),
+                constants: constConfigToParam(step.constantConfigs)
               }))
             );
           }
@@ -186,7 +186,7 @@ export class Client {
                 description: step.description,
                 condition: step.condition,
                 parameters: paramConfigToParam(step.parameterConfigs),
-                constants: constConfigToParam(step.constantConfigs),
+                constants: constConfigToParam(step.constantConfigs)
               }))
             );
           }
@@ -197,8 +197,8 @@ export class Client {
             description: pipeline.description,
             steps: {
               preSteps,
-              postSteps,
-            },
+              postSteps
+            }
           };
         }) ?? []
       );
@@ -227,8 +227,8 @@ export class Client {
     }>("/sajari.pipeline.v2.PipelineAdmin/GetDefaultPipeline", {
       pipeline: {
         type,
-        identifier: { name },
-      },
+        identifier: { name }
+      }
     });
     return resp.pipeline.identifier;
   }
@@ -246,7 +246,7 @@ export class Client {
       token,
       identifier,
       weight,
-      data,
+      data
     });
   }
 }
@@ -262,7 +262,7 @@ export enum PipelineType {
   /**
    * Record pipeline.
    */
-  Record = 2,
+  Record = 2
 }
 
 /**
@@ -448,7 +448,7 @@ class QueryPipeline extends EventEmitter {
     this.client = client;
     this.identifier = {
       name: name,
-      version: version,
+      version: version
     };
   }
 
@@ -478,7 +478,7 @@ class QueryPipeline extends EventEmitter {
       const { queryID, ...rest } = tracking;
       pt = {
         query_id: queryID,
-        ...rest,
+        ...rest
       };
     }
 
@@ -488,7 +488,7 @@ class QueryPipeline extends EventEmitter {
       {
         pipeline: this.identifier,
         tracking: pt,
-        values,
+        values
       }
     );
 
@@ -501,14 +501,14 @@ class QueryPipeline extends EventEmitter {
           return {
             type: t,
             key: k,
-            value: aggregate.metric.value,
+            value: aggregate.metric.value
           };
         }
         if ("count" in aggregate) {
           return {
             type: "count",
             key: key.replace(/^count./, ""),
-            value: aggregate.count.counts,
+            value: aggregate.count.counts
           };
         }
         if ("buckets" in aggregate) {
@@ -518,10 +518,10 @@ class QueryPipeline extends EventEmitter {
             value: Object.values(aggregate.buckets?.buckets ?? {}).reduce(
               (obj, { name, count }) =>
                 Object.assign(obj, {
-                  [name]: count,
+                  [name]: count
                 }),
               {}
-            ),
+            )
           };
         }
         return { key, value: aggregate };
@@ -550,14 +550,14 @@ class QueryPipeline extends EventEmitter {
           return {
             type: t,
             key: k,
-            value: aggregate.metric.value,
+            value: aggregate.metric.value
           };
         }
         if ("count" in aggregate) {
           return {
             type: "count",
             key: key.replace(/^count./, ""),
-            value: aggregate.count.counts,
+            value: aggregate.count.counts
           };
         }
         if ("buckets" in aggregate) {
@@ -567,10 +567,10 @@ class QueryPipeline extends EventEmitter {
             value: Object.values(aggregate.buckets?.buckets ?? {}).reduce(
               (obj, { name, count }) =>
                 Object.assign(obj, {
-                  [name]: count,
+                  [name]: count
                 }),
               {}
-            ),
+            )
           };
         }
         return { key, value: aggregate };
@@ -606,7 +606,7 @@ class QueryPipeline extends EventEmitter {
           indexScore,
           score,
           values: processProtoValues(values),
-          token: t,
+          token: t
         };
       }
     );
@@ -620,9 +620,9 @@ class QueryPipeline extends EventEmitter {
         ),
         results: results,
         aggregates: aggregates,
-        aggregateFilters: aggregateFilters,
+        aggregateFilters: aggregateFilters
       },
-      jsonProto.values || {},
+      jsonProto.values || {}
     ];
   }
 }
@@ -744,7 +744,7 @@ type ValueProto =
  */
 function processProtoValues(values: Record<string, ValueProto>) {
   let vs: Record<string, string | string[]> = {};
-  Object.keys(values).forEach((key) => {
+  Object.keys(values).forEach(key => {
     let v = valueFromProto(values[key]);
     if (v !== null) {
       vs[key] = v;
@@ -852,7 +852,7 @@ export enum TrackingType {
   /**
    * PosNeg creates pos/neg tracking tokens.
    */
-  PosNeg = "POS_NEG",
+  PosNeg = "POS_NEG"
 }
 
 /**
@@ -909,7 +909,7 @@ export class DefaultSession extends EventEmitter implements Session {
       queryID: this.queryID,
       sequence: this.sequence,
       field: this.field,
-      data: this.data,
+      data: this.data
     };
   }
 
@@ -928,8 +928,8 @@ export class DefaultSession extends EventEmitter implements Session {
 function mergeTrackingData(data?: Record<string, string>) {
   const cookieData = document.cookie
     .split(";")
-    .filter((item) => item.includes("_ga") || item.includes("sjID"))
-    .map((item) => item.split("="))
+    .filter(item => item.includes("_ga") || item.includes("sjID"))
+    .map(item => item.split("="))
     .reduce((data, [key, val]) => {
       if (key === "_ga") {
         data["ga"] = val;
@@ -1024,7 +1024,7 @@ export class Filter extends EventEmitter {
   private joinOp: "OR" | "AND";
 
   constructor(
-    options: Record<string, string>,
+    options: Record<string, string | FilterFunc>,
     initial: string[] = [],
     multi = false,
     joinOp: "OR" | "AND" = "OR"
@@ -1041,9 +1041,9 @@ export class Filter extends EventEmitter {
       if (active && this.active.indexOf(key) === -1) {
         this.active = this.active.concat(key);
       } else {
-        this.active = this.active.filter((k) => k !== key);
+        this.active = this.active.filter(k => k !== key);
       }
-      this.emit(EVENT_SELECTION_UPDATED, [...this.active]);
+      this._emitSelectionUpdated();
       return;
     }
 
@@ -1052,7 +1052,7 @@ export class Filter extends EventEmitter {
     } else {
       this.active = [];
     }
-    this.emit(EVENT_SELECTION_UPDATED, [...this.active]);
+    this._emitSelectionUpdated();
   }
 
   isActive(key: string): boolean {
@@ -1064,26 +1064,34 @@ export class Filter extends EventEmitter {
   }
 
   updateOptions(options: Record<string, string | FilterFunc | undefined>) {
-    Object.keys(options).forEach((key) => {
+    Object.keys(options).forEach(key => {
       const value = options[key];
       if (value === undefined) {
         delete this.options[key];
-        this.active = this.active.filter((k) => k !== key);
+        this.active = this.active.filter(k => k !== key);
         return;
       }
 
       this.options[key] = value;
     });
-    this.emit(EVENT_OPTIONS_UPDATED, { ...this.options });
+    this._emitOptionsUpdated();
   }
 
   getOptions(): Record<string, string | FilterFunc> {
     return { ...this.options };
   }
 
+  _emitSelectionUpdated() {
+    this.emit(EVENT_SELECTION_UPDATED, [...this.active]);
+  }
+
+  _emitOptionsUpdated() {
+    this.emit(EVENT_OPTIONS_UPDATED, { ...this.options });
+  }
+
   filter(): string {
     const filters = this.active
-      .map((key) => {
+      .map(key => {
         let filter = this.options[key];
         if (typeof filter === "function") {
           filter = filter();
@@ -1108,6 +1116,33 @@ export class Filter extends EventEmitter {
   }
 }
 
+export const CombineFilters = (
+  filters: Filter[],
+  operator: "AND" | "OR" = "AND"
+) => {
+  const opts: Record<string, string | FilterFunc> = {};
+  let count = 1;
+  let on: string[] = [];
+
+  filters.forEach(f => {
+    opts["" + count] = () => f.filter();
+    on = on.concat(["" + count]);
+    count++;
+  });
+
+  const combFilter = new Filter(opts, on, true, operator);
+  filters.forEach(f => {
+    f.on(EVENT_SELECTION_UPDATED, () => {
+      combFilter._emitSelectionUpdated();
+    });
+    f.on(EVENT_OPTIONS_UPDATED, () => {
+      combFilter._emitOptionsUpdated();
+    });
+  });
+
+  return combFilter;
+};
+
 export type ValueFunc = () => string;
 export type ValueType =
   | string
@@ -1129,7 +1164,7 @@ export class Values extends EventEmitter {
   }
 
   _internalUpdate(values: Record<string, ValueType | undefined>) {
-    Object.keys(values).forEach((key) => {
+    Object.keys(values).forEach(key => {
       const value = values[key];
       if (value === undefined) {
         delete this.internal[key];

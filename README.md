@@ -13,10 +13,20 @@ You can also quickly generate search interfaces from the [Sajari](https://www.sa
 
 ## Table of Contents
 
-- [Install](#install)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [License](#license)
+- [Sajari Javascript SDK](#sajari-javascript-sdk)
+  - [Table of Contents](#table-of-contents)
+  - [Install](#install)
+    - [NPM/Yarn](#npmyarn)
+    - [Browser](#browser)
+  - [Getting Started](#getting-started)
+  - [Handling results](#handling-results)
+  - [Handle filters](#handle-filters)
+    - [Single-select filter](#single-select-filter)
+    - [Multiple-select filters](#multiple-select-filters)
+    - [CombineFilters](#combinefilters)
+  - [Consuming an interaction token](#consuming-an-interaction-token)
+  - [Documentation](#documentation)
+  - [License](#license)
 
 ## Install
 
@@ -107,6 +117,76 @@ websitePipeline
   .catch(error => {
     // Handle error...
   });
+```
+
+## Handle filters
+
+Use the `Filter` helper-class to construct `filter` parameter for running searches. A filter can handle single or multiple filtering options. Multile `Filter` instances can be combined in to one by using `CombineFilter` function.
+
+### Single-select filter
+
+```javascript
+import { Filter } from "@sajari/sdk-react";
+
+const categories = new Filter(
+  {
+    // Options: Name -> Filter
+    All: "",
+    Blog: "dir1='blog'", // limit to results with dir1='blog'
+    Articles: "dir1='articles'" // limit to results with dir1='articles'
+  },
+  // The default option.
+  "Blog"
+);
+
+const values = { q: "FAQ", filter: categories.filter() };
+// => {q: "FAQ", filter: "dir1='blog'"}
+```
+
+### Multiple-select filters
+
+```javascript
+const categories = new Filter(
+  {
+    // Options: Name -> Filter
+    Blog: "dir1='blog'", // limit to dir1='blog'
+    Articles: "dir1='articles'", // limit to dir1='articles'
+    Other: "dir1!='blog' AND dir1!='articles'" // everything else
+  },
+  // The default filters to be enabled
+  ["Blog", "Articles"], // default filter will be "dir1='blog' OR dir1='articles'"
+  true // Allow multiple selections
+);
+
+const values = { q: "FAQ", filter: categories.filter() };
+// => {q: "FAQ", filter: "(dir1='blog') AND (dir1='articles')"}
+```
+
+### CombineFilters
+
+```javascript
+import { Filter, CombineFilters } from "@sajari/sdk-react";
+
+const categories = new Filter(
+  {
+    Blog: "cat='blog'",
+    Articles: "cat='articles'"
+  },
+  "Blog"
+);
+
+const topics = new Filter(
+  {
+    News: "topic='news'",
+    Sport: "topic='sport'"
+  },
+  "Sport"
+);
+
+const combinedFilters = CombileFilters([categories, topics]);
+
+const values = { q: "FAQ", filter: combinedFilters.filter() };
+// => {q: "FAQ", filter: "((cat='blog')) OR ((topic='sport'))"}
 ```
 
 ## Consuming an interaction token
