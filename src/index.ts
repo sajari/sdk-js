@@ -1017,12 +1017,18 @@ type FilterFunc = () => string;
 export const EVENT_SELECTION_UPDATED = "selection-updated";
 export const EVENT_OPTIONS_UPDATED = "options-updated";
 
+/**
+ * Filter is a helper class for building filters values to contruct search params.
+ */
 export class Filter extends EventEmitter {
   private options: Record<string, string | FilterFunc>;
   private active: string[];
   private multi: boolean;
   private joinOp: "OR" | "AND";
 
+  /**
+   * Constructs an instance of Filter.
+   */
   constructor(
     options: Record<string, string | FilterFunc>,
     initial: string[] = [],
@@ -1036,6 +1042,9 @@ export class Filter extends EventEmitter {
     this.joinOp = joinOp;
   }
 
+  /**
+   * Set the state of the filter.
+   */
   set(key: string, active = true) {
     if (this.multi) {
       if (active && this.active.indexOf(key) === -1) {
@@ -1055,14 +1064,25 @@ export class Filter extends EventEmitter {
     this._emitSelectionUpdated();
   }
 
+  /**
+   * returns whether the filter is set or not.
+   */
   isActive(key: string): boolean {
     return this.active.indexOf(key) !== -1;
   }
 
+  /**
+   * Get the current selection in this filter.
+   */
   get(): string[] {
     return [...this.active];
   }
 
+  /**
+   * Merge options into the filter options.
+   *
+   * Set an option to null to remove it.
+   */
   updateOptions(options: Record<string, string | FilterFunc | undefined>) {
     Object.keys(options).forEach(key => {
       const value = options[key];
@@ -1077,18 +1097,30 @@ export class Filter extends EventEmitter {
     this._emitOptionsUpdated();
   }
 
+  /**
+   * Get all the options defined in this filter.
+   */
   getOptions(): Record<string, string | FilterFunc> {
     return { ...this.options };
   }
 
+  /**
+   * Emits a selection updated event to the selection updated listener.
+   */
   _emitSelectionUpdated() {
     this.emit(EVENT_SELECTION_UPDATED, [...this.active]);
   }
 
+  /**
+   * Emits an options updated event to the options updated listener.
+   */
   _emitOptionsUpdated() {
     this.emit(EVENT_OPTIONS_UPDATED, { ...this.options });
   }
 
+  /**
+   * Builds up the filter string from the current filter and it's children.
+   */
   filter(): string {
     const filters = this.active
       .map(key => {
@@ -1116,6 +1148,17 @@ export class Filter extends EventEmitter {
   }
 }
 
+/**
+ * CombineFilters is a helper for combining multiple Filter instances
+ * into one.
+ *
+ * Whenever any of the combined filters are updated, the events are
+ * propagated up to the returned "root" filter.
+ *
+ * @param filters Array of filters to combine.
+ * @param  [operator="AND"] Operator to apply between them ("AND" | "OR").
+ * @return The resulting Filter.
+ */
 export const CombineFilters = (
   filters: Filter[],
   operator: "AND" | "OR" = "AND"
@@ -1155,6 +1198,9 @@ export type ValueType =
 
 export const EVENT_VALUES_UPDATED = "values-changed";
 
+/*
+ * The Values controller is used to manage parameters for running searches
+ */
 export class Values extends EventEmitter {
   private internal: Record<string, ValueType>;
 
@@ -1163,6 +1209,9 @@ export class Values extends EventEmitter {
     this.internal = initial;
   }
 
+  /**
+   * Updates values without triggering an event, internal use only.
+   */
   _internalUpdate(values: Record<string, ValueType | undefined>) {
     Object.keys(values).forEach(key => {
       const value = values[key];
@@ -1174,16 +1223,36 @@ export class Values extends EventEmitter {
     });
   }
 
-  update(values: Record<string, ValueType | undefined>) {
-    this._internalUpdate(values);
+  /**
+   * Sets values without triggering an event, internal use only.
+   */
+  _internalSet(values: Record<string, ValueType>) {
+    this.internal = values;
+  }
+
+  /**
+   * Emits an event to notify listener that the values have been updated.
+   */
+  _emitUpdate(changes: Record<string, ValueType | undefined>) {
     this.emit(
       EVENT_VALUES_UPDATED,
-      values,
+      changes,
       (values: Record<string, ValueType | undefined>) =>
         this._internalUpdate(values)
     );
   }
 
+  /**
+   * Merge new changes into the value map.
+   */
+  update(changes: Record<string, ValueType | undefined>) {
+    this._internalUpdate(changes);
+    this._emitUpdate(changes);
+  }
+
+  /**
+   * get returns the current values.
+   */
   get(): Record<string, string> {
     const values: Record<string, string> = {};
     Object.entries(this.internal).forEach(([key, value]) => {
@@ -1197,5 +1266,13 @@ export class Values extends EventEmitter {
     });
 
     return values;
+  }
+
+  /**
+   * Replace the current values with a new values.
+   */
+  set(values: Record<string, ValueType>) {
+    this._internalSet(values);
+    this._emitUpdate(values);
   }
 }
