@@ -2,7 +2,7 @@ import {
   Client,
   RequestError,
   DefaultSession,
-  TrackingType
+  TrackingType,
 } from "../src/index";
 
 const client = new Client("test", "test", "test.com");
@@ -16,7 +16,7 @@ describe("Client", () => {
     global.fetch.mockResponseOnce(JSON.stringify({ data: "12345" }));
 
     expect.assertions(1);
-    return client.call("/hello", { foo: "bar" }).then(res => {
+    return client.call("/hello", { foo: "bar" }).then((res) => {
       expect(res.data).toEqual("12345");
     });
   });
@@ -25,7 +25,7 @@ describe("Client", () => {
     global.fetch.mockRejectOnce(new RequestError(500, "oh noes"));
 
     expect.assertions(2);
-    return client.call("/hello", { foo: "bar" }).catch(err => {
+    return client.call("/hello", { foo: "bar" }).catch((err) => {
       expect(err.statusCode).toEqual(500);
       expect(err.message).toEqual("oh noes");
     });
@@ -52,7 +52,8 @@ describe("Pipeline", () => {
       time: 0.003,
       totalResults: 0,
       results: [],
-      aggregates: {}
+      aggregates: {},
+      aggregateFilters: {},
     });
 
     expect(global.fetch.mock.calls.length).toEqual(1);
