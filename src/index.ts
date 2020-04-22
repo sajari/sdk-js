@@ -84,16 +84,16 @@ export class Client {
         Accept: "application/json",
         // XXX: This is to remove the need for the OPTIONS request
         // https://stackoverflow.com/questions/29954037/why-is-an-options-request-sent-and-can-i-disable-it
-        "Content-Type": "text/plain"
+        "Content-Type": "text/plain",
       },
       body: JSON.stringify({
         metadata: {
           project: [this.project],
           collection: [this.collection],
-          "user-agent": [USER_AGENT]
+          "user-agent": [USER_AGENT],
         },
-        request
-      })
+        request,
+      }),
     });
 
     if (resp.status !== 200) {
@@ -148,19 +148,19 @@ export class Client {
         {
           pipeline: {
             type,
-            identifier: { name }
+            identifier: { name },
           },
-          pageToken: nextPageToken
+          pageToken: nextPageToken,
         }
       );
 
       pipelines = pipelines.concat(
-        resp.pipelines.map(pipeline => {
+        resp.pipelines.map((pipeline) => {
           const preStepsProto = pipeline.steps.find(
-            step => step.stepType === "PRE_STEP"
+            (step) => step.stepType === "PRE_STEP"
           ) || { steps: undefined };
           const postStepsProto = pipeline.steps.find(
-            step => step.stepType === "POST_STEP"
+            (step) => step.stepType === "POST_STEP"
           ) || { steps: undefined };
 
           let preSteps: Step[] = [];
@@ -172,7 +172,7 @@ export class Client {
                 description: step.description,
                 condition: step.condition,
                 parameters: paramConfigToParam(step.parameterConfigs),
-                constants: constConfigToParam(step.constantConfigs)
+                constants: constConfigToParam(step.constantConfigs),
               }))
             );
           }
@@ -186,7 +186,7 @@ export class Client {
                 description: step.description,
                 condition: step.condition,
                 parameters: paramConfigToParam(step.parameterConfigs),
-                constants: constConfigToParam(step.constantConfigs)
+                constants: constConfigToParam(step.constantConfigs),
               }))
             );
           }
@@ -197,8 +197,8 @@ export class Client {
             description: pipeline.description,
             steps: {
               preSteps,
-              postSteps
-            }
+              postSteps,
+            },
           };
         })
       );
@@ -227,8 +227,8 @@ export class Client {
     }>("/sajari.pipeline.v2.PipelineAdmin/GetDefaultPipeline", {
       pipeline: {
         type,
-        identifier: { name }
-      }
+        identifier: { name },
+      },
     });
     return resp.pipeline.identifier;
   }
@@ -246,7 +246,7 @@ export class Client {
       token,
       identifier,
       weight,
-      data
+      data,
     });
   }
 }
@@ -262,7 +262,7 @@ export enum PipelineType {
   /**
    * Record pipeline.
    */
-  Record = 2
+  Record = 2,
 }
 
 /**
@@ -316,15 +316,12 @@ function constConfigToParam(
 
   const output = Object.keys(configs).reduce<NonNullable<Step["constants"]>>(
     (out, key) => {
-      const config = (configs[key].configs || []).reduce(
-        (val, cfg) => {
-          if ("setValue" in cfg) {
-            val["value"] = cfg.setValue;
-          }
-          return val;
-        },
-        {} as { value?: string }
-      );
+      const config = (configs[key].configs || []).reduce((val, cfg) => {
+        if ("setValue" in cfg) {
+          val["value"] = cfg.setValue;
+        }
+        return val;
+      }, {} as { value?: string });
 
       out[key] = config;
       return out;
@@ -401,7 +398,7 @@ interface StepProto {
 
   constantConfigs?: {
     [name: string]: {
-      configs?: ({ setValue: string })[];
+      configs?: { setValue: string }[];
     };
   };
 
@@ -451,7 +448,7 @@ class QueryPipeline extends EventEmitter {
     this.client = client;
     this.identifier = {
       name: name,
-      version: version
+      version: version,
     };
   }
 
@@ -481,7 +478,7 @@ class QueryPipeline extends EventEmitter {
       const { queryID, ...rest } = tracking;
       pt = {
         query_id: queryID,
-        ...rest
+        ...rest,
       };
     }
 
@@ -491,12 +488,12 @@ class QueryPipeline extends EventEmitter {
       {
         pipeline: this.identifier,
         tracking: pt,
-        values
+        values,
       }
     );
 
     const aggregates = Object.entries(
-      (jsonProto.searchResponse && jsonProto.searchResponse.aggregates) || {}
+      jsonProto.searchResponse?.aggregates || {}
     )
       .map(([key, aggreagate]) => {
         if ("metric" in aggreagate) {
@@ -504,14 +501,14 @@ class QueryPipeline extends EventEmitter {
           return {
             type: t,
             key: k,
-            value: aggreagate.metric.value
+            value: aggreagate.metric.value,
           };
         }
         if ("count" in aggreagate) {
           return {
             type: "count",
             key: key.replace(/^count./, ""),
-            value: aggreagate.count.counts
+            value: aggreagate.count.counts,
           };
         }
         return { key, value: aggreagate };
@@ -531,42 +528,75 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
-    const results: Result[] = (
-      (jsonProto.searchResponse && jsonProto.searchResponse.results) ||
-      []
-    ).map(({ indexScore, score, values }, index) => {
-      let t: Token | undefined = undefined;
-      const token = (jsonProto.tokens || [])[index];
-      if (token !== undefined) {
-        if ("click" in token) {
-          t = { click: clickTokenURL + token.click.token };
-        } else if ("pos" in token) {
-          t = { ...token };
+    const aggregateFilters = Object.entries(
+      jsonProto.searchResponse?.aggregateFilters || {}
+    )
+      .map(([key, aggreagate]) => {
+        if ("metric" in aggreagate) {
+          let [t, k] = key.split(".");
+          return {
+            type: t,
+            key: k,
+            value: aggreagate.metric.value,
+          };
         }
-      }
+        if ("count" in aggreagate) {
+          return {
+            type: "count",
+            key: key.replace(/^count./, ""),
+            value: aggreagate.count.counts,
+          };
+        }
+        return { key, value: aggreagate };
+      })
+      .reduce<Aggregates>((obj, item) => {
+        if (item.type === undefined) {
+          console.debug(item);
+          return obj;
+        }
 
-      return {
-        indexScore,
-        score,
-        values: processProtoValues(values),
-        token: t
-      };
-    });
+        if (obj[item.key] === undefined) {
+          obj[item.key] = {};
+        }
+        // @ts-ignore
+        obj[item.key][item.type] = item.value;
+
+        return obj;
+      }, {});
+
+    const results: Result[] = (jsonProto.searchResponse?.results || []).map(
+      ({ indexScore, score, values }, index) => {
+        let t: Token | undefined = undefined;
+        const token = (jsonProto.tokens || [])[index];
+        if (token !== undefined) {
+          if ("click" in token) {
+            t = { click: clickTokenURL + token.click.token };
+          } else if ("pos" in token) {
+            t = { ...token };
+          }
+        }
+
+        return {
+          indexScore,
+          score,
+          values: processProtoValues(values),
+          token: t,
+        };
+      }
+    );
 
     return [
       {
-        time: parseFloat(
-          (jsonProto.searchResponse && jsonProto.searchResponse.time) || "0.0"
-        ),
+        time: parseFloat(jsonProto.searchResponse?.time || "0.0"),
         totalResults: parseInt(
-          (jsonProto.searchResponse && jsonProto.searchResponse.totalResults) ||
-            "0",
+          jsonProto.searchResponse?.totalResults || "0",
           10
         ),
         results: results,
-        aggregates: aggregates
+        aggregates: aggregates,
+        aggregateFilters: aggregateFilters,
       },
-      jsonProto.values || {}
+      jsonProto.values || {},
     ];
   }
 }
@@ -583,18 +613,26 @@ export interface SearchResponse {
    * Time in seconds taken to perform the query.
    */
   time: number;
+
   /**
    * totalResults is the total number of results.
    */
   totalResults: number;
+
   /**
    * Results of the query.
    */
   results: Result[];
+
   /**
    * Aggregates computed on the query results (see [[Aggregates]]).
    */
   aggregates: Aggregates;
+
+  /**
+   * AggregateFilters computed on the query results (see [[Aggregates]]).
+   */
+  aggregateFilters: Aggregates;
 }
 
 export interface Result {
@@ -648,6 +686,7 @@ interface SearchResponseProto {
     totalResults: string;
     results: ResultProto[];
     aggregates: AggregatesProto;
+    aggregateFilters: AggregatesProto;
   }>;
   tokens?: TokenProto[];
   values?: Record<string, string>;
@@ -679,7 +718,7 @@ type ValueProto =
  */
 function processProtoValues(values: Record<string, ValueProto>) {
   let vs: Record<string, string | string[]> = {};
-  Object.keys(values).forEach(key => {
+  Object.keys(values).forEach((key) => {
     let v = valueFromProto(values[key]);
     if (v !== null) {
       vs[key] = v;
@@ -772,7 +811,7 @@ export enum TrackingType {
   /**
    * PosNeg creates pos/neg tracking tokens.
    */
-  PosNeg = "POS_NEG"
+  PosNeg = "POS_NEG",
 }
 
 /**
@@ -829,7 +868,7 @@ export class DefaultSession extends EventEmitter implements Session {
       queryID: this.queryID,
       sequence: this.sequence,
       field: this.field,
-      data: this.data
+      data: this.data,
     };
   }
 
@@ -848,19 +887,16 @@ export class DefaultSession extends EventEmitter implements Session {
 function mergeTrackingData(data?: Record<string, string>) {
   const cookieData = document.cookie
     .split(";")
-    .filter(item => item.includes("_ga") || item.includes("sjID"))
-    .map(item => item.split("="))
-    .reduce(
-      (data, [key, val]) => {
-        if (key === "_ga") {
-          data["ga"] = val;
-          return data;
-        }
-        data[key] = val;
+    .filter((item) => item.includes("_ga") || item.includes("sjID"))
+    .map((item) => item.split("="))
+    .reduce((data, [key, val]) => {
+      if (key === "_ga") {
+        data["ga"] = val;
         return data;
-      },
-      {} as Record<string, string>
-    );
+      }
+      data[key] = val;
+      return data;
+    }, {} as Record<string, string>);
 
   if (data === undefined) {
     return cookieData;
@@ -964,7 +1000,7 @@ export class Filter extends EventEmitter {
       if (active && this.active.indexOf(key) === -1) {
         this.active = this.active.concat(key);
       } else {
-        this.active = this.active.filter(k => k !== key);
+        this.active = this.active.filter((k) => k !== key);
       }
       this.emit(EVENT_SELECTION_UPDATED, [...this.active]);
       return;
@@ -987,11 +1023,11 @@ export class Filter extends EventEmitter {
   }
 
   updateOptions(options: Record<string, string | FilterFunc | undefined>) {
-    Object.keys(options).forEach(key => {
+    Object.keys(options).forEach((key) => {
       const value = options[key];
       if (value === undefined) {
         delete this.options[key];
-        this.active = this.active.filter(k => k !== key);
+        this.active = this.active.filter((k) => k !== key);
         return;
       }
 
@@ -1006,7 +1042,7 @@ export class Filter extends EventEmitter {
 
   filter(): string {
     const filters = this.active
-      .map(key => {
+      .map((key) => {
         let filter = this.options[key];
         if (typeof filter === "function") {
           filter = filter();
@@ -1052,7 +1088,7 @@ export class Values extends EventEmitter {
   }
 
   _internalUpdate(values: Record<string, ValueType | undefined>) {
-    Object.keys(values).forEach(key => {
+    Object.keys(values).forEach((key) => {
       const value = values[key];
       if (value === undefined) {
         delete this.internal[key];
