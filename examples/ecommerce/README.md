@@ -1,6 +1,6 @@
 # Ecommerce Example
 
-A lightweight and fast example user interface using the Sajari SDK in an ecommerce solution.
+A lightweight and fast example user interface using the Sajari JavaScript SDK in an ecommerce project.
 
 ![Video of the example in action](video.gif)
 
