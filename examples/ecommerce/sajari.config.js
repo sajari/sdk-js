@@ -5,13 +5,13 @@ import filterTypes from './src/Components/Filters/types';
  */
 export default {
   // These details can be found in your console
-  project: '',
-  collection: '',
-  pipeline: '',
+  project: '1586987615805531725',
+  collection: 'best-buy',
+  pipeline: 'query',
   version: undefined, // undefined will use the default version
 
   // For production this can be undefined
-  endpoint: undefined,
+  endpoint: 'https://jsonapi-au-staging-valkyrie.sajari.com',
 
   // Which facets to display
   // Order in the UI is defined by their order here
