@@ -56,7 +56,7 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
         </div>
 
         {!instant && (
-          <div className="absolute inset-y-0 right-0 flex items-center hidden pr-4 text-sm text-gray-500 pointer-events-none md:block">
+          <div className="absolute inset-y-0 right-0 items-center hidden pr-4 text-sm text-gray-500 pointer-events-none md:flex">
             Press ⏎ to search
           </div>
         )}
