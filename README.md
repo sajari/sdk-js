@@ -107,6 +107,14 @@ websitePipeline.search(
 
 For full documentation, see [https://sajari-sdk-js.netlify.com/](https://sajari-sdk-js.netlify.com/).
 
+## Examples
+
+### [Ecommerce](examples/ecommerce)
+
+A lightweight and fast example user interface using the Sajari JavaScript SDK in an ecommerce project.
+
+[![Video of the example in action](examples/ecommerce/video.gif)](examples/ecommerce)
+
 ## License
 
 We use the [MIT license](./LICENSE)

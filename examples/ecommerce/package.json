@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "preact-js-sdk-sandbox",
+  "name": "js-sdk-ecommerce-example",
   "version": "0.0.0",
   "license": "MIT",
   "browserslist": "> 1%",
@@ -13,12 +13,6 @@
     "lint": "eslint src",
     "lint:fix": "eslint --fix src"
   },
-  "eslintConfig": {
-    "extends": "eslint-config-synacor"
-  },
-  "eslintIgnore": [
-    "build/*"
-  ],
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.1.2",
     "@sampotts/eslint-config": "sampotts/eslint-config",
