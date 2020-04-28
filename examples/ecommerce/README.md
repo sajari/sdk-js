@@ -2,6 +2,8 @@
 
 A lightweight and fast example user interface using the Sajari SDK in an ecommerce solution.
 
+![Video of the example in action](video.gif)
+
 The demo uses:
 
 - [Preact](https://preactjs.com/)
