@@ -1,4 +1,4 @@
-import filterTypes from './src/Components/Filters/types';
+import filterTypes from './src/components/Filters/types';
 
 /**
  * Your environment configuration
