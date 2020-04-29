@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-underscore-dangle */
 import { formatNumber } from '../../utils/number';
 import { IconCheck } from '../Icons';
 import Rating from '../Rating';
 import Image from './Image';
 
 const GridItem = ({ data }) => (
-  <article className="mb-8 text-center" key={data._id}>
+  <article className="mb-8 text-center" key={data.id}>
     <a href={data.url} target="_blank" rel="noreferrer noopener" className="block mb-3">
       <Image src={data.image} alt={data.title} />
     </a>

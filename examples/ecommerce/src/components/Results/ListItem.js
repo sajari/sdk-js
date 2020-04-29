@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-underscore-dangle */
 import { formatNumber } from '../../utils/number';
 import { IconCheck } from '../Icons';
 import Rating from '../Rating';
 import Image from './Image';
 
 const ListItem = ({ data }) => (
-  <article className="flex items-center w-full mb-8" key={data._id}>
+  <article className="flex items-center w-full mb-8" key={data.id}>
     <a href={data.url} target="_blank" rel="noreferrer noopener" className="block w-24 mr-6">
       <Image src={data.image} alt={data.title} />
     </a>
