@@ -31,7 +31,7 @@ const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemPr
           'text-left',
           'rounded',
           'transition',
-          'transition-all',
+          'duration-75',
           {
             'bg-blue-500 text-white': highlightedIndex === index,
             'text-gray-700': highlightedIndex !== index,
