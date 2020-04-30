@@ -1,5 +1,3 @@
-const Dotenv = require('dotenv-webpack');
-
 // Override webpack config defaults
 export default {
   webpack(config, env, helpers) {
@@ -9,8 +7,5 @@ export default {
 
     // Inline SVGs
     babelConfig.plugins.push('inline-react-svg');
-
-    // Add .env file support
-    config.plugins.push(new Dotenv({ defaults: true }));
   },
 };
