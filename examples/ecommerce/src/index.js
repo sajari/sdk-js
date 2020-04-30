@@ -138,6 +138,9 @@ export default class App extends Component {
 
         clearTimeout(this.renderTimer);
 
+        // Delay slightly longer if no results so if someone is typing they don't get a flash of no results
+        const delay = results.length > 0 ? 20 : 500;
+
         this.renderTimer = setTimeout(
           () =>
             this.setState({
@@ -147,7 +150,7 @@ export default class App extends Component {
               results,
               init: false,
             }),
-          20,
+          delay,
         );
 
         if (setHistory) {
