@@ -11,6 +11,6 @@ export default {
     babelConfig.plugins.push('inline-react-svg');
 
     // Add .env file support
-    config.plugins.push(new Dotenv());
+    config.plugins.push(new Dotenv({ defaults: true }));
   },
 };
