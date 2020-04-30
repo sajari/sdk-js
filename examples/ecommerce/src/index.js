@@ -165,12 +165,12 @@ export default class App extends Component {
       });
   };
 
-  handleInput = (inputValue, isSelect) => {
+  handleInput = (value, isSelect = false) => {
     const { instant, query, suggest } = this.state;
     const search = instant || isSelect;
 
     // Already have results for this query
-    if (query === inputValue) {
+    if (query === value) {
       return;
     }
 
@@ -182,7 +182,7 @@ export default class App extends Component {
     // If we only need to update suggestions
     if (instant || !search) {
       if (suggest && !isSelect) {
-        this.getSuggestions(inputValue);
+        this.getSuggestions(value);
       }
 
       if (!search) {
@@ -193,8 +193,9 @@ export default class App extends Component {
     // Perform a full search
     this.setState(
       {
-        query: inputValue,
-        page: 1, // Reset page on new query
+        query: value,
+        // Reset page on new query
+        page: 1,
       },
       () => {
         clearTimeout(this.inputTimer);
@@ -518,9 +519,9 @@ export default class App extends Component {
     return (
       <Fragment>
         <div className="box-content fixed inset-x-0 top-0 z-50 flex items-center h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50">
-          <div className="relative w-full max-w-screen-xl px-6 mx-auto">
+          <div className="relative w-full max-w-screen-xl px-4 mx-auto lg:px-6">
             <div className="flex items-center">
-              <Logomark className="mr-6" />
+              <Logomark className="mr-4 lg:mr-6" />
 
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
@@ -531,16 +532,22 @@ export default class App extends Component {
                   instant={instant}
                   onInput={this.handleInput}
                   items={suggest ? suggestions : undefined}
+                  suggest={suggest}
                   autofocus
                 />
 
                 {!instant && (
-                  <Button type="button" className="ml-2" onClick={this.search} style={buttonStyles.primary}>
+                  <Button
+                    type="button"
+                    className="hidden ml-2 md:inline-flex"
+                    onClick={this.search}
+                    style={buttonStyles.primary}
+                  >
                     Search
                   </Button>
                 )}
 
-                <div className="items-center hidden ml-6 lg:flex">
+                <div className="items-center hidden ml-3 md:ml-6 lg:flex">
                   <Checkbox id="suggest" label="Suggestions" onInput={this.toggleSuggest} checked={suggest} />
 
                   <Checkbox
