@@ -1,17 +1,21 @@
 import filterTypes from './src/components/Filters/types';
 
+const endpoint = process.env.ENDPOINT;
+const project = process.env.PROJECT;
+const collection = process.env.COLLECTION;
+const pipeline = process.env.PIPELINE;
+const version = process.env.VERSION;
+
 /**
  * Your environment configuration
  */
 export default {
-  // These details can be found in your console
-  project: '1586987615805531725',
-  collection: 'best-buy',
-  pipeline: 'query',
-  version: undefined, // undefined will use the default version
-
-  // For production this can be undefined
-  endpoint: 'https://jsonapi-au-staging-valkyrie.sajari.com',
+  // Refer to the .env file for these values
+  endpoint,
+  project,
+  collection,
+  pipeline,
+  version,
 
   // Which facets to display
   // Order in the UI is defined by their order here
