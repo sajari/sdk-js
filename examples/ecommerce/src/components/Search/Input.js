@@ -8,7 +8,7 @@ import Label from '../Forms/Label';
 import { IconSearch } from '../Icons';
 import Suggestions from './Suggestions';
 
-const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput, value, ...rest }) => {
+const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }) => {
   const {
     isOpen,
     getLabelProps,
@@ -44,10 +44,24 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
           autoCorrect="off"
           spellCheck="false"
           type="search"
-          // enterkeyhint="search"
+          enterkeyhint="search"
           {...rest}
           {...getInputProps({
             onFocus: openMenu,
+            onKeyDown: (event) => {
+              if (!instant && event.key === 'Enter') {
+                // Let downshift handle selection from suggestions
+                if (suggest && highlightedIndex > -1) {
+                  return;
+                }
+
+                // Prevent Downshift's default 'Enter' behavior.
+                event.nativeEvent.preventDownshiftDefault = true;
+
+                // Perform a search
+                onInput(inputValue, true);
+              }
+            },
           })}
         />
 
@@ -56,7 +70,7 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
         </div>
 
         {!instant && (
-          <div className="absolute inset-y-0 right-0 flex items-center hidden pr-4 text-sm text-gray-500 pointer-events-none md:block">
+          <div className="absolute inset-y-0 right-0 items-center hidden pr-4 text-sm text-gray-500 pointer-events-none md:flex">
             Press ⏎ to search
           </div>
         )}

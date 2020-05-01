@@ -5,19 +5,19 @@ import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
 
 import env from '../sajari.config';
-import Button, { buttonSizes, buttonStyles } from './Components/Button';
-import Filters from './Components/Filters';
-import Checkbox from './Components/Forms/Checkbox';
-import Input from './Components/Forms/Input';
-import Label from './Components/Forms/Label';
-import Select from './Components/Forms/Select';
-import { IconGrid, IconList, Logomark } from './Components/Icons';
-import MenuToggle from './Components/MenuToggle';
-import Message from './Components/Message';
-import Pagination from './Components/Pagination';
-import Results from './Components/Results';
-import SearchInput from './Components/Search/Input';
-import Request from './Models/Request';
+import Button, { buttonSizes, buttonStyles } from './components/Button';
+import Filters from './components/Filters';
+import Checkbox from './components/Forms/Checkbox';
+import Input from './components/Forms/Input';
+import Label from './components/Forms/Label';
+import Select from './components/Forms/Select';
+import { IconGrid, IconList, Logomark } from './components/Icons';
+import MenuToggle from './components/MenuToggle';
+import Message from './components/Message';
+import Pagination from './components/Pagination';
+import Results from './components/Results';
+import SearchInput from './components/Search/Input';
+import Request from './models/Request';
 import { parseStateFromUrl, setStateToUrl } from './utils/history';
 import { formatNumber } from './utils/number';
 import { toSentenceCase } from './utils/string';
@@ -138,6 +138,9 @@ export default class App extends Component {
 
         clearTimeout(this.renderTimer);
 
+        // Delay slightly longer if no results so if someone is typing they don't get a flash of no results
+        const delay = results.length > 0 ? 20 : 500;
+
         this.renderTimer = setTimeout(
           () =>
             this.setState({
@@ -147,7 +150,7 @@ export default class App extends Component {
               results,
               init: false,
             }),
-          20,
+          delay,
         );
 
         if (setHistory) {
@@ -162,12 +165,12 @@ export default class App extends Component {
       });
   };
 
-  handleInput = (inputValue, isSelect) => {
+  handleInput = (value, isSelect = false) => {
     const { instant, query, suggest } = this.state;
     const search = instant || isSelect;
 
     // Already have results for this query
-    if (query === inputValue) {
+    if (query === value) {
       return;
     }
 
@@ -179,7 +182,7 @@ export default class App extends Component {
     // If we only need to update suggestions
     if (instant || !search) {
       if (suggest && !isSelect) {
-        this.getSuggestions(inputValue);
+        this.getSuggestions(value);
       }
 
       if (!search) {
@@ -190,8 +193,9 @@ export default class App extends Component {
     // Perform a full search
     this.setState(
       {
-        query: inputValue,
-        page: 1, // Reset page on new query
+        query: value,
+        // Reset page on new query
+        page: 1,
       },
       () => {
         clearTimeout(this.inputTimer);
@@ -515,9 +519,9 @@ export default class App extends Component {
     return (
       <Fragment>
         <div className="box-content fixed inset-x-0 top-0 z-50 flex items-center h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50">
-          <div className="relative w-full max-w-screen-xl px-6 mx-auto">
+          <div className="relative w-full max-w-screen-xl px-4 mx-auto lg:px-6">
             <div className="flex items-center">
-              <Logomark className="mr-6" />
+              <Logomark className="mr-4 lg:mr-6" />
 
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
@@ -528,16 +532,22 @@ export default class App extends Component {
                   instant={instant}
                   onInput={this.handleInput}
                   items={suggest ? suggestions : undefined}
+                  suggest={suggest}
                   autofocus
                 />
 
                 {!instant && (
-                  <Button type="button" className="ml-2" onClick={this.search} style={buttonStyles.primary}>
+                  <Button
+                    type="button"
+                    className="hidden ml-2 md:inline-flex"
+                    onClick={this.search}
+                    style={buttonStyles.primary}
+                  >
                     Search
                   </Button>
                 )}
 
-                <div className="items-center hidden ml-6 lg:flex">
+                <div className="items-center hidden ml-3 md:ml-6 lg:flex">
                   <Checkbox id="suggest" label="Suggestions" onInput={this.toggleSuggest} checked={suggest} />
 
                   <Checkbox

@@ -4,7 +4,7 @@ import is from '../../utils/is';
 import GridItem from './GridItem';
 import ListItem from './ListItem';
 
-const fields = { _id: '_id', ...env.fields };
+const fields = { id: '_id', ...env.fields };
 
 const map = (data) =>
   Object.entries(fields).reduce(
