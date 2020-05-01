@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import { Component, Fragment } from 'preact';
 
+import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { sliceObject, sortObject } from '../../utils/object';
 import { toKebabCase } from '../../utils/string';
 import Checkbox from '../Forms/Checkbox';
 import Rating from '../Rating';
+import Header from './Header';
 import filterTypes from './types';
 
 const formatLabel = (label, type) => {
@@ -63,7 +65,7 @@ export default class List extends Component {
   };
 
   render() {
-    const { values, items, sort, title, type, onChange } = this.props;
+    const { values, items, sort, title, type, onChange, onReset } = this.props;
     const { expanded } = this.state;
 
     if (!items) {
@@ -80,14 +82,16 @@ export default class List extends Component {
     const slice = count > limit;
     const sorted = sort ? sortObject(items, false, null, values) : items;
     const sliced = slice && !expanded ? sliceObject(sorted, 0, 8) : sorted;
+    const filtered = !is.empty(values);
 
     return (
       <Fragment>
-        <h2 className="mb-2 text-xs font-medium text-gray-400 uppercase">{title}</h2>
+        <Header title={title} filtered={filtered} onReset={onReset} />
 
         <div id={`list-${type}`}>
           {Object.entries(sliced).map(([name, count], index) => {
             const id = `${type}-${toKebabCase(name)}-${index}`;
+            const checked = filtered && values.includes(name);
 
             return (
               <Checkbox
@@ -95,7 +99,7 @@ export default class List extends Component {
                 id={id}
                 key={id}
                 value={name}
-                checked={values && values.includes(name)}
+                checked={checked}
                 count={formatNumber(count)}
                 className={`mb-1 ${type === filterTypes.rating ? 'items-center' : ''}`}
                 onChange={onChange}
