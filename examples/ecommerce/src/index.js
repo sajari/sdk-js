@@ -82,7 +82,7 @@ export default class App extends Component {
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
 
-  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search({ setHistory: false }));
+  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search(false));
 
   updatePipeline = () => {
     const { pipeline, version } = this.state;
@@ -107,7 +107,7 @@ export default class App extends Component {
       });
   };
 
-  search = ({ setHistory = true, delayHistory = false }) => {
+  search = (setHistory = true, delayHistory = false) => {
     const { filters, page, pageSize, query, sort } = this.state;
     const request = new Request(query);
     request.filters = filters;
@@ -199,7 +199,7 @@ export default class App extends Component {
       },
       () => {
         clearTimeout(this.inputTimer);
-        this.inputTimer = setTimeout(() => this.search({ delayHistory: instant }), 30);
+        this.inputTimer = setTimeout(() => this.search(true, instant), 30);
       },
     );
   };
