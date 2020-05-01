@@ -82,7 +82,7 @@ export default class App extends Component {
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
 
-  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search(false, false));
+  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search({ setHistory: false }));
 
   updatePipeline = () => {
     const { pipeline, version } = this.state;
@@ -107,7 +107,7 @@ export default class App extends Component {
       });
   };
 
-  search = (delayHistory = false, setHistory = true) => {
+  search = ({ setHistory = true, delayHistory = false }) => {
     const { filters, page, pageSize, query, sort } = this.state;
     const request = new Request(query);
     request.filters = filters;
@@ -199,7 +199,7 @@ export default class App extends Component {
       },
       () => {
         clearTimeout(this.inputTimer);
-        this.inputTimer = setTimeout(() => this.search(true), 30);
+        this.inputTimer = setTimeout(() => this.search({ delayHistory: instant }), 30);
       },
     );
   };
@@ -396,7 +396,11 @@ export default class App extends Component {
             <form onSubmit={this.setPipeline} className="mb-6">
               <div className="flex items-center mb-2">
                 <h2 className="text-xs font-medium text-gray-400 uppercase">Pipeline</h2>
-                <button type="button" onClick={this.toggleSettingsShown} className="ml-auto text-sm text-blue-500">
+                <button
+                  type="button"
+                  onClick={this.toggleSettingsShown}
+                  className="ml-auto text-xs text-blue-500 uppercase"
+                >
                   {!settingsShown ? 'Show' : 'Hide'}
                 </button>
               </div>

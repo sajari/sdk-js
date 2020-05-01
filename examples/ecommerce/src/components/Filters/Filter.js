@@ -36,6 +36,12 @@ export default class Filter extends Component {
     this.setState({ values }, () => onChange({ field, values }));
   };
 
+  onReset = () => {
+    const { field, onChange = () => {} } = this.props;
+    const values = [];
+    this.setState({ values }, () => onChange({ field, values }));
+  };
+
   render() {
     const { items, query, sort, title, type } = this.props;
     const { values } = this.state;
@@ -47,7 +53,15 @@ export default class Filter extends Component {
     return (
       <div className="mb-4">
         {type === filterTypes.color && (
-          <ColorSwatch title={title} values={values} items={items} type={type} query={query} onChange={this.onChange} />
+          <ColorSwatch
+            title={title}
+            values={values}
+            items={items}
+            type={type}
+            query={query}
+            onChange={this.onChange}
+            onReset={this.onReset}
+          />
         )}
         {type !== filterTypes.color && (
           <List
@@ -58,6 +72,7 @@ export default class Filter extends Component {
             type={type}
             query={query}
             onChange={this.onChange}
+            onReset={this.onReset}
           />
         )}
       </div>
