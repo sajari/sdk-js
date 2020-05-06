@@ -14,7 +14,7 @@
     "url": "git://github.com/sajari/sajari-sdk-js.git"
   },
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
-  "version": "1.0.7",
+  "version": "1.0.6",
   "main": "dist.umd/index.js",
   "types": "dist.types/index.d.ts",
   "files": [
