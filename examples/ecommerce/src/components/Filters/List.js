@@ -4,13 +4,13 @@ import { Component, Fragment } from 'preact';
 import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { sliceObject, sortObject } from '../../utils/object';
-import { toKebabCase } from '../../utils/string';
+import { toKebabCase, transformCase } from '../../utils/string';
 import Checkbox from '../Forms/Checkbox';
 import Rating from '../Rating';
 import Header from './Header';
 import filterTypes from './types';
 
-const formatLabel = (label, type) => {
+const formatLabel = (label, type, transform) => {
   switch (type) {
     case filterTypes.price:
       if (label.includes(' - ')) {
@@ -32,7 +32,7 @@ const formatLabel = (label, type) => {
       return <Rating value={Number(label)} />;
 
     default:
-      return label;
+      return transformCase(label, transform);
   }
 };
 
@@ -65,7 +65,7 @@ export default class List extends Component {
   };
 
   render() {
-    const { values, items, sort, title, type, onChange, onReset } = this.props;
+    const { values, items, sort, title, transform, type, onChange, onReset } = this.props;
     const { expanded } = this.state;
 
     if (!items) {
@@ -95,7 +95,7 @@ export default class List extends Component {
 
             return (
               <Checkbox
-                label={formatLabel(name, type)}
+                label={formatLabel(name, type, transform)}
                 id={id}
                 key={id}
                 value={name}

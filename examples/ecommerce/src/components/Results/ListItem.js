@@ -21,9 +21,11 @@ const ListItem = ({ data }) => (
           <div className="mt-1 md:flex md:items-center">
             <p className="hidden text-xs text-gray-400 md:block">{data.category}</p>
 
-            <p className="flex items-center mt-2 md:mt-0 md:ml-4">
-              <Rating value={Number(data.rating)} />
-            </p>
+            {data.rating && (
+              <p className="flex items-center mt-2 md:mt-0 md:ml-4">
+                <Rating value={Number(data.rating)} />
+              </p>
+            )}
           </div>
         </div>
 

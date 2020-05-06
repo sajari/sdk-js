@@ -13,6 +13,14 @@ export default {
   // For production this can be undefined
   endpoint: 'https://jsonapi-au-staging-valkyrie.sajari.com',
 
+  // Default display type (grid|list)
+  display: 'list',
+
+  // Set the tracking config
+  tracking: {
+    field: 'url', // Usually this is 'url'
+  },
+
   // Which facets to display
   // Order in the UI is defined by their order here
   // field: Field to use in results
