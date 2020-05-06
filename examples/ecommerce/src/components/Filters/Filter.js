@@ -43,7 +43,7 @@ export default class Filter extends Component {
   };
 
   render() {
-    const { items, query, sort, title, type } = this.props;
+    const { items, query, sort, title, transform, type } = this.props;
     const { values } = this.state;
 
     if (!items || !Object.keys(items).length) {
@@ -71,6 +71,7 @@ export default class Filter extends Component {
             sort={sort}
             type={type}
             query={query}
+            transform={transform}
             onChange={this.onChange}
             onReset={this.onReset}
           />

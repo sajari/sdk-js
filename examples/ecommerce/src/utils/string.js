@@ -1,6 +1,19 @@
 import is from './is';
 
 /**
+ * Format a template string with arguments
+ * @param {String} input
+ * @param {...String} args
+ */
+export function format(input, ...args) {
+  if (is.empty(input)) {
+    return input;
+  }
+
+  return input.toString().replace(/{(\d+)}/g, (match, i) => args[i].toString());
+}
+
+/**
  * Replace all occurances of a string in a string
  * @param {String} input
  * @param {String} find
@@ -19,17 +32,11 @@ export function toSentenceCase(input = '') {
 }
 
 /**
- * Format a template string with arguments
+ * Convert a string to title case
  * @param {String} input
- * @param {...String} args
  */
-export function format(input, ...args) {
-  if (is.empty(input)) {
-    return input;
-  }
-
-  return input.toString().replace(/{(\d+)}/g, (match, i) => args[i].toString());
-}
+export const toTitleCase = (input = '') =>
+  input.toString().replace(/\w\S*/g, (text) => `${text.charAt(0).toUpperCase()}${text.substr(1).toLowerCase()}`);
 
 /**
  * Convert a string to kebab-case (mmm... kebabs 🌯🤤)
@@ -56,4 +63,30 @@ export function toKebabCase(input = '') {
   result = result.replace(/^-+/, '').replace(/-$/, '');
 
   return result;
+}
+
+/**
+ * Transform the case of a string
+ * @param {String} input
+ * @param {String} case */
+export function transformCase(input = '', type = '') {
+  switch (type) {
+    case 'uppercase':
+      return input.toUpperCase();
+
+    case 'lowercase':
+      return input.toLowerCase();
+
+    case 'titlecase':
+      return toTitleCase(input);
+
+    case 'sentencecase':
+      return toSentenceCase(input);
+
+    case 'kebabcase':
+      return toKebabCase(input);
+
+    default:
+      return input;
+  }
 }

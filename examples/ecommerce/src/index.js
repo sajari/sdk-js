@@ -22,7 +22,7 @@ import { parseStateFromUrl, setStateToUrl } from './utils/history';
 import { formatNumber } from './utils/number';
 import { toSentenceCase } from './utils/string';
 
-const { project, collection, pipeline, version, endpoint, facets } = env;
+const { project, collection, pipeline, version, endpoint, facets, display, tracking } = env;
 
 const defaults = {
   pageSize: 15,
@@ -47,7 +47,7 @@ export default class App extends Component {
       // Options
       sort: null,
       instant: true,
-      grid: false,
+      grid: display && display === 'grid',
       suggest: false,
       suggestions: [],
       settingsShown: false,
@@ -61,7 +61,7 @@ export default class App extends Component {
 
   componentDidMount() {
     this.client = new Client(project, collection, endpoint);
-    this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, 'url', {}));
+    this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {}));
 
     this.updatePipeline();
 

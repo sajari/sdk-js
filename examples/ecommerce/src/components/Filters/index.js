@@ -12,7 +12,7 @@ const Filters = ({ aggregates, facets, filters, query, onChange }) => {
 
   return (
     <Fragment>
-      {facets.map(({ field, sort, title, type = filterTypes.list }) => (
+      {facets.map(({ field, sort, title, type = filterTypes.list, transform }) => (
         <Filter
           field={field}
           title={title}
@@ -21,6 +21,7 @@ const Filters = ({ aggregates, facets, filters, query, onChange }) => {
           values={filters[field]}
           query={query}
           sort={sort}
+          transform={transform}
           onChange={onChange}
         />
       ))}
