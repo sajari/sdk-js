@@ -495,23 +495,36 @@ class QueryPipeline extends EventEmitter {
     const aggregates = Object.entries(
       jsonProto.searchResponse?.aggregates || {}
     )
-      .map(([key, aggreagate]) => {
-        if ("metric" in aggreagate) {
+      .map(([key, aggregate]) => {
+        if ("metric" in aggregate) {
           let [t, k] = key.split(".");
           return {
             type: t,
             key: k,
-            value: aggreagate.metric.value,
+            value: aggregate.metric.value,
           };
         }
-        if ("count" in aggreagate) {
+        if ("count" in aggregate) {
           return {
             type: "count",
             key: key.replace(/^count./, ""),
-            value: aggreagate.count.counts,
+            value: aggregate.count.counts,
           };
         }
-        return { key, value: aggreagate };
+        if ("buckets" in aggregate) {
+          return {
+            type: "count",
+            key: "buckets",
+            value: Object.values(aggregate.buckets.buckets).reduce(
+              (obj, { name, count }) =>
+                Object.assign(obj, {
+                  [name]: count,
+                }),
+              {}
+            ),
+          };
+        }
+        return { key, value: aggregate };
       })
       .reduce<Aggregates>((obj, item) => {
         if (item.type === undefined) {
@@ -531,23 +544,36 @@ class QueryPipeline extends EventEmitter {
     const aggregateFilters = Object.entries(
       jsonProto.searchResponse?.aggregateFilters || {}
     )
-      .map(([key, aggreagate]) => {
-        if ("metric" in aggreagate) {
+      .map(([key, aggregate]) => {
+        if ("metric" in aggregate) {
           let [t, k] = key.split(".");
           return {
             type: t,
             key: k,
-            value: aggreagate.metric.value,
+            value: aggregate.metric.value,
           };
         }
-        if ("count" in aggreagate) {
+        if ("count" in aggregate) {
           return {
             type: "count",
             key: key.replace(/^count./, ""),
-            value: aggreagate.count.counts,
+            value: aggregate.count.counts,
           };
         }
-        return { key, value: aggreagate };
+        if ("buckets" in aggregate) {
+          return {
+            type: "count",
+            key: "buckets",
+            value: Object.values(aggregate.buckets.buckets).reduce(
+              (obj, { name, count }) =>
+                Object.assign(obj, {
+                  [name]: count,
+                }),
+              {}
+            ),
+          };
+        }
+        return { key, value: aggregate };
       })
       .reduce<Aggregates>((obj, item) => {
         if (item.type === undefined) {
@@ -753,7 +779,7 @@ interface ResultProto {
  */
 type AggregatesProto = Record<
   string,
-  CountAggregateProto | MetricAggregateProto
+  CountAggregateProto | MetricAggregateProto | BucketAggregateProto
 >;
 
 /**
@@ -762,6 +788,21 @@ type AggregatesProto = Record<
 interface CountAggregateProto {
   count: {
     counts: Record<string, number>;
+  };
+}
+
+/**
+ * @hidden
+ */
+interface BucketAggregateProto {
+  buckets: {
+    buckets: Record<
+      string,
+      {
+        name: string;
+        count: number;
+      }
+    >;
   };
 }
 
