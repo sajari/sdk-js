@@ -39,18 +39,22 @@ const sortColors = (raw) =>
     return obj;
   }, {});
 
-const filterColors = (raw) => {
+const filterColors = (items) => {
   const keys = Object.keys(allowedColors);
 
   return sortColors(
-    Object.keys(raw)
+    Object.keys(items)
       .filter((key) => keys.includes(key))
-      .reduce((obj, key) => {
-        const count = raw[key];
-        const className = allowedColors[key];
-        obj[key] = { count, className };
-        return obj;
-      }, {}),
+      .reduce(
+        (obj, key) =>
+          Object.assign(obj, {
+            [key]: {
+              ...items[key],
+              className: allowedColors[key],
+            },
+          }),
+        {},
+      ),
   );
 };
 
@@ -70,9 +74,9 @@ const ColorSwatch = ({ values, items, title, type, onChange, onReset }) => {
       <Header title={title} filtered={!is.empty(values)} onReset={onReset} />
 
       <div className="grid grid-cols-7 gap-4 lg:gap-2">
-        {Object.entries(filtered).map(([name, { count, className }], index) => {
-          const id = `${type}-${toKebabCase(name)}-${index}`;
-          const checked = values.includes(name);
+        {Object.entries(filtered).map(([name, { className, count, value }], index) => {
+          const id = `${type}-${toKebabCase(value)}-${index}`;
+          const checked = values.includes(value);
 
           return (
             <Label

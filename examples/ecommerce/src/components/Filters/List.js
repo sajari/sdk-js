@@ -80,7 +80,7 @@ export default class List extends Component {
 
     const limit = 8;
     const slice = count > limit;
-    const sorted = sort ? sortObject(items, false, null, values) : items;
+    const sorted = sort ? sortObject(items, false, 'count', values) : items;
     const sliced = slice && !expanded ? sliceObject(sorted, 0, 8) : sorted;
     const filtered = !is.empty(values);
 
@@ -89,16 +89,16 @@ export default class List extends Component {
         <Header title={title} filtered={filtered} onReset={onReset} />
 
         <div id={`list-${type}`}>
-          {Object.entries(sliced).map(([name, count], index) => {
-            const id = `${type}-${toKebabCase(name)}-${index}`;
-            const checked = filtered && values.includes(name);
+          {Object.entries(sliced).map(([name, { value, count }], index) => {
+            const id = `${type}-${toKebabCase(value)}-${index}`;
+            const checked = filtered && values.includes(value);
 
             return (
               <Checkbox
                 label={formatLabel(name, type, transform)}
                 id={id}
                 key={id}
-                value={name}
+                value={value}
                 checked={checked}
                 count={formatNumber(count)}
                 className={`mb-1 ${type === filterTypes.rating ? 'items-center' : ''}`}
