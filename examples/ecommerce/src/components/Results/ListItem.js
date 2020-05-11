@@ -30,7 +30,7 @@ const ListItem = ({ data }) => (
         </div>
 
         <div className="mt-3 md:mt-0 md:ml-6 md:text-right">
-          {data.price && <h2>{formatNumber(data.price, 'USD', true)}</h2>}
+          {data.price && <h2>{formatNumber(Number(data.price), 'USD', true)}</h2>}
 
           {data.freeShipping === 'true' && (
             <span className="inline-flex items-center text-xs font-medium text-green-500 md:ml-4">
