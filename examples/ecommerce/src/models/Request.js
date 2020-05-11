@@ -54,7 +54,7 @@ export default class Request {
 
   serialize = () => ({
     q: this.query,
-    filter: this.filter || '_id != ""',
+    filter: !is.empty(this.filter) ? this.filter : '_id != ""',
     page: this.page.toString(),
     resultsPerPage: this.pageSize.toString(),
     fields: '',
