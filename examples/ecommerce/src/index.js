@@ -127,7 +127,7 @@ export default class App extends Component {
       request.sort = sort;
     }
 
-    console.log(JSON.stringify(request.serialize(), null, 2));
+    // console.log(JSON.stringify(request.serialize(), null, 2));
 
     // Hide the suggestions and error
     this.setState({
@@ -172,7 +172,7 @@ export default class App extends Component {
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.error('Query failed', { ...request.serialize() });
+        console.error('Query failed', JSON.stringify(request.serialize(), null, 2));
         this.setState({ aggregates, aggregateFilters, time, totalResults, results, init: false, error });
       });
   };
