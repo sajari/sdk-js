@@ -905,10 +905,10 @@
     kleur "^3.0.3"
     loader-utils "^1.1.0"
 
-"@sajari/sdk-js@^2.0.0-alpha.8":
-  version "2.0.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/@sajari/sdk-js/-/sdk-js-2.0.0-alpha.8.tgz#5fb7ad2ee0a522a2eb62d1b842ecc60ee7dcdbe3"
-  integrity sha512-Mv7Lzbm+7VZra/sG9aJ3aL9yKMRKLCMx8efyD4RTEbz5ghgWGqqPtebTAjIGftLdm/1aDdI7roZ68Hm4i9yoPg==
+"@sajari/sdk-js@next":
+  version "2.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@sajari/sdk-js/-/sdk-js-2.0.0-alpha.9.tgz#b689af02f666e2119639bb709648664fe3cbf449"
+  integrity sha512-D9wlWuOd3bF7kFofhAe2EMeSflfcUcZL5LJYwA9Fo4g4psWZsXunrIZO4cJc4d0UevQ7UsC1wVhgmq9N6H1C7g==
 
 "@sampotts/eslint-config@sampotts/eslint-config":
   version "0.0.1"
