@@ -22,7 +22,7 @@ const GridItem = ({ data }) => (
       </p>
     )}
 
-    {data.price && <h2 className="mt-2 text-gray-500">{formatNumber(data.price, 'USD', true)}</h2>}
+    {data.price && <h2 className="mt-2 text-gray-500">{formatNumber(Number(data.price), 'USD', true)}</h2>}
 
     {data.freeShipping === 'true' && (
       <span className="inline-flex items-center ml-4 text-xs font-medium text-green-500">
