@@ -16,9 +16,11 @@ const GridItem = ({ data }) => (
       </a>
     </h1>
 
-    <p className="flex items-center justify-center mt-2">
-      <Rating value={Number(data.rating)} />
-    </p>
+    {data.rating && (
+      <p className="flex items-center justify-center mt-2">
+        <Rating value={Number(data.rating)} />
+      </p>
+    )}
 
     {data.price && <h2 className="mt-2 text-gray-500">{formatNumber(data.price, 'USD', true)}</h2>}
 

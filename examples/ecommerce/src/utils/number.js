@@ -1,3 +1,5 @@
+import is from './is';
+
 /**
  * Format a number into a localised format
  *
@@ -5,7 +7,7 @@
  * @param {String} currencyCode - The ISO currency code
  */
 export function formatNumber(input = 0, currencyCode = '', neutral = false) {
-  if (Number.isNaN(input)) {
+  if (!is.number(input)) {
     return input;
   }
 

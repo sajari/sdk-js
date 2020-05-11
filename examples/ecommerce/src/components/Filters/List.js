@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
 import { Component, Fragment } from 'preact';
 
+import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { sliceObject, sortObject } from '../../utils/object';
-import { toKebabCase } from '../../utils/string';
+import { toKebabCase, transformCase } from '../../utils/string';
 import Checkbox from '../Forms/Checkbox';
 import Rating from '../Rating';
+import Header from './Header';
 import filterTypes from './types';
 
-const formatLabel = (label, type) => {
+const formatLabel = (label, type, transform) => {
   switch (type) {
     case filterTypes.price:
       if (label.includes(' - ')) {
@@ -30,7 +32,7 @@ const formatLabel = (label, type) => {
       return <Rating value={Number(label)} />;
 
     default:
-      return label;
+      return transformCase(label, transform);
   }
 };
 
@@ -63,7 +65,7 @@ export default class List extends Component {
   };
 
   render() {
-    const { values, items, sort, title, type, onChange } = this.props;
+    const { values, items, sort, title, transform, type, onChange, onReset } = this.props;
     const { expanded } = this.state;
 
     if (!items) {
@@ -78,24 +80,26 @@ export default class List extends Component {
 
     const limit = 8;
     const slice = count > limit;
-    const sorted = sort ? sortObject(items, false, null, values) : items;
+    const sorted = sort ? sortObject(items, false, 'count', values) : items;
     const sliced = slice && !expanded ? sliceObject(sorted, 0, 8) : sorted;
+    const filtered = !is.empty(values);
 
     return (
       <Fragment>
-        <h2 className="mb-2 text-xs font-medium text-gray-400 uppercase">{title}</h2>
+        <Header title={title} filtered={filtered} onReset={onReset} />
 
         <div id={`list-${type}`}>
-          {Object.entries(sliced).map(([name, count], index) => {
-            const id = `${type}-${toKebabCase(name)}-${index}`;
+          {Object.entries(sliced).map(([name, { value, count }], index) => {
+            const id = `${type}-${toKebabCase(value)}-${index}`;
+            const checked = filtered && values.includes(value);
 
             return (
               <Checkbox
-                label={formatLabel(name, type)}
+                label={formatLabel(name, type, transform)}
                 id={id}
                 key={id}
-                value={name}
-                checked={values && values.includes(name)}
+                value={value}
+                checked={checked}
                 count={formatNumber(count)}
                 className={`mb-1 ${type === filterTypes.rating ? 'items-center' : ''}`}
                 onChange={onChange}
