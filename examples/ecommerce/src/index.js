@@ -19,10 +19,11 @@ import Results from './components/Results';
 import SearchInput from './components/Search/Input';
 import Request from './models/Request';
 import { parseStateFromUrl, setStateToUrl } from './utils/history';
+import is from './utils/is';
 import { formatNumber } from './utils/number';
 import { toSentenceCase } from './utils/string';
 
-const { project, collection, pipeline, version, endpoint, facets, display, tracking } = env;
+const { project, collection, pipeline, version, endpoint, facets, buckets, display, tracking } = env;
 
 const defaults = {
   pageSize: 15,
@@ -40,6 +41,7 @@ export default class App extends Component {
       init: true,
       results: null,
       aggregates: null,
+      aggregateFilters: null,
       totalResults: 0,
       time: 0,
       error: null,
@@ -113,11 +115,19 @@ export default class App extends Component {
     request.filters = filters;
     request.pageSize = pageSize;
     request.page = page;
-    request.facets = facets.map((f) => f.field);
+    request.facets = facets;
+    request.buckets = buckets;
+    request.filter = Object.entries(filters)
+      .filter(([key]) => facets.find(({ field, buckets }) => field === key && !is.empty(buckets)))
+      .reduce((filter, [, values]) => values.map((v) => buckets[v]), [])
+      .map((v) => `(${v})`)
+      .join(' OR ');
 
     if (sort) {
       request.sort = sort;
     }
+
+    // console.log(JSON.stringify(request.serialize(), null, 2));
 
     // Hide the suggestions and error
     this.setState({
@@ -128,12 +138,13 @@ export default class App extends Component {
     let time = 0;
     let totalResults = 0;
     let aggregates = null;
+    let aggregateFilters = null;
 
     this.pipeline.main
       .search(request.serialize(), this.session.next(request.serialize()))
       .then(([response]) => {
         if (response) {
-          ({ aggregateFilters: aggregates, results, time, totalResults } = response);
+          ({ aggregateFilters, aggregates, results, time, totalResults } = response);
         }
 
         clearTimeout(this.renderTimer);
@@ -145,6 +156,7 @@ export default class App extends Component {
           () =>
             this.setState({
               aggregates,
+              aggregateFilters,
               time,
               totalResults,
               results,
@@ -160,8 +172,8 @@ export default class App extends Component {
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.error('Query failed', { ...request.serialize() });
-        this.setState({ aggregates, time, totalResults, results, init: false, error });
+        console.error('Query failed', JSON.stringify(request.serialize(), null, 2));
+        this.setState({ aggregates, aggregateFilters, time, totalResults, results, init: false, error });
       });
   };
 
@@ -330,6 +342,7 @@ export default class App extends Component {
   renderSidebar = () => {
     const {
       aggregates,
+      aggregateFilters,
       filters,
       instant,
       query,
@@ -387,7 +400,9 @@ export default class App extends Component {
 
             <Filters
               facets={facets}
+              buckets={buckets}
               aggregates={aggregates}
+              aggregateFilters={aggregateFilters}
               filters={filters}
               query={query}
               onChange={this.setFilter}

@@ -5,26 +5,57 @@ import is from '../../utils/is';
 import Filter from './Filter';
 import filterTypes from './types';
 
-const Filters = ({ aggregates, facets, filters, query, onChange }) => {
-  if (is.empty(facets) || is.empty(aggregates)) {
+const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => {
+  if (is.empty(facets)) {
     return null;
   }
 
   return (
     <Fragment>
-      {facets.map(({ field, sort, title, type = filterTypes.list, transform }) => (
-        <Filter
-          field={field}
-          title={title}
-          type={type}
-          items={aggregates[field].count}
-          values={filters[field]}
-          query={query}
-          sort={sort}
-          transform={transform}
-          onChange={onChange}
-        />
-      ))}
+      {facets.map(({ field, buckets, sort, title, type = filterTypes.list, transform }) => {
+        let items = {};
+        const values = filters[field];
+
+        // Get items from aggregates for regular facets
+        if (is.empty(buckets)) {
+          items = Object.entries(aggregateFilters[field].count).reduce(
+            (obj, [title, count]) =>
+              Object.assign(obj, {
+                [title]: {
+                  value: title,
+                  count,
+                },
+              }),
+            {},
+          );
+        }
+        // Map the bucket types to title / filter format
+        else {
+          items = Object.entries(buckets).reduce(
+            (obj, [type, title]) =>
+              Object.assign(obj, {
+                [title]: {
+                  value: type,
+                  count: aggregates.buckets.count[type],
+                },
+              }),
+            {},
+          );
+        }
+
+        return (
+          <Filter
+            field={field}
+            title={title}
+            type={type}
+            items={items}
+            values={values}
+            sort={sort}
+            transform={transform}
+            {...rest}
+          />
+        );
+      })}
     </Fragment>
   );
 };
