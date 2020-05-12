@@ -6,7 +6,7 @@ import Image from './Image';
 
 const ListItem = ({ data }) => (
   <article className="flex items-center w-full mb-8" key={data.id}>
-    <a href={data.url} target="_blank" rel="noreferrer noopener" className="block w-24 mr-6">
+    <a href={data.url} target="_blank" rel="noreferrer noopener" className="block w-24 h-24 mr-6">
       <Image src={data.image} alt={data.title} />
     </a>
 
