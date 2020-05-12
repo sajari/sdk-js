@@ -12,7 +12,7 @@ const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemPr
       return (
         <Fragment>
           {inputValue}
-          <span className={classnames('font-medium', !selected ? 'text-gray-900' : '')}>
+          <span className={classnames('font-semibold', !selected ? 'text-gray-900' : '')}>
             {item.replace(inputValue, '')}
           </span>
         </Fragment>
