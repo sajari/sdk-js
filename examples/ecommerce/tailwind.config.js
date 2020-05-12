@@ -12,6 +12,9 @@ module.exports = {
       spacing: {
         '(screen-20)': 'calc(100vh - 5rem)',
       },
+      padding: {
+        full: '100%',
+      },
     },
     linearGradientColors: (theme) => theme('colors'),
   },
