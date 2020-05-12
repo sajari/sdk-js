@@ -17,10 +17,16 @@ module.exports = {
       },
     },
     linearGradientColors: (theme) => theme('colors'),
+    truncate: {
+      lines: {
+        2: '2',
+        3: '3',
+      },
+    },
   },
   variants: {
     zIndex: ['responsive', 'hover', 'focus'],
     boxShadow: ['responsive', 'hover', 'focus', 'focus-within'],
   },
-  plugins: [require('@tailwindcss/ui'), require('tailwindcss-gradients')],
+  plugins: [require('@tailwindcss/ui'), require('tailwindcss-gradients'), require('tailwindcss-truncate-multiline')()],
 };
