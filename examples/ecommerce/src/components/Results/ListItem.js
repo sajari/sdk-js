@@ -42,7 +42,7 @@ const ListItem = ({ data }) => (
       </div>
 
       <p
-        className="hidden mt-2 text-sm text-gray-500 md:block"
+        className="mt-2 text-sm text-gray-500 truncate-2-lines"
         dangerouslySetInnerHTML={{ __html: data.description }}
       />
     </div>
