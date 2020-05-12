@@ -132,7 +132,9 @@ class Image extends Component {
         onError={this.onError}
         ref={this.setRef}
         loading="lazy"
-        className={classnames('rounded', 'transition', 'duration-200', { 'opacity-0': !loaded })}
+        className={classnames('rounded', 'transition', 'duration-200', 'object-contain', 'max-h-full', {
+          'opacity-0': !loaded,
+        })}
       />
     );
   };
