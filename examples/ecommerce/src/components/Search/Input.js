@@ -22,7 +22,7 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
     openMenu,
   } = useCombobox({
     items,
-    selectedItem: value,
+    initialInputValue: value,
     initialIsOpen: !is.empty(items),
     onInputValueChange: ({ inputValue }) => onInput(inputValue),
     onSelectedItemChange: ({ inputValue }) => onInput(inputValue, true),
