@@ -58,6 +58,9 @@ export default class App extends Component {
       // Pipeline
       pipeline,
       version,
+
+      // Merge state from URL
+      ...parseStateFromUrl({ defaults }),
     };
   }
 
@@ -67,9 +70,9 @@ export default class App extends Component {
 
     this.updatePipeline();
 
-    this.parseHistory();
-
     this.listeners(true);
+
+    this.search(false);
   }
 
   componentWillUnmount() {
@@ -83,8 +86,6 @@ export default class App extends Component {
   };
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
-
-  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search(false));
 
   updatePipeline = () => {
     const { pipeline, version } = this.state;
