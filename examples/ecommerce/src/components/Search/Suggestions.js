@@ -4,7 +4,7 @@ import { Fragment } from 'preact';
 
 import is from '../../utils/is';
 
-const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemProps, ...rest }) => {
+const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemProps, getMenuProps, ...rest }) => {
   // Highlight the suggested text rather than their input
   // https://baymard.com/blog/autocomplete-design#7-highlight-the-active-suggestion-desktop-specific
   const highlighter = (item, selected) => {
@@ -37,6 +37,7 @@ const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemPr
         'rounded-lg',
         'shadow',
       )}
+      {...getMenuProps()}
       {...rest}
     >
       {items.map((item, index) => {
