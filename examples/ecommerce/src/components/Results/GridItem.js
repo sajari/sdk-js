@@ -6,8 +6,8 @@ import Image from './Image';
 
 const GridItem = ({ data }) => (
   <article className="mb-8 text-center" key={data.id}>
-    <a href={data.url} target="_blank" rel="noreferrer noopener" className="block mb-3">
-      <Image src={data.image} alt={data.title} />
+    <a href={data.url} target="_blank" rel="noreferrer noopener" className="relative block h-0 mb-3 pb-full">
+      <Image src={data.image} alt={data.title} className="absolute" />
     </a>
 
     <h1 className="mt-4 font-medium text-gray-900">

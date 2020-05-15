@@ -132,18 +132,15 @@ class Image extends Component {
         onError={this.onError}
         ref={this.setRef}
         loading="lazy"
-        className={classnames(
-          'rounded',
-          'transition',
-          'duration-200',
-          { 'opacity-0': !loaded },
-          { 'opacity-1': loaded },
-        )}
+        className={classnames('rounded', 'transition', 'duration-200', 'object-contain', 'max-h-full', {
+          'opacity-0': !loaded,
+        })}
       />
     );
   };
 
   render() {
+    const { className } = this.props;
     const { loaded } = this.state;
 
     return (
@@ -153,9 +150,10 @@ class Image extends Component {
           'items-center',
           'justify-center',
           'w-full',
-          loaded ? 'h-full' : 'h-24',
+          'h-full',
           { 'bg-gray-100': !loaded },
           { rounded: !loaded },
+          className,
         )}
       >
         {this.renderImage()}

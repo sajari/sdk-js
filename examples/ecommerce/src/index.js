@@ -16,7 +16,7 @@ import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
 import Pagination from './components/Pagination';
 import Results from './components/Results';
-import SearchInput from './components/Search/Input';
+import Combobox from './components/Search/Combobox';
 import Request from './models/Request';
 import { parseStateFromUrl, setStateToUrl } from './utils/history';
 import is from './utils/is';
@@ -58,6 +58,9 @@ export default class App extends Component {
       // Pipeline
       pipeline,
       version,
+
+      // Merge state from URL
+      ...parseStateFromUrl({ defaults }),
     };
   }
 
@@ -67,9 +70,9 @@ export default class App extends Component {
 
     this.updatePipeline();
 
-    this.parseHistory();
-
     this.listeners(true);
+
+    this.search(false);
   }
 
   componentWillUnmount() {
@@ -83,8 +86,6 @@ export default class App extends Component {
   };
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
-
-  parseHistory = () => this.setState(parseStateFromUrl({ defaults }), () => this.search(false));
 
   updatePipeline = () => {
     const { pipeline, version } = this.state;
@@ -545,7 +546,7 @@ export default class App extends Component {
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
               <div className="flex-1 lg:flex lg:items-center">
-                <SearchInput
+                <Combobox
                   id="q"
                   value={query}
                   instant={instant}

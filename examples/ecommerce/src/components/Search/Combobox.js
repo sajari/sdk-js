@@ -8,7 +8,7 @@ import Label from '../Forms/Label';
 import { IconSearch } from '../Icons';
 import Suggestions from './Suggestions';
 
-const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }) => {
+const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }) => {
   const {
     isOpen,
     getLabelProps,
@@ -22,7 +22,7 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
     openMenu,
   } = useCombobox({
     items,
-    selectedItem: value,
+    initialInputValue: value,
     initialIsOpen: !is.empty(items),
     onInputValueChange: ({ inputValue }) => onInput(inputValue),
     onSelectedItemChange: ({ inputValue }) => onInput(inputValue, true),
@@ -30,11 +30,11 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
 
   return (
     <div className="relative flex-1">
-      <div className="relative" {...getComboboxProps()}>
-        <Label htmlFor={id} srOnly {...getLabelProps()}>
-          {placeholder}
-        </Label>
+      <Label htmlFor={id} srOnly {...getLabelProps()}>
+        {placeholder}
+      </Label>
 
+      <div className="relative" {...getComboboxProps()}>
         <Input
           id={id}
           className={classnames('pl-10', 'rounded-full', { 'md:pr-40': !instant })}
@@ -80,13 +80,13 @@ const SearchInput = ({ placeholder = 'Search', id, instant, items = [], onInput,
         open={isOpen}
         items={items}
         getItemProps={getItemProps}
+        getMenuProps={getMenuProps}
         inputValue={inputValue}
         highlightedIndex={highlightedIndex}
         selectedItem={selectedItem}
-        {...getMenuProps()}
       />
     </div>
   );
 };
 
-export default SearchInput;
+export default Combobox;
