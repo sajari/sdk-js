@@ -43,16 +43,6 @@ export const request = (
   body: any,
   callback: RequestCallback
 ): void => {
-  if (!navigator.onLine) {
-    const error = new Error(
-      "Search request failed due to a network error. Please check your network connection."
-    ) as RequestError;
-    error.transportErrorCode = TransportError.Connection;
-
-    callback(error);
-    return;
-  }
-
   const req = new XMLHttpRequest();
   req.open("POST", address, true);
   req.setRequestHeader("Accept", "application/json");
