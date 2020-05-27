@@ -7,5 +7,9 @@ export default {
 
     // Inline SVGs
     babelConfig.plugins.push('inline-react-svg');
+
+    // Fix strange issue with URL package alias
+    // https://preact.slack.com/archives/C3M9NTD16/p1590535624120100
+    delete config.resolve.alias.url;
   },
 };

@@ -5,6 +5,7 @@ module.exports = {
   purge: ['./src/**/*.js', './src/**/*.html'],
   theme: {
     fontFamily: {
+      ...defaultTheme.fontFamily,
       sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       mono: ['SFMono-Regular', ...defaultTheme.fontFamily.mono],
     },
