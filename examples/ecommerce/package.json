@@ -22,7 +22,7 @@
     "if-env": "^1.0.4",
     "postcss": "^7.0.31",
     "postcss-clean": "^1.1.0",
-    "preact-cli": "^3.0.0-rc.9",
+    "preact-cli": "3.0.0-rc.9",
     "sirv-cli": "^0.4.6"
   },
   "dependencies": {
