@@ -2,7 +2,10 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  purge: ['./src/**/*.js', './src/**/*.html'],
+  purge: {
+    // enabled: true,
+    content: ['./src/**/*.{js,html}'],
+  },
   theme: {
     fontFamily: {
       ...defaultTheme.fontFamily,
