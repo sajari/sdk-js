@@ -25,8 +25,8 @@
     "postcss": "^7.0.32",
     "postcss-clean": "^1.1.0",
     "postcss-cli": "^7.1.1",
-    "preact-cli": "3.0.0-rc.9",
-    "sirv-cli": "^1.0.1"
+    "preact-cli": "3.0.0-rc.14",
+    "sirv-cli": "^0.4.6"
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
