@@ -37,6 +37,10 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
         }
         // Map the bucket types to title / filter format
         else {
+          if (!aggregates.buckets) {
+            return null;
+          }
+
           items = Object.entries(buckets).reduce(
             (obj, [type, title]) =>
               Object.assign(obj, {
