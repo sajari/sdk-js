@@ -72,19 +72,18 @@ export default class App extends Component {
     this.client = new Client(project, collection, endpoint);
     this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {}));
 
-    const handleError = (error) =>
-      this.setState({
-        error,
-      });
-
-    this.client.listPipelines().then(this.setPipelines).catch(handleError);
-
     this.getPipeline()
       .then(() => {
         this.updatePipeline();
         this.search(false);
       })
-      .catch(handleError);
+      .catch((error) =>
+        this.setState({
+          error,
+        }),
+      );
+
+    this.client.listPipelines().then(this.setPipelines);
 
     this.listeners(true);
   }
