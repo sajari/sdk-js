@@ -262,12 +262,27 @@ export default class App extends Component {
     this.setState(
       {
         query: value,
-        // Reset page on new query
         page: 1,
       },
       () => {
         clearTimeout(this.inputTimer);
         this.inputTimer = setTimeout(() => this.search(true, instant), 30);
+      },
+    );
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+
+    this.setState(
+      {
+        query: formData.get('q'),
+        page: 1,
+      },
+      () => {
+        this.search(true);
       },
     );
   };
@@ -618,9 +633,10 @@ export default class App extends Component {
 
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
-              <div className="flex-1 lg:flex lg:items-center">
+              <form onSubmit={this.handleSubmit} className="flex-1 lg:flex lg:items-center">
                 <Combobox
                   id="q"
+                  name="q"
                   value={query}
                   instant={instant}
                   onInput={this.handleInput}
@@ -630,12 +646,7 @@ export default class App extends Component {
                 />
 
                 {!instant && (
-                  <Button
-                    type="button"
-                    className="hidden ml-2 md:inline-flex"
-                    onClick={this.search}
-                    style={buttonStyles.primary}
-                  >
+                  <Button type="submit" className="hidden ml-2 md:inline-flex" style={buttonStyles.primary}>
                     Search
                   </Button>
                 )}
@@ -651,7 +662,7 @@ export default class App extends Component {
                     checked={instant}
                   />
                 </div>
-              </div>
+              </form>
 
               <MenuToggle open={menuOpen} onClick={this.toggleMenu} />
             </div>
