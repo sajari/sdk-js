@@ -22,14 +22,14 @@
     "if-env": "^1.0.4",
     "postcss": "^7.0.32",
     "postcss-clean": "^1.1.0",
-    "preact-cli": "3.0.0-rc.14",
+    "preact-cli": "3.0.0-rc.9",
     "sirv-cli": "^0.4.6"
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
     "@tailwindcss/ui": "^0.3.0",
     "classnames": "^2.2.6",
-    "downshift": "^5.4.2",
+    "downshift": "^5.4.3",
     "preact": "^10.4.4",
     "preact-render-to-string": "^5.1.9",
     "prop-types": "^15.7.2",
