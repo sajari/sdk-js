@@ -525,7 +525,7 @@ export default class App extends Component {
                     <Label htmlFor="pipeline" className="block mb-2 text-sm text-gray-500">
                       Name
                     </Label>
-                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} fontSize="text-sm">
+                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} className="text-sm">
                       {Object.keys(pipelines).map((p) => (
                         <option value={p}>{p}</option>
                       ))}
@@ -535,7 +535,7 @@ export default class App extends Component {
                     <Label htmlFor="version" className="block mb-2 text-sm text-gray-500">
                       Version
                     </Label>
-                    <Select id="version" value={version} onChange={this.setPipeline} fontSize="text-sm">
+                    <Select id="version" value={version} onChange={this.setPipeline} className="text-sm">
                       {pipelines[pipeline].map((v) => (
                         <option value={v}>{v}</option>
                       ))}
