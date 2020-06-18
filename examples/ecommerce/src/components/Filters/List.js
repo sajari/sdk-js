@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { Button } from '@sajari-ui/core';
 import { Component, Fragment } from 'preact';
 
 import is from '../../utils/is';
@@ -109,15 +110,18 @@ export default class List extends Component {
         </div>
 
         {slice && (
-          <button
+          <Button
             type="button"
-            className="text-sm text-blue-500 focus:outline-none focus:text-blue-700"
+            appearance="link"
+            spacing="none"
             onClick={this.toggleExpanded}
             aria-controls={`list-${type}`}
             aria-expanded={expanded}
+            iconAfter={expanded ? 'small-chevron-up' : 'small-chevron-down'}
+            fontSize="text-sm"
           >
             {expanded ? `Show less` : `Show ${count - limit} more`}
-          </button>
+          </Button>
         )}
       </Fragment>
     );

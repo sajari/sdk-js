@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-import classnames from 'classnames';
+import { SearchInput } from '@sajari-ui/core';
 import { useCombobox } from 'downshift';
 
 import is from '../../utils/is';
-import Input from '../Forms/Input';
 import Label from '../Forms/Label';
 import { IconSearch } from '../Icons';
 import Suggestions from './Suggestions';
@@ -35,16 +34,9 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
       </Label>
 
       <div className="relative" {...getComboboxProps()}>
-        <Input
+        <SearchInput
           id={id}
-          className={classnames('pl-10', 'rounded-full', { 'md:pr-40': !instant })}
           placeholder={placeholder}
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck="false"
-          type="search"
-          enterkeyhint="search"
           {...rest}
           {...getInputProps({
             onFocus: openMenu,

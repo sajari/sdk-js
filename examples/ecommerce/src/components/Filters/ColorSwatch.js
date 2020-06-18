@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 
+import { Icon } from '@sajari-ui/core';
 import { Fragment } from 'preact';
 
 import is from '../../utils/is';
 import { toKebabCase } from '../../utils/string';
 import Label from '../Forms/Label';
-import { IconCheck } from '../Icons';
 import Header from './Header';
 
 const allowedColors = {
@@ -93,8 +93,13 @@ const ColorSwatch = ({ values, items, title, type, onChange, onReset }) => {
                 checked={checked}
                 onChange={onChange}
               />
-              <IconCheck
-                className={`mt-px fill-current transition-opacity duration-100 ${checked ? 'opacity-1' : 'opacity-0'}`}
+              <Icon
+                name="check"
+                size="sm"
+                margin="mt-px"
+                transitionProperty="transition-opacity"
+                transitionDuration="duration-100"
+                opacity={checked ? 'opacity-100' : 'opacity-0'}
               />
             </Label>
           );

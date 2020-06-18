@@ -1,11 +1,11 @@
 import './app.css';
 
+import { Box, Button, ButtonGroup, Heading } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
 
 import env from '../sajari.config';
-import Button, { buttonSizes, buttonStyles } from './components/Button';
 import Filters from './components/Filters';
 import Checkbox from './components/Forms/Checkbox';
 import Label from './components/Forms/Label';
@@ -14,6 +14,7 @@ import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
 import Pagination from './components/Pagination';
+import Parameters from './components/Parameters';
 import Results from './components/Results';
 import Combobox from './components/Search/Combobox';
 import Request from './models/Request';
@@ -27,7 +28,7 @@ import { toSentenceCase } from './utils/string';
 - Use hooks for shared logic
 */
 
-const { project, collection, pipeline, version, endpoint, facets, buckets, display, tracking } = env;
+const { project, collection, pipeline, version, endpoint, facets, buckets, display, tracking, parameters } = env;
 
 const defaults = {
   pageSize: 15,
@@ -62,6 +63,9 @@ export default class App extends Component {
       pipelines: {},
       pipeline,
       version,
+
+      // Parameters
+      parameters,
 
       // Merge state from URL
       ...parseStateFromUrl({ defaults }),
@@ -166,13 +170,14 @@ export default class App extends Component {
   };
 
   search = (setHistory = true, delayHistory = false) => {
-    const { filters, page, pageSize, query, sort } = this.state;
+    const { filters, page, pageSize, parameters, query, sort } = this.state;
     const request = new Request(query);
     request.filters = filters;
     request.pageSize = pageSize;
     request.page = page;
     request.facets = facets;
     request.buckets = buckets;
+    request.parameters = parameters;
     request.filter = Object.entries(filters)
       .filter(([key]) => facets.find(({ field, buckets }) => field === key && !is.empty(buckets)))
       .reduce((filter, [, values]) => values.map((v) => buckets[v]), [])
@@ -182,8 +187,6 @@ export default class App extends Component {
     if (sort) {
       request.sort = sort;
     }
-
-    // console.log(JSON.stringify(request.serialize(), null, 2));
 
     // Hide the suggestions and error
     this.setState({
@@ -431,6 +434,14 @@ export default class App extends Component {
     });
   };
 
+  setParameters = (params) =>
+    this.setState(
+      {
+        parameters: params,
+      },
+      () => this.search(),
+    );
+
   renderSidebar = () => {
     const {
       aggregates,
@@ -439,6 +450,7 @@ export default class App extends Component {
       instant,
       query,
       menuOpen,
+      parameters,
       pipeline,
       pipelines,
       results,
@@ -500,18 +512,20 @@ export default class App extends Component {
               onChange={this.setFilter}
             />
 
+            <Parameters parameters={parameters} onChange={this.setParameters} margin="mb-6" />
+
             {pipelines && Object.keys(pipelines).includes(pipeline) && (
-              <div className="mb-6">
-                <div className="flex items-center mb-2">
-                  <h2 className="text-xs font-medium text-gray-400 uppercase">Pipeline</h2>
-                </div>
+              <Box margin="mb-6">
+                <Heading as="h2" size="xs" margin="mb-2">
+                  Pipeline
+                </Heading>
 
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-2">
                     <Label htmlFor="pipeline" className="block mb-2 text-sm text-gray-500">
                       Name
                     </Label>
-                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline}>
+                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} fontSize="text-sm">
                       {Object.keys(pipelines).map((p) => (
                         <option value={p}>{p}</option>
                       ))}
@@ -521,14 +535,14 @@ export default class App extends Component {
                     <Label htmlFor="version" className="block mb-2 text-sm text-gray-500">
                       Version
                     </Label>
-                    <Select id="version" value={version} onChange={this.setPipeline}>
+                    <Select id="version" value={version} onChange={this.setPipeline} fontSize="text-sm">
                       {pipelines[pipeline].map((v) => (
                         <option value={v}>{v}</option>
                       ))}
                     </Select>
                   </div>
                 </div>
-              </div>
+              </Box>
             )}
           </nav>
         </div>
@@ -583,29 +597,17 @@ export default class App extends Component {
             <div className="items-center hidden ml-2 ml-6 lg:flex">
               <span className="mr-2 text-sm text-gray-400">View</span>
 
-              <span className="inline-flex flex-no-wrap items-center">
-                <Button
-                  className={classnames('rounded-l', grid ? 'z-10' : 'focus:z-10')}
-                  rounded={false}
-                  size={buttonSizes.small}
-                  pressed={grid}
-                  onClick={() => this.toggleGrid(true)}
-                >
+              <ButtonGroup attached>
+                <Button size="xs" active={grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(true)}>
                   <IconGrid />
                   <span className="sr-only">Grid view</span>
                 </Button>
 
-                <Button
-                  className={classnames('-ml-px', 'rounded-r', !grid ? 'z-10' : 'focus:z-10')}
-                  rounded={false}
-                  size={buttonSizes.small}
-                  pressed={!grid}
-                  onClick={() => this.toggleGrid(false)}
-                >
+                <Button size="xs" active={!grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(false)}>
                   <IconList />
                   <span className="sr-only">List view</span>
                 </Button>
-              </span>
+              </ButtonGroup>
             </div>
           </div>
         </div>
@@ -646,7 +648,7 @@ export default class App extends Component {
                 />
 
                 {!instant && (
-                  <Button type="submit" className="hidden ml-2 md:inline-flex" style={buttonStyles.primary}>
+                  <Button type="submit" appearance="primary" display={['hidden', 'md:inline-flex']} margin="ml-2">
                     Search
                   </Button>
                 )}
@@ -679,7 +681,7 @@ export default class App extends Component {
                   <Message title="No results" message={`Sorry, we couldn't find any matches for '${query}'.`} />
 
                   {filters && Object.keys(filters).length > 0 && (
-                    <Button style={buttonStyles.primary} onClick={this.clearFilters}>
+                    <Button appearance="primary" onClick={this.clearFilters}>
                       Clear filters
                     </Button>
                   )}

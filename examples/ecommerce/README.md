@@ -18,3 +18,9 @@ The demo uses:
 - Edit `sajari.config.js` with the correct project, collection, pipeline, etc.
 - Run `yarn && yarn start`.
 - Open a browser and head to [http://localhost:8080](http://localhost:8080).
+
+# TODO
+
+- [] Convert to TypeScript
+- [] Use hooks/context more
+- [] Use `@sajari-ui`
