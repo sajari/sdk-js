@@ -1,5 +1,4 @@
 import { Button, ButtonGroup, IconButton } from '@sajari-ui/core';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 import { clamp } from '../utils/number';

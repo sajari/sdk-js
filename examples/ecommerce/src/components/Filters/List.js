@@ -6,7 +6,7 @@ import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { sliceObject, sortObject } from '../../utils/object';
 import { toKebabCase, transformCase } from '../../utils/string';
-import Checkbox from '../Forms/Checkbox';
+import Checkbox from '../Checkbox';
 import Rating from '../Rating';
 import Header from './Header';
 import filterTypes from './types';
@@ -102,7 +102,8 @@ export default class List extends Component {
                 value={value}
                 checked={checked}
                 count={formatNumber(count)}
-                className={`mb-1 ${type === filterTypes.rating ? 'items-center' : ''}`}
+                alignItems={type === filterTypes.rating ? 'items-center' : undefined}
+                margin="mb-1"
                 onChange={onChange}
               />
             );

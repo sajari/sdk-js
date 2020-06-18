@@ -1,15 +1,13 @@
 import './app.css';
 
-import { Box, Button, ButtonGroup, Heading } from '@sajari-ui/core';
+import { Box, Button, ButtonGroup, Flex, Heading, Label, Select, Text } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
 
 import env from '../sajari.config';
 import Filters from './components/Filters';
-import Checkbox from './components/Forms/Checkbox';
-import Label from './components/Forms/Label';
-import Select from './components/Forms/Select';
+import Checkbox from './components/Checkbox';
 import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
@@ -493,13 +491,7 @@ export default class App extends Component {
 
               <Checkbox id="suggest-sm" label="Suggestions" onInput={this.toggleSuggest} checked={suggest} />
 
-              <Checkbox
-                id="instant-sm"
-                label="Instant"
-                className="mt-1"
-                onInput={this.toggleInstant}
-                checked={instant}
-              />
+              <Checkbox id="instant-sm" label="Instant" margin="mt-1" onInput={this.toggleInstant} checked={instant} />
             </div>
 
             <Filters
@@ -520,28 +512,29 @@ export default class App extends Component {
                   Pipeline
                 </Heading>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="col-span-2">
-                    <Label htmlFor="pipeline" className="block mb-2 text-sm text-gray-500">
+                <Flex space="space-x-2">
+                  <Box flex="flex-1">
+                    <Label htmlFor="pipeline" visuallyHidden>
                       Name
                     </Label>
-                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} className="text-sm">
+                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} fontSize="text-sm">
                       {Object.keys(pipelines).map((p) => (
                         <option value={p}>{p}</option>
                       ))}
                     </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="version" className="block mb-2 text-sm text-gray-500">
+                  </Box>
+
+                  <Box>
+                    <Label htmlFor="version" visuallyHidden>
                       Version
                     </Label>
-                    <Select id="version" value={version} onChange={this.setPipeline} className="text-sm">
+                    <Select id="version" value={version} onChange={this.setPipeline} fontSize="text-sm">
                       {pipelines[pipeline].map((v) => (
                         <option value={v}>{v}</option>
                       ))}
                     </Select>
-                  </div>
-                </div>
+                  </Box>
+                </Flex>
               </Box>
             )}
           </nav>
@@ -555,18 +548,24 @@ export default class App extends Component {
 
     return (
       <Fragment>
-        <div className="flex items-center justify-end mb-8 lg:mb-6">
-          <p className="flex-1 text-sm text-gray-600">
+        <Flex alignItems="items-center" justifyContent="justify-end" margin={['mb-8', 'lg:mb-6']}>
+          <Text className="text-sm text-gray-600">
             {`${formatNumber(totalResults)} results`}
-            <span className="hidden md:inline">{` (${time} secs)`}</span>
-          </p>
+            <Text as="span" display={['hidden', 'md:inline']}>{` (${time} secs)`}</Text>
+          </Text>
 
-          <div className="flex items-center justify-end pl-4 ml-auto">
-            <div className="lg:flex lg:items-center">
-              <Label htmlFor="sorting" className="mr-2 text-sm text-gray-400">
-                Sort by
+          <Flex flex="flex-1" alignItems="items-center" justifyContent="justify-end" padding="pl-4" margin="ml-auto">
+            <Box display="lg:flex" alignItems="lg:items-center">
+              <Label htmlFor="sorting" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
+                Sort
               </Label>
-              <Select id="sorting" small onChange={this.setSorting} value={sort}>
+              <Select
+                id="sorting"
+                onChange={this.setSorting}
+                value={sort}
+                fontSize="text-sm"
+                padding={['py-1', 'pl-2', 'pr-4']}
+              >
                 <option value="">Most Relevant</option>
                 <option value="-price">Price: High to Low</option>
                 <option value="price">Price: Low to High</option>
@@ -575,27 +574,30 @@ export default class App extends Component {
                 <option value="popularity">Popularity</option>
                 <option value="bestSellingRank">Best Seller</option>
               </Select>
-            </div>
+            </Box>
 
-            <div className="items-center hidden ml-2 ml-6 lg:flex">
-              <Label htmlFor="page-size" className="mr-2 text-sm text-gray-400">
+            <Box display={['hidden', 'lg:flex']} margin="ml-6">
+              <Label htmlFor="page-size" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
                 Size
               </Label>
               <Select
                 id="page-size"
-                className="py-1 pl-2 pr-6 text-sm border-gray-200 form-select form-select--small"
                 onChange={this.setPageSize}
                 value={pageSize}
+                fontSize="text-sm"
+                padding={['py-1', 'pl-2', 'pr-6']}
               >
                 <option value="15">15</option>
                 <option value="25">25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
               </Select>
-            </div>
+            </Box>
 
-            <div className="items-center hidden ml-2 ml-6 lg:flex">
-              <span className="mr-2 text-sm text-gray-400">View</span>
+            <Box display={['hidden', 'lg:flex']} alignItems="items-center" margin="ml-6">
+              <Box as="span" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
+                View
+              </Box>
 
               <ButtonGroup attached>
                 <Button size="xs" active={grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(true)}>
@@ -608,16 +610,16 @@ export default class App extends Component {
                   <span className="sr-only">List view</span>
                 </Button>
               </ButtonGroup>
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Flex>
+        </Flex>
 
         <Results results={results} grid={grid} />
 
-        <div className="sticky bottom-0 p-4 pt-2 -mx-8 lg:p-6 lg:mx-0">
+        <Box position="sticky" offset="bottom-0" padding={['p-4', 'pt-2', 'lg:p-6']} margin={['-mx-8', 'lg:mx-0']}>
           <Pagination totalResults={totalResults} pageSize={pageSize} page={page} onChange={this.setPage} />
           <div className="absolute inset-0 z-0 opacity-25 bg-gradient-b-white" aria-hidden="true" />
-        </div>
+        </Box>
       </Fragment>
     );
   };
@@ -656,13 +658,7 @@ export default class App extends Component {
                 <div className="items-center hidden ml-3 md:ml-6 lg:flex">
                   <Checkbox id="suggest" label="Suggestions" onInput={this.toggleSuggest} checked={suggest} />
 
-                  <Checkbox
-                    id="instant"
-                    label="Instant"
-                    className="ml-4"
-                    onInput={this.toggleInstant}
-                    checked={instant}
-                  />
+                  <Checkbox id="instant" label="Instant" margin="ml-4" onInput={this.toggleInstant} checked={instant} />
                 </div>
               </form>
 
