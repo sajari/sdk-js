@@ -987,10 +987,10 @@
   resolved "https://registry.yarnpkg.com/@reach/visually-hidden/-/visually-hidden-0.1.4.tgz#0dc4ecedf523004337214187db70a46183bd945b"
   integrity sha512-QHbzXjflSlCvDd6vJwdwx16mSB+vUCCQMiU/wK/CgVNPibtpEiIbisyxkpZc55DyDFNUIqP91rSUsNae+ogGDQ==
 
-"@sajari-ui/core@^0.1.31":
-  version "0.1.31"
-  resolved "https://registry.yarnpkg.com/@sajari-ui/core/-/core-0.1.31.tgz#33712f5bbff63d63de78738de0b745599ed3c006"
-  integrity sha512-G8VyvpSPydGshiqsWqYC/U4dd7hLwn4sf3bt6br7w+i2OshqMYA/ySS3Dm0NkC8G6bFRhP4r1+HK5XHIsNXtrg==
+"@sajari-ui/core@^0.1.33":
+  version "0.1.33"
+  resolved "https://registry.yarnpkg.com/@sajari-ui/core/-/core-0.1.33.tgz#a7bfd820c3a300bc8cfd27aa1fa342d1093455e4"
+  integrity sha512-IFDTEWQVlU836sfN1ng4WBCphgRtEnkkkct3DjRjVjHuSTCtroyVWkDYxPfgtIat3KT9KlEOliRfIIvnAtz0MA==
   dependencies:
     "@reach/auto-id" "^0.10.3"
     "@tailwindcss/ui" "^0.3.0"

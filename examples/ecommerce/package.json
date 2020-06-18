@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
-    "@sajari-ui/core": "^0.1.31",
+    "@sajari-ui/core": "^0.1.33",
     "classnames": "^2.2.6",
     "downshift": "^5.4.3",
     "preact": "^10.4.4",
