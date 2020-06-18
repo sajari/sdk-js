@@ -2,9 +2,8 @@
 const { tailwindConfig } = require('@sajari-ui/core');
 
 tailwindConfig.purge = {
-  // enabled: true,
-  mode: 'all',
-  content: ['./src/**/*.{js,html}', 'node_modules/@sajari-ui/core/dist/*.js'],
+  enabled: true,
+  content: ['./src/**/*.{js,html}', './node_modules/@sajari-ui/core/dist/*.js'],
 };
 
 // Setup gradients
