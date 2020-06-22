@@ -23,7 +23,7 @@ const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest
       </Label>
 
       {count && (
-        <Text as="span" margin="ml-auto" fontSize="text-sm" textColor="text-gray-400">
+        <Text as="span" margin="ml-auto" fontSize="text-xs" textColor="text-gray-400">
           {count}
         </Text>
       )}
