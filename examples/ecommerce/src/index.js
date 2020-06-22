@@ -6,8 +6,8 @@ import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
 
 import env from '../sajari.config';
-import Filters from './components/Filters';
 import Checkbox from './components/Checkbox';
+import Filters from './components/Filters';
 import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
