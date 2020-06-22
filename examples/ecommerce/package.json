@@ -7,9 +7,10 @@
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
     "build": "preact build",
+    "build:prod": "cross-env NODE_ENV=production preact build",
     "serve": "sirv build --cors --single",
     "dev": "preact watch --host=localhost",
-    "analyze": "preact build --analyze",
+    "analyze": "cross-env NODE_ENV=production preact build --analyze",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src"
   },
@@ -18,23 +19,24 @@
     "autoprefixer": "^9.8.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-inline-react-svg": "^1.1.1",
+    "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "if-env": "^1.0.4",
     "postcss": "^7.0.32",
     "postcss-clean": "^1.1.0",
+    "postcss-cli": "^7.1.1",
     "preact-cli": "3.0.0-rc.9",
-    "sirv-cli": "^0.4.6"
+    "sirv-cli": "^1.0.1"
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
-    "@tailwindcss/ui": "^0.3.0",
+    "@sajari-ui/core": "^0.1.34",
     "classnames": "^2.2.6",
     "downshift": "^5.4.3",
     "preact": "^10.4.4",
     "preact-render-to-string": "^5.1.9",
     "prop-types": "^15.7.2",
     "tailwindcss": "^1.4.6",
-    "tailwindcss-gradients": "^3.0.0",
-    "tailwindcss-truncate-multiline": "^1.0.3"
+    "tailwindcss-gradients": "^3.0.0"
   }
 }

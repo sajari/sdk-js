@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
 
+import { Icon, Label } from '@sajari-ui/core';
 import { Fragment } from 'preact';
 
 import is from '../../utils/is';
 import { toKebabCase } from '../../utils/string';
-import Label from '../Forms/Label';
-import { IconCheck } from '../Icons';
 import Header from './Header';
 
 const allowedColors = {
@@ -81,7 +80,16 @@ const ColorSwatch = ({ values, items, title, type, onChange, onReset }) => {
           return (
             <Label
               htmlFor={id}
-              className={`flex items-center justify-center mb-1 rounded w-full h-10 border shadow-sm cursor-pointer lg:w-6 lg:h-6 lg:rounded-full focus-within:shadow-outline ${className}`}
+              display="flex"
+              alignItems="items-center"
+              justifyContent="justify-center"
+              margin="mb-1"
+              width={['w-full', 'lg:w-8']}
+              height={['h-10', 'lg:h-8']}
+              borderWidth="border"
+              borderRadius={['rounded', 'rounded-full']}
+              boxShadow="focus-within:shadow-outline"
+              dangerouslySetClassName={className}
             >
               <span className="sr-only">{`${name} (${count} items)`}</span>
               <input
@@ -93,8 +101,12 @@ const ColorSwatch = ({ values, items, title, type, onChange, onReset }) => {
                 checked={checked}
                 onChange={onChange}
               />
-              <IconCheck
-                className={`mt-px fill-current transition-opacity duration-100 ${checked ? 'opacity-1' : 'opacity-0'}`}
+              <Icon
+                name="check"
+                margin="mt-px"
+                transitionProperty="transition-opacity"
+                transitionDuration="duration-100"
+                opacity={checked ? 'opacity-100' : 'opacity-0'}
               />
             </Label>
           );

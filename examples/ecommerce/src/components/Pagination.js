@@ -1,10 +1,8 @@
-import classnames from 'classnames';
+import { Button, ButtonGroup, IconButton } from '@sajari-ui/core';
 import PropTypes from 'prop-types';
 
 import { clamp } from '../utils/number';
 import { format } from '../utils/string';
-import Button from './Button';
-import { IconArrowLeft, IconArrowRight } from './Icons';
 
 const getButtons = (page, pageCount, onChange) => {
   const limit = 5;
@@ -46,14 +44,11 @@ const getButtons = (page, pageCount, onChange) => {
 
     return (
       <Button
-        className={classnames('-ml-px', active ? 'z-10' : 'focus:z-10')}
-        rounded={false}
-        pressed={active}
+        active={active}
         key={index}
         aria-current={active ? 'page' : null}
         aria-label={format('{0}{1}', `Page ${number}`, active ? ', current page' : '')}
         onClick={() => onChange(number)}
-        narrow
       >
         {number}
       </Button>
@@ -86,31 +81,23 @@ const Pagination = (props) => {
 
   return (
     <nav className="relative z-10 text-center" aria-label="Pagination">
-      <span className="relative z-0 inline-flex shadow-sm">
-        <Button
-          className="px-1 rounded-l focus:z-10"
-          rounded={false}
+      <ButtonGroup attached boxShadow="shadow-sm">
+        <IconButton
           disabled={!hasPrevious}
           onClick={() => (hasPrevious ? changeHandler(page - 1) : {})}
-          narrow
-        >
-          <IconArrowLeft />
-          <span className="sr-only">Previous</span>
-        </Button>
+          icon="chevron-left"
+          label="Previous"
+        />
 
         {getButtons(page, pageCount, changeHandler)}
 
-        <Button
-          className="px-2 -ml-px rounded-r focus:z-10"
-          rounded={false}
+        <IconButton
           disabled={!hasNext}
           onClick={() => (hasNext ? changeHandler(page + 1) : {})}
-          narrow
-        >
-          <IconArrowRight />
-          <span className="sr-only">Next</span>
-        </Button>
-      </span>
+          icon="chevron-right"
+          label="Next"
+        />
+      </ButtonGroup>
     </nav>
   );
 };

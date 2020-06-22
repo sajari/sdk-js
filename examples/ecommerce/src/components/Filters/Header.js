@@ -1,14 +1,25 @@
 /* eslint-disable react/prop-types */
+import { Button, Flex, Heading } from '@sajari-ui/core';
 
 const Header = ({ title, filtered = false, onReset = () => {} }) => (
-  <div className="flex items-center mb-2">
-    <h2 className="text-xs font-medium text-gray-400 uppercase">{title}</h2>
+  <Flex alignItems="items-center" margin="mb-2">
+    <Heading as="h2" size="xs">
+      {title}
+    </Heading>
+
     {filtered && (
-      <button type="button" onClick={onReset} className="ml-auto text-xs text-blue-500 uppercase">
+      <Button
+        onClick={onReset}
+        appearance="link"
+        spacing="none"
+        margin="ml-auto"
+        fontSize="text-xs"
+        textTransform="uppercase"
+      >
         Reset
-      </button>
+      </Button>
     )}
-  </div>
+  </Flex>
 );
 
 export default Header;

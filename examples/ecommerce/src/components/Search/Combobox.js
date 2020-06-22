@@ -1,11 +1,8 @@
 /* eslint-disable react/prop-types */
-import classnames from 'classnames';
+import { Box, Label, SearchInput } from '@sajari-ui/core';
 import { useCombobox } from 'downshift';
 
 import is from '../../utils/is';
-import Input from '../Forms/Input';
-import Label from '../Forms/Label';
-import { IconSearch } from '../Icons';
 import Suggestions from './Suggestions';
 
 const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }) => {
@@ -30,21 +27,14 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
 
   return (
     <div className="relative flex-1">
-      <Label htmlFor={id} srOnly {...getLabelProps()}>
+      <Label htmlFor={id} visuallyHidden {...getLabelProps()}>
         {placeholder}
       </Label>
 
-      <div className="relative" {...getComboboxProps()}>
-        <Input
+      <Box position="relative" {...getComboboxProps()}>
+        <SearchInput
           id={id}
-          className={classnames('pl-10', 'rounded-full', { 'md:pr-40': !instant })}
           placeholder={placeholder}
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck="false"
-          type="search"
-          enterkeyhint="search"
           {...rest}
           {...getInputProps({
             onFocus: openMenu,
@@ -65,16 +55,21 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
           })}
         />
 
-        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-          <IconSearch className="w-4 h-4 text-gray-400 pointer-events-none fill-current" />
-        </div>
-
         {!instant && (
-          <div className="absolute inset-y-0 right-0 items-center hidden pr-4 text-sm text-gray-500 pointer-events-none md:flex">
+          <Box
+            position="absolute"
+            offset={['inset-y-0', 'right-0']}
+            display={['hidden', 'md:flex']}
+            alignItems="items-center"
+            padding="pr-4"
+            pointerEvents="pointer-events-none"
+            fontSize="text-sm"
+            textColor="text-gray-500"
+          >
             Press ⏎ to search
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
 
       <Suggestions
         open={isOpen}

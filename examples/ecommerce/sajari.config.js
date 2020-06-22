@@ -63,4 +63,9 @@ export default {
     freeShipping: 'free_shipping',
     category: (data) => data.level4 || data.level3 || data.level2 || data.level1,
   },
+
+  // Key / Value pairs to add to the request
+  paramaters: {
+    // key: 'value',
+  },
 };
