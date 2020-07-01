@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
+import { Button } from '@sajari-ui/core';
 import { Component, Fragment } from 'preact';
 
 import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { sliceObject, sortObject } from '../../utils/object';
 import { toKebabCase, transformCase } from '../../utils/string';
-import Checkbox from '../Forms/Checkbox';
+import Checkbox from '../Checkbox';
 import Rating from '../Rating';
 import Header from './Header';
 import filterTypes from './types';
@@ -101,7 +102,8 @@ export default class List extends Component {
                 value={value}
                 checked={checked}
                 count={formatNumber(count)}
-                className={`mb-1 ${type === filterTypes.rating ? 'items-center' : ''}`}
+                alignItems={type === filterTypes.rating ? 'items-center' : undefined}
+                margin="mb-1"
                 onChange={onChange}
               />
             );
@@ -109,15 +111,18 @@ export default class List extends Component {
         </div>
 
         {slice && (
-          <button
+          <Button
             type="button"
-            className="text-sm text-blue-500 focus:outline-none focus:text-blue-700"
+            appearance="link"
+            spacing="none"
             onClick={this.toggleExpanded}
             aria-controls={`list-${type}`}
             aria-expanded={expanded}
+            iconAfter={expanded ? 'small-chevron-up' : 'small-chevron-down'}
+            fontSize="text-sm"
           >
             {expanded ? `Show less` : `Show ${count - limit} more`}
-          </button>
+          </Button>
         )}
       </Fragment>
     );

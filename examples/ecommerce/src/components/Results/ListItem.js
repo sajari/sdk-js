@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import { IconCheck } from '../Icons';
 import Rating from '../Rating';
@@ -18,15 +19,17 @@ const ListItem = ({ data }) => (
               {data.title}
             </a>
           </h1>
-          <div className="mt-1 md:flex md:items-center">
-            <p className="hidden text-xs text-gray-400 md:block">{data.category}</p>
+          {(!is.empty(data.category) || data.rating) && (
+            <div className="mt-1 md:flex md:items-center">
+              {data.category && <p className="hidden text-xs text-gray-400 md:block md:mr-4">{data.category}</p>}
 
-            {data.rating && (
-              <p className="flex items-center mt-2 md:mt-0 md:ml-4">
-                <Rating value={Number(data.rating)} />
-              </p>
-            )}
-          </div>
+              {data.rating && (
+                <p className="flex items-center mt-2 md:mt-0">
+                  <Rating value={Number(data.rating)} />
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mt-3 md:mt-0 md:ml-6 md:text-right">

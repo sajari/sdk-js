@@ -1,21 +1,19 @@
 /* eslint-disable react/prop-types */
-import { Fragment } from 'preact';
-
-import { IconStar } from './Icons';
+import { Box, Icon } from '@sajari-ui/core';
 
 const Rating = ({ value, max = 6 }) => {
   const remainder = max - value;
 
   return (
-    <Fragment>
+    <Box display="inline-flex" alignItems="items-center" space="space-x-1">
       {Array.from(Array(value)).map((k, i) => (
-        <IconStar className={`${i > 0 ? 'ml-1' : ''} text-orange-400 fill-current`} />
+        <Icon name="small-star" textColor="text-orange-400" />
       ))}
       {Array.from(Array(remainder)).map((k, i) => (
-        <IconStar className={`${value > 0 || i > 0 ? 'ml-1' : ''} text-gray-300 fill-current`} />
+        <Icon name="small-star" textColor="text-gray-300" />
       ))}
       <span className="sr-only">{`${value} stars`}</span>
-    </Fragment>
+    </Box>
   );
 };
 

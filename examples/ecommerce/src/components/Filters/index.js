@@ -18,7 +18,13 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
 
         // Get items from aggregates for regular facets
         if (is.empty(buckets)) {
-          items = Object.entries(aggregateFilters[field].count).reduce(
+          const counts = aggregateFilters[field].count;
+
+          if (is.empty(counts)) {
+            return null;
+          }
+
+          items = Object.entries(counts).reduce(
             (obj, [title, count]) =>
               Object.assign(obj, {
                 [title]: {
@@ -31,6 +37,10 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
         }
         // Map the bucket types to title / filter format
         else {
+          if (!aggregates.buckets) {
+            return null;
+          }
+
           items = Object.entries(buckets).reduce(
             (obj, [type, title]) =>
               Object.assign(obj, {

@@ -20,6 +20,7 @@ export default class Request {
     this.count = [];
     this.buckets = {};
     this.filters = {};
+    this.parameters = {};
     this.filter = null;
   }
 
@@ -64,5 +65,6 @@ export default class Request {
       .map(([key, filter]) => `${key}:${filter}`)
       .toString(),
     sort: this.sort,
+    ...this.parameters,
   });
 }
