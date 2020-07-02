@@ -46,13 +46,13 @@ export class Client {
     this.project = project;
     this.collection = collection;
     this.endpoint = defaultEndpoint;
-    opts.forEach(opt => {
+    opts.forEach((opt) => {
       opt(this);
     });
   }
 
   /** pipeline returns a new [[Pipeline]] instance that inherits config from the Client. */
-  public pipeline(name: string): Pipeline {
-    return new pipeline(this, name);
+  public pipeline(name: string, version?: string): Pipeline {
+    return new pipeline(this, name, version);
   }
 }

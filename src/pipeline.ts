@@ -61,10 +61,12 @@ export class pipeline implements Pipeline {
 
   private client: Client;
   private name: string;
+  private version?: string;
 
-  public constructor(client: Client, name: string) {
+  public constructor(client: Client, name: string, version?: string) {
     this.client = client;
     this.name = name;
+    this.version = version;
   }
 
   public search(
@@ -85,13 +87,13 @@ export class pipeline implements Pipeline {
       metadata: {
         collection: [this.client.collection],
         project: [this.client.project],
-        "user-agent": [UserAgent]
+        "user-agent": [UserAgent],
       },
       request: {
         tracking,
         values,
-        pipeline: { name: this.name }
-      }
+        pipeline: { name: this.name, version: this.version || "" },
+      },
     });
 
     request(
