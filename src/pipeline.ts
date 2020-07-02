@@ -83,6 +83,13 @@ export class pipeline implements Pipeline {
       return;
     }
 
+    let pipelineIdentifer: { name: string; version?: string } = {
+      name: this.name,
+    };
+    if (this.version) {
+      pipelineIdentifer.version = this.version;
+    }
+
     const requestBody = JSON.stringify({
       metadata: {
         collection: [this.client.collection],
@@ -92,7 +99,7 @@ export class pipeline implements Pipeline {
       request: {
         tracking,
         values,
-        pipeline: { name: this.name, version: this.version || "" },
+        pipeline: pipelineIdentifer,
       },
     });
 
