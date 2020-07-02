@@ -43,7 +43,7 @@ export const newResult = (resultJSON: any): Result => {
     [id: string]: string | string[];
   } = {};
 
-  Object.keys(resultJSON.values).forEach(k => {
+  Object.keys(resultJSON.values).forEach((k) => {
     const val = valueFromProto(resultJSON.values[k]);
     if (val !== null) {
       values[k] = val;
@@ -54,7 +54,7 @@ export const newResult = (resultJSON: any): Result => {
     values,
     token: {} as Token,
     score: parseFloat(resultJSON.score),
-    indexScore: parseFloat(resultJSON.indexScore)
+    indexScore: parseFloat(resultJSON.indexScore),
   };
 };
 
@@ -112,7 +112,7 @@ export const processSearchResponse = (
     if (token.posNeg !== undefined) {
       result.token = {
         pos: token.posNeg.pos,
-        neg: token.posNeg.neg
+        neg: token.posNeg.neg,
       };
       return result;
     }
@@ -124,6 +124,7 @@ export const processSearchResponse = (
     totalResults: parseInt(response.totalResults, 10) || 0, // sometimes totalResults is not returned
     time: parseFloat(response.time) || 0, // sometimes time is not returned
     aggregates: newAggregates(response.aggregates),
-    results
+    aggregateFilters: newAggregates(response.aggregateFilters),
+    results,
   };
 };

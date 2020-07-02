@@ -68,6 +68,9 @@ export interface Response {
   /** Aggregates computed on the query results (see [[AggregateResponse]]). */
   aggregates: AggregateResponse;
 
+  /** aggregateFilters computed on the query results (see [[AggregateResponse]]). */
+  aggregateFilters: AggregateResponse;
+
   /** Results of the query. */
   results: Result[];
 }
