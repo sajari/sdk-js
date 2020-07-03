@@ -155,7 +155,7 @@ export class Client {
       );
 
       pipelines = pipelines.concat(
-        resp.pipelines.map((pipeline) => {
+        resp.pipelines?.map((pipeline) => {
           const preStepsProto = pipeline.steps.find(
             (step) => step.stepType === "PRE_STEP"
           ) || { steps: undefined };
@@ -200,7 +200,7 @@ export class Client {
               postSteps,
             },
           };
-        })
+        }) ?? []
       );
       if (
         resp.nextPageToken === "" ||
@@ -339,7 +339,7 @@ function constConfigToParam(
  * @hidden
  */
 interface ListPipelinesProto {
-  pipelines: PipelineProto[];
+  pipelines?: PipelineProto[];
   nextPageToken?: string;
 }
 
