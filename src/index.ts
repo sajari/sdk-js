@@ -515,7 +515,7 @@ class QueryPipeline extends EventEmitter {
           return {
             type: "count",
             key: "buckets",
-            value: Object.values(aggregate.buckets.buckets).reduce(
+            value: Object.values(aggregate.buckets.buckets ?? {}).reduce(
               (obj, { name, count }) =>
                 Object.assign(obj, {
                   [name]: count,
@@ -564,7 +564,7 @@ class QueryPipeline extends EventEmitter {
           return {
             type: "count",
             key: "buckets",
-            value: Object.values(aggregate.buckets.buckets).reduce(
+            value: Object.values(aggregate.buckets.buckets ?? {}).reduce(
               (obj, { name, count }) =>
                 Object.assign(obj, {
                   [name]: count,
@@ -796,7 +796,7 @@ interface CountAggregateProto {
  */
 interface BucketAggregateProto {
   buckets: {
-    buckets: Record<
+    buckets?: Record<
       string,
       {
         name: string;
