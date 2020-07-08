@@ -1,6 +1,17 @@
 import './app.css';
 
-import { Box, Button, ButtonGroup, Flex, Heading, Label, Pagination, Select, Text } from '@sajari-ui/core';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  Label,
+  Pagination,
+  Select,
+  Text,
+  VisuallyHidden,
+} from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
@@ -599,14 +610,24 @@ export default class App extends Component {
               </Box>
 
               <ButtonGroup attached>
-                <Button size="xs" active={grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(true)}>
+                <Button
+                  size="xs"
+                  appearance={grid ? 'primary' : undefined}
+                  padding={['px-3', 'py-2']}
+                  onClick={() => this.toggleGrid(true)}
+                >
                   <IconGrid />
-                  <span className="sr-only">Grid view</span>
+                  <VisuallyHidden>Grid view</VisuallyHidden>
                 </Button>
 
-                <Button size="xs" active={!grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(false)}>
+                <Button
+                  size="xs"
+                  appearance={!grid ? 'primary' : undefined}
+                  padding={['px-3', 'py-2']}
+                  onClick={() => this.toggleGrid(false)}
+                >
                   <IconList />
-                  <span className="sr-only">List view</span>
+                  <VisuallyHidden>List view</VisuallyHidden>
                 </Button>
               </ButtonGroup>
             </Box>
