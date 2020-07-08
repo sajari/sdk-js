@@ -11,7 +11,7 @@ export default {
   version: undefined, // undefined will use the default version
 
   // For production this can be undefined
-  endpoint: 'https://jsonapi-us-valkyrie-beta1.sajari.net',
+  endpoint: 'https://jsonapi-us-valkyrie.sajari.net',
 
   // Default display type (grid|list)
   display: 'list',
