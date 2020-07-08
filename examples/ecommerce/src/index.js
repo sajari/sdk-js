@@ -1,6 +1,6 @@
 import './app.css';
 
-import { Box, Button, ButtonGroup, Flex, Heading, Label, Select, Text } from '@sajari-ui/core';
+import { Box, Button, ButtonGroup, Flex, Heading, Label, Pagination, Select, Text } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
@@ -11,7 +11,6 @@ import Filters from './components/Filters';
 import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
-import Pagination from './components/Pagination';
 import Parameters from './components/Parameters';
 import Results from './components/Results';
 import Combobox from './components/Search/Combobox';
