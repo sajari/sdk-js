@@ -6,11 +6,12 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  IconButton,
   Label,
+  Logomark,
   Pagination,
   Select,
   Text,
-  VisuallyHidden,
 } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
@@ -19,7 +20,6 @@ import { Component, Fragment } from 'preact';
 import env from '../sajari.config';
 import Checkbox from './components/Checkbox';
 import Filters from './components/Filters';
-import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
 import Parameters from './components/Parameters';
@@ -610,25 +610,23 @@ export default class App extends Component {
               </Box>
 
               <ButtonGroup attached>
-                <Button
+                <IconButton
+                  icon="small-grid"
+                  label="Grid view"
                   size="xs"
                   appearance={grid ? 'primary' : undefined}
                   padding={['px-3', 'py-2']}
                   onClick={() => this.toggleGrid(true)}
-                >
-                  <IconGrid />
-                  <VisuallyHidden>Grid view</VisuallyHidden>
-                </Button>
+                />
 
-                <Button
+                <IconButton
+                  icon="small-list"
+                  label="List view"
                   size="xs"
                   appearance={!grid ? 'primary' : undefined}
                   padding={['px-3', 'py-2']}
                   onClick={() => this.toggleGrid(false)}
-                >
-                  <IconList />
-                  <VisuallyHidden>List view</VisuallyHidden>
-                </Button>
+                />
               </ButtonGroup>
             </Box>
           </Flex>
@@ -666,7 +664,7 @@ export default class App extends Component {
         <div className="box-content fixed inset-x-0 top-0 z-50 flex items-center h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50">
           <div className="relative w-full max-w-screen-xl px-4 mx-auto lg:px-6">
             <div className="flex items-center">
-              <Logomark className="mr-4 lg:mr-6" />
+              <Logomark size="md" margin={['mr-4', 'lg:mr-6']} />
 
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
