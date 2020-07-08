@@ -5,8 +5,8 @@ import filterTypes from './src/components/Filters/types';
  */
 export default {
   // These details can be found in your console
-  project: '1588205875936974083',
-  collection: 'best-buy',
+  project: '1594153711901724220',
+  collection: 'bestbuy',
   pipeline: 'query',
   version: undefined, // undefined will use the default version
 
