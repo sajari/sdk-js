@@ -615,8 +615,21 @@ export default class App extends Component {
 
         <Results results={results} grid={grid} />
 
-        <Box position="sticky" offset="bottom-0" padding={['p-4', 'pt-2', 'lg:p-6']} margin={['-mx-8', 'lg:mx-0']}>
-          <Pagination totalResults={totalResults} pageSize={pageSize} page={page} onChange={this.setPage} />
+        <Box
+          position="sticky"
+          offset="bottom-0"
+          padding={['p-4', 'pt-2', 'lg:p-6']}
+          margin={['-mx-8', 'lg:mx-0']}
+          textAlign="text-center"
+        >
+          <Pagination
+            position="relative"
+            zIndex="z-10"
+            totalResults={totalResults}
+            pageSize={pageSize}
+            page={page}
+            onChange={this.setPage}
+          />
           <div className="absolute inset-0 z-0 opacity-25 bg-gradient-b-white" aria-hidden="true" />
         </Box>
       </Fragment>
