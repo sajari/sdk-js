@@ -18,7 +18,6 @@
     "@sampotts/eslint-config": "^1.0.0",
     "autoprefixer": "^9.8.4",
     "babel-eslint": "^10.1.0",
-    "babel-plugin-inline-react-svg": "^1.1.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.4.0",
     "if-env": "^1.0.4",
@@ -30,7 +29,7 @@
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
-    "@sajari-ui/core": "^0.1.82",
+    "@sajari-ui/core": "^0.1.84",
     "classnames": "^2.2.6",
     "downshift": "^5.4.5",
     "preact": "^10.4.5",
