@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
+import { Icon } from '@sajari-ui/core';
 import classnames from 'classnames';
 import { Component } from 'preact';
 
 import is from '../../utils/is';
-import { IconLargeCamera } from '../Icons';
 
 class Image extends Component {
   mounted = false;
@@ -119,7 +119,7 @@ class Image extends Component {
     const { loaded, failed, naturalHeight, naturalWidth } = this.state;
 
     if (failed || is.empty(src)) {
-      return <IconLargeCamera className="text-gray-300 fill-current" />;
+      return <Icon name="image" textColor="text-gray-300" />;
     }
 
     return (
