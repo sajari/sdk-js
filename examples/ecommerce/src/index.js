@@ -12,6 +12,7 @@ import {
   Pagination,
   Select,
   Text,
+  TextInput,
 } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
@@ -68,7 +69,6 @@ export default class App extends Component {
       menuOpen: false,
 
       // Pipeline
-      pipelines: {},
       pipeline,
       version,
 
@@ -84,19 +84,8 @@ export default class App extends Component {
     this.client = new Client(project, collection, endpoint);
     this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {}));
 
-    this.getPipeline()
-      .then(() => {
-        this.updatePipeline();
-        this.search(false);
-      })
-      .catch((error) =>
-        this.setState({
-          error,
-        }),
-      );
-
-    this.client.listPipelines().then(this.setPipelines);
-
+    this.updatePipeline();
+    this.search(false);
     this.listeners(true);
   }
 
@@ -112,27 +101,6 @@ export default class App extends Component {
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
 
-  setPipelines = (pipelines) => {
-    if (is.empty(pipelines)) {
-      this.setState({ pipelines: {} });
-      return;
-    }
-
-    const list = pipelines.reduce((obj, { identifier }) => {
-      const { name, version } = identifier;
-
-      if (!Object.keys(obj).includes(name)) {
-        obj[name] = [];
-      }
-
-      obj[name].push(version);
-
-      return obj;
-    }, {});
-
-    this.setState({ pipelines: list });
-  };
-
   updatePipeline = () => {
     const { pipeline, version } = this.state;
 
@@ -141,27 +109,6 @@ export default class App extends Component {
       autocomplete: this.client.pipeline('autocomplete'),
     };
   };
-
-  getPipeline = () =>
-    new Promise((resolve, reject) => {
-      const { pipeline, version } = this.state;
-
-      if (!version) {
-        this.client
-          .getDefaultPipelineVersion(pipeline)
-          .then(({ version: defaultVersion }) => {
-            this.setState(
-              {
-                version: defaultVersion,
-              },
-              () => resolve(defaultVersion),
-            );
-          })
-          .catch(reject);
-      } else {
-        resolve({ version });
-      }
-    });
 
   getSuggestions = (query) => {
     const request = new Request(query);
@@ -390,48 +337,18 @@ export default class App extends Component {
   setPipeline = (event) => {
     event.preventDefault();
 
-    const { value, id } = event.target;
+    const formData = new FormData(event.target);
 
-    const callback = () => {
-      this.updatePipeline();
-      this.search();
-    };
-
-    if (id === 'pipeline') {
-      const { pipelines } = this.state;
-      let { version } = this.state;
-      const versions = pipelines[value];
-
-      // Default to first version
-      if (!versions.includes(version)) {
-        [version] = versions;
-
-        this.client.getDefaultPipelineVersion(value).then(({ version }) => {
-          this.setState(
-            {
-              pipeline: value,
-              version,
-            },
-            callback,
-          );
-        });
-      } else {
-        this.setState(
-          {
-            pipeline: value,
-            version,
-          },
-          callback,
-        );
-      }
-    } else if (id === 'version') {
-      this.setState(
-        {
-          version: value,
-        },
-        callback,
-      );
-    }
+    this.setState(
+      {
+        pipeline: formData.get('pipeline'),
+        version: formData.get('version'),
+      },
+      () => {
+        this.updatePipeline();
+        this.search();
+      },
+    );
   };
 
   toggleMenu = () => {
@@ -460,7 +377,6 @@ export default class App extends Component {
       menuOpen,
       parameters,
       pipeline,
-      pipelines,
       results,
       suggest,
       version,
@@ -516,37 +432,27 @@ export default class App extends Component {
 
             <Parameters parameters={parameters} onChange={this.setParameters} margin="mb-6" />
 
-            {pipelines && Object.keys(pipelines).includes(pipeline) && (
-              <Box margin="mb-6">
-                <Heading as="h2" size="xs" margin="mb-2">
-                  Pipeline
-                </Heading>
+            <Box as="form" margin="mb-6" onSubmit={this.setPipeline}>
+              <Heading as="h2" size="xs" margin="mb-2">
+                Pipeline
+              </Heading>
 
-                <Flex space="space-x-2">
-                  <Box flex="flex-1">
-                    <Label htmlFor="pipeline" visuallyHidden>
-                      Name
-                    </Label>
-                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} fontSize="text-sm">
-                      {Object.keys(pipelines).map((p) => (
-                        <option value={p}>{p}</option>
-                      ))}
-                    </Select>
-                  </Box>
+              <Flex space="space-x-2">
+                <Box flex="flex-1">
+                  <Label htmlFor="pipeline" visuallyHidden>
+                    Name
+                  </Label>
+                  <TextInput id="pipeline" defaultValue={pipeline} placeholder="Name" fontSize="text-sm" />
+                </Box>
 
-                  <Box>
-                    <Label htmlFor="version" visuallyHidden>
-                      Version
-                    </Label>
-                    <Select id="version" value={version} onChange={this.setPipeline} fontSize="text-sm">
-                      {pipelines[pipeline].map((v) => (
-                        <option value={v}>{v}</option>
-                      ))}
-                    </Select>
-                  </Box>
-                </Flex>
-              </Box>
-            )}
+                <Box flex="flex-1">
+                  <Label htmlFor="version" visuallyHidden>
+                    Version
+                  </Label>
+                  <TextInput id="version" defaultValue={version} placeholder="Version" fontSize="text-sm" />
+                </Box>
+              </Flex>
+            </Box>
           </nav>
         </div>
       </aside>
