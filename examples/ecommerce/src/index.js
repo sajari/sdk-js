@@ -37,7 +37,18 @@ import { toSentenceCase } from './utils/string';
 - Use hooks for shared logic
 */
 
-const { project, collection, pipeline, version, endpoint, facets, buckets, display, tracking, parameters } = env;
+const {
+  projectId,
+  collectionId,
+  pipelineName,
+  pipelineVersion,
+  endpoint,
+  facets,
+  buckets,
+  display,
+  tracking,
+  parameters,
+} = env;
 
 const defaults = {
   pageSize: 15,
@@ -69,8 +80,8 @@ export default class App extends Component {
       menuOpen: false,
 
       // Pipeline
-      pipeline,
-      version,
+      pipelineName,
+      pipelineVersion,
 
       // Parameters
       parameters,
@@ -81,7 +92,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.client = new Client(project, collection, endpoint);
+    this.client = new Client(projectId, collectionId, endpoint);
     this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {}));
 
     this.updatePipeline();
@@ -102,10 +113,10 @@ export default class App extends Component {
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
 
   updatePipeline = () => {
-    const { pipeline, version } = this.state;
+    const { pipelineName, pipelineVersion } = this.state;
 
     this.pipeline = {
-      main: this.client.pipeline(pipeline, version),
+      main: this.client.pipeline(pipelineName, pipelineVersion),
       autocomplete: this.client.pipeline('autocomplete'),
     };
   };
@@ -341,8 +352,8 @@ export default class App extends Component {
 
     this.setState(
       {
-        pipeline: formData.get('pipeline'),
-        version: formData.get('version'),
+        pipelineName: formData.get('pipeline-name'),
+        pipelineVersion: formData.get('pipeline-version'),
       },
       () => {
         this.updatePipeline();
@@ -376,10 +387,10 @@ export default class App extends Component {
       query,
       menuOpen,
       parameters,
-      pipeline,
+      pipelineName,
+      pipelineVersion,
       results,
       suggest,
-      version,
     } = this.state;
     const hasResults = results && results.length > 0;
 
@@ -439,17 +450,29 @@ export default class App extends Component {
 
               <Flex space="space-x-2">
                 <Box flex="flex-1">
-                  <Label htmlFor="pipeline" visuallyHidden>
+                  <Label htmlFor="pipeline-name" visuallyHidden>
                     Name
                   </Label>
-                  <TextInput id="pipeline" defaultValue={pipeline} placeholder="Name" fontSize="text-sm" />
+                  <TextInput
+                    id="pipeline-name"
+                    name="pipeline-name"
+                    defaultValue={pipelineName}
+                    placeholder="Name"
+                    fontSize="text-sm"
+                  />
                 </Box>
 
                 <Box flex="flex-1">
-                  <Label htmlFor="version" visuallyHidden>
+                  <Label htmlFor="pipeline-version" visuallyHidden>
                     Version
                   </Label>
-                  <TextInput id="version" defaultValue={version} placeholder="Version" fontSize="text-sm" />
+                  <TextInput
+                    id="pipeline-version"
+                    name="pipeline-version"
+                    defaultValue={pipelineVersion}
+                    placeholder="Version"
+                    fontSize="text-sm"
+                  />
                 </Box>
               </Flex>
             </Box>
