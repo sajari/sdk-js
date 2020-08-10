@@ -1,17 +1,20 @@
 import filterTypes from './src/components/Filters/types';
 
+const envVariables = process.env;
+const { APP_ENDPOINT, APP_ACCOUNT_ID, APP_COLLECTION_ID, APP_PIPELINE_NAME, APP_PIPELINE_VERSION } = envVariables;
+
 /**
  * Your environment configuration
  */
 export default {
   // These details can be found in your console
-  project: '1594153711901724220',
-  collection: 'bestbuy',
-  pipeline: 'query',
-  version: undefined, // undefined will use the default version
+  projectId: APP_ACCOUNT_ID,
+  collectionId: APP_COLLECTION_ID,
+  pipelineName: APP_PIPELINE_NAME,
+  pipelineVersion: APP_PIPELINE_VERSION,
 
   // For production this can be undefined
-  endpoint: 'https://jsonapi-us-valkyrie.sajari.net',
+  endpoint: APP_ENDPOINT,
 
   // Default display type (grid|list)
   display: 'list',
