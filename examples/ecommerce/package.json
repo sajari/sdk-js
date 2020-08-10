@@ -7,13 +7,14 @@
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
     "build": "preact build",
+    "build:env": "node -r esm scripts/build-env.js",
     "build:prod": "cross-env NODE_ENV=production preact build",
+    "build:netlify": "yarn build:env && preact build",
     "serve": "sirv build --cors --single",
     "dev": "preact watch --host=localhost",
     "analyze": "cross-env NODE_ENV=production preact build --analyze",
     "lint": "eslint src",
-    "lint:fix": "eslint --fix src",
-    "build:env": "node -r esm scripts/build-env.js"
+    "lint:fix": "eslint --fix src"
   },
   "devDependencies": {
     "@sampotts/eslint-config": "^1.0.0",
