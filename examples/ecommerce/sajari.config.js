@@ -5,13 +5,13 @@ import filterTypes from './src/components/Filters/types';
  */
 export default {
   // These details can be found in your console
-  project: '1586987615805531725',
-  collection: 'best-buy',
+  project: '1594153711901724220',
+  collection: 'bestbuy',
   pipeline: 'query',
   version: undefined, // undefined will use the default version
 
   // For production this can be undefined
-  endpoint: 'https://jsonapi-au-staging-valkyrie.sajari.com',
+  endpoint: 'https://jsonapi-us-valkyrie.sajari.net',
 
   // Default display type (grid|list)
   display: 'list',

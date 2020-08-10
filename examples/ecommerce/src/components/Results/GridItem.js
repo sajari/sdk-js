@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
+import { Icon } from '@sajari-ui/core';
+
 import { formatNumber } from '../../utils/number';
-import { IconCheck } from '../Icons';
 import Rating from '../Rating';
 import Image from './Image';
 
@@ -26,7 +27,7 @@ const GridItem = ({ data }) => (
 
     {data.freeShipping === 'true' && (
       <span className="inline-flex items-center ml-4 text-xs font-medium text-green-500">
-        <IconCheck className="mr-2 fill-current" />
+        <Icon name="check" margin="mr-2" />
         Free shipping
       </span>
     )}

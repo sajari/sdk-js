@@ -1,6 +1,19 @@
 import './app.css';
 
-import { Box, Button, ButtonGroup, Flex, Heading, Label, Select, Text } from '@sajari-ui/core';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  IconButton,
+  Label,
+  Logomark,
+  Pagination,
+  Select,
+  Text,
+  TextInput,
+} from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { Component, Fragment } from 'preact';
@@ -8,10 +21,8 @@ import { Component, Fragment } from 'preact';
 import env from '../sajari.config';
 import Checkbox from './components/Checkbox';
 import Filters from './components/Filters';
-import { IconGrid, IconList, Logomark } from './components/Icons';
 import MenuToggle from './components/MenuToggle';
 import Message from './components/Message';
-import Pagination from './components/Pagination';
 import Parameters from './components/Parameters';
 import Results from './components/Results';
 import Combobox from './components/Search/Combobox';
@@ -58,7 +69,6 @@ export default class App extends Component {
       menuOpen: false,
 
       // Pipeline
-      pipelines: {},
       pipeline,
       version,
 
@@ -74,19 +84,8 @@ export default class App extends Component {
     this.client = new Client(project, collection, endpoint);
     this.session = new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {}));
 
-    this.getPipeline()
-      .then(() => {
-        this.updatePipeline();
-        this.search(false);
-      })
-      .catch((error) =>
-        this.setState({
-          error,
-        }),
-      );
-
-    this.client.listPipelines().then(this.setPipelines);
-
+    this.updatePipeline();
+    this.search(false);
     this.listeners(true);
   }
 
@@ -102,27 +101,6 @@ export default class App extends Component {
 
   setHistory = (replace) => setStateToUrl({ state: this.state, replace, defaults });
 
-  setPipelines = (pipelines) => {
-    if (is.empty(pipelines)) {
-      this.setState({ pipelines: {} });
-      return;
-    }
-
-    const list = pipelines.reduce((obj, { identifier }) => {
-      const { name, version } = identifier;
-
-      if (!Object.keys(obj).includes(name)) {
-        obj[name] = [];
-      }
-
-      obj[name].push(version);
-
-      return obj;
-    }, {});
-
-    this.setState({ pipelines: list });
-  };
-
   updatePipeline = () => {
     const { pipeline, version } = this.state;
 
@@ -131,27 +109,6 @@ export default class App extends Component {
       autocomplete: this.client.pipeline('autocomplete'),
     };
   };
-
-  getPipeline = () =>
-    new Promise((resolve, reject) => {
-      const { pipeline, version } = this.state;
-
-      if (!version) {
-        this.client
-          .getDefaultPipelineVersion(pipeline)
-          .then(({ version: defaultVersion }) => {
-            this.setState(
-              {
-                version: defaultVersion,
-              },
-              () => resolve(defaultVersion),
-            );
-          })
-          .catch(reject);
-      } else {
-        resolve({ version });
-      }
-    });
 
   getSuggestions = (query) => {
     const request = new Request(query);
@@ -380,48 +337,18 @@ export default class App extends Component {
   setPipeline = (event) => {
     event.preventDefault();
 
-    const { value, id } = event.target;
+    const formData = new FormData(event.target);
 
-    const callback = () => {
-      this.updatePipeline();
-      this.search();
-    };
-
-    if (id === 'pipeline') {
-      const { pipelines } = this.state;
-      let { version } = this.state;
-      const versions = pipelines[value];
-
-      // Default to first version
-      if (!versions.includes(version)) {
-        [version] = versions;
-
-        this.client.getDefaultPipelineVersion(value).then(({ version }) => {
-          this.setState(
-            {
-              pipeline: value,
-              version,
-            },
-            callback,
-          );
-        });
-      } else {
-        this.setState(
-          {
-            pipeline: value,
-            version,
-          },
-          callback,
-        );
-      }
-    } else if (id === 'version') {
-      this.setState(
-        {
-          version: value,
-        },
-        callback,
-      );
-    }
+    this.setState(
+      {
+        pipeline: formData.get('pipeline'),
+        version: formData.get('version'),
+      },
+      () => {
+        this.updatePipeline();
+        this.search();
+      },
+    );
   };
 
   toggleMenu = () => {
@@ -450,7 +377,6 @@ export default class App extends Component {
       menuOpen,
       parameters,
       pipeline,
-      pipelines,
       results,
       suggest,
       version,
@@ -506,37 +432,27 @@ export default class App extends Component {
 
             <Parameters parameters={parameters} onChange={this.setParameters} margin="mb-6" />
 
-            {pipelines && Object.keys(pipelines).includes(pipeline) && (
-              <Box margin="mb-6">
-                <Heading as="h2" size="xs" margin="mb-2">
-                  Pipeline
-                </Heading>
+            <Box as="form" margin="mb-6" onSubmit={this.setPipeline}>
+              <Heading as="h2" size="xs" margin="mb-2">
+                Pipeline
+              </Heading>
 
-                <Flex space="space-x-2">
-                  <Box flex="flex-1">
-                    <Label htmlFor="pipeline" visuallyHidden>
-                      Name
-                    </Label>
-                    <Select id="pipeline" value={pipeline} onChange={this.setPipeline} fontSize="text-sm">
-                      {Object.keys(pipelines).map((p) => (
-                        <option value={p}>{p}</option>
-                      ))}
-                    </Select>
-                  </Box>
+              <Flex space="space-x-2">
+                <Box flex="flex-1">
+                  <Label htmlFor="pipeline" visuallyHidden>
+                    Name
+                  </Label>
+                  <TextInput id="pipeline" defaultValue={pipeline} placeholder="Name" fontSize="text-sm" />
+                </Box>
 
-                  <Box>
-                    <Label htmlFor="version" visuallyHidden>
-                      Version
-                    </Label>
-                    <Select id="version" value={version} onChange={this.setPipeline} fontSize="text-sm">
-                      {pipelines[pipeline].map((v) => (
-                        <option value={v}>{v}</option>
-                      ))}
-                    </Select>
-                  </Box>
-                </Flex>
-              </Box>
-            )}
+                <Box flex="flex-1">
+                  <Label htmlFor="version" visuallyHidden>
+                    Version
+                  </Label>
+                  <TextInput id="version" defaultValue={version} placeholder="Version" fontSize="text-sm" />
+                </Box>
+              </Flex>
+            </Box>
           </nav>
         </div>
       </aside>
@@ -600,15 +516,23 @@ export default class App extends Component {
               </Box>
 
               <ButtonGroup attached>
-                <Button size="xs" active={grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(true)}>
-                  <IconGrid />
-                  <span className="sr-only">Grid view</span>
-                </Button>
+                <IconButton
+                  icon="small-grid"
+                  label="Grid view"
+                  size="xs"
+                  appearance={grid ? 'primary' : undefined}
+                  padding={['px-3', 'py-2']}
+                  onClick={() => this.toggleGrid(true)}
+                />
 
-                <Button size="xs" active={!grid} padding={['px-3', 'py-2']} onClick={() => this.toggleGrid(false)}>
-                  <IconList />
-                  <span className="sr-only">List view</span>
-                </Button>
+                <IconButton
+                  icon="small-list"
+                  label="List view"
+                  size="xs"
+                  appearance={!grid ? 'primary' : undefined}
+                  padding={['px-3', 'py-2']}
+                  onClick={() => this.toggleGrid(false)}
+                />
               </ButtonGroup>
             </Box>
           </Flex>
@@ -616,8 +540,21 @@ export default class App extends Component {
 
         <Results results={results} grid={grid} />
 
-        <Box position="sticky" offset="bottom-0" padding={['p-4', 'pt-2', 'lg:p-6']} margin={['-mx-8', 'lg:mx-0']}>
-          <Pagination totalResults={totalResults} pageSize={pageSize} page={page} onChange={this.setPage} />
+        <Box
+          position="sticky"
+          offset="bottom-0"
+          padding={['p-4', 'pt-2', 'lg:p-6']}
+          margin={['-mx-8', 'lg:mx-0']}
+          textAlign="text-center"
+        >
+          <Pagination
+            position="relative"
+            zIndex="z-10"
+            totalResults={totalResults}
+            pageSize={pageSize}
+            page={page}
+            onChange={this.setPage}
+          />
           <div className="absolute inset-0 z-0 opacity-25 bg-gradient-b-white" aria-hidden="true" />
         </Box>
       </Fragment>
@@ -633,7 +570,7 @@ export default class App extends Component {
         <div className="box-content fixed inset-x-0 top-0 z-50 flex items-center h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50">
           <div className="relative w-full max-w-screen-xl px-4 mx-auto lg:px-6">
             <div className="flex items-center">
-              <Logomark className="mr-4 lg:mr-6" />
+              <Logomark size="md" margin={['mr-4', 'lg:mr-6']} />
 
               <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
 
