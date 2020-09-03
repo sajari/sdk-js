@@ -1,10 +1,8 @@
 /* eslint-disable global-require, import/no-extraneous-dependencies */
 const { tailwindConfig } = require('@sajari-ui/core');
 
-tailwindConfig.purge = {
-  // enabled: true,
-  content: ['./src/**/*.{js,html}'],
-};
+// Setup purging of CSS
+tailwindConfig.purge.content.push('./src/**/*.{js,html}');
 
 // Setup gradients
 tailwindConfig.theme.linearGradientColors = (theme) => theme('colors');
