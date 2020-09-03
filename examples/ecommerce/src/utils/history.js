@@ -3,14 +3,13 @@ import is from './is';
 import { parseUrl } from './url';
 
 const { facets } = env;
-
 const params = {
   query: 'q',
   page: 'p',
   pageSize: 'ps',
   sort: 's',
 };
-
+const arraySeparator = '|';
 let win = {};
 
 if (typeof window !== 'undefined') {
@@ -34,7 +33,7 @@ export function parseStateFromUrl({ defaults }) {
 
         // Filters are flattened into the URL
         if (facets.some((f) => f.field === param)) {
-          state.filters[param] = value.split(',');
+          state.filters[param] = value.split(arraySeparator);
           return state;
         }
 
@@ -78,7 +77,7 @@ export function setStateToUrl({ state, replace, defaults }) {
     if (isDefault || is.empty(value)) {
       url.searchParams.delete(param);
     } else {
-      url.searchParams.set(param, value);
+      url.searchParams.set(param, is.array(value) ? value.join(arraySeparator) : value);
     }
   });
 
