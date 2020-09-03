@@ -13,6 +13,7 @@ import {
   Select,
   Text,
   TextInput,
+  VisuallyHidden,
 } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
@@ -590,14 +591,34 @@ export default class App extends Component {
 
     return (
       <Fragment>
-        <div className="box-content fixed inset-x-0 top-0 z-50 flex items-center h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50">
-          <div className="relative w-full max-w-screen-xl px-4 mx-auto lg:px-6">
-            <div className="flex items-center">
+        <Flex
+          alignItems="items-center"
+          boxSizing="box-content"
+          position="fixed"
+          offset={['inset-x-0', 'top-0']}
+          zIndex="z-50"
+          height="h-16"
+          padding="py-2"
+          borderWidth="border-b"
+          borderColor="border-gray-200"
+          shadow="shadow-sm"
+          backgroundColor="bg-gray-50"
+          backgroundOpacity="bg-opacity-75"
+          backdropFilter="backdrop-blur-1"
+        >
+          <Box
+            position="relative"
+            width="w-full"
+            maxWidth="max-w-screen-xl"
+            margin="mx-auto"
+            padding={['px-4', 'lg:px-6']}
+          >
+            <Flex alignItems="items-center">
               <Logomark size="md" margin={['mr-4', 'lg:mr-6']} />
 
-              <h1 className="sr-only">Sajari JavaScript SDK Demo</h1>
+              <VisuallyHidden as="h1">Sajari Ecommerce Demo</VisuallyHidden>
 
-              <form onSubmit={this.handleSubmit} className="flex-1 lg:flex lg:items-center">
+              <Box as="form" onSubmit={this.handleSubmit} flex="flex-1" display="lg:flex" alignItems="lg:items-center">
                 <Combobox
                   id="q"
                   name="q"
@@ -615,25 +636,33 @@ export default class App extends Component {
                   </Button>
                 )}
 
-                <div className="items-center hidden ml-3 md:ml-6 lg:flex">
+                <Box display={['hidden', 'lg:flex']} alignItems="items-center" margin={['ml-3', 'md:ml-6']}>
                   <Checkbox id="suggest" label="Suggestions" onInput={this.toggleSuggest} checked={suggest} />
 
                   <Checkbox id="instant" label="Instant" margin="ml-4" onInput={this.toggleInstant} checked={instant} />
-                </div>
-              </form>
+                </Box>
+              </Box>
 
               <MenuToggle open={menuOpen} onClick={this.toggleMenu} />
-            </div>
-          </div>
-        </div>
+            </Flex>
+          </Box>
+        </Flex>
 
-        <div className="w-full max-w-screen-xl px-6 mx-auto">
-          <div className="lg:flex">
+        <Box width="w-full" maxWidth="max-w-screen-xl" padding="px-6" margin="mx-auto">
+          <Box display="lg:flex">
             {!init && this.renderSidebar()}
 
-            <main className="w-full min-h-screen pt-24 lg:pl-10 lg:static lg:max-h-full lg:overflow-visible lg:flex-1 lg:pt-28 ">
+            <Box
+              as="main"
+              width="w-full"
+              minHeight="min-h-screen"
+              padding={['pt-24', 'lg:pl-10', 'lg:pt-28']}
+              maxHeight="lg:max-h-full"
+              overflow="lg:overflow-visible"
+              flex="lg:flex-1"
+            >
               {!hasResults && !error && !init && (
-                <div className="text-center">
+                <Box textAlign="text-center">
                   <Message title="No results" message={`Sorry, we couldn't find any matches for '${query}'.`} />
 
                   {filters && Object.keys(filters).length > 0 && (
@@ -641,15 +670,15 @@ export default class App extends Component {
                       Clear filters
                     </Button>
                   )}
-                </div>
+                </Box>
               )}
 
               {error && <Message type="error" title="Error" message={toSentenceCase(error.message)} />}
 
               {hasResults && this.renderResults()}
-            </main>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
       </Fragment>
     );
   }
