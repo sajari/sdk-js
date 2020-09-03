@@ -6,7 +6,7 @@ const escape = (input = '') => {
   const chars = [','];
 
   chars.forEach((c) => {
-    escaped = replaceAll(input, c, `\${char}`);
+    escaped = replaceAll(input, c, `\\${c}`);
   });
 
   return escaped;
