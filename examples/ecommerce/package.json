@@ -37,7 +37,6 @@
     "@sajari-ui/core": "^0.1.168",
     "classnames": "^2.2.6",
     "downshift": "^6.0.5",
-    "node-fetch": "^2.6.0",
     "preact": "^10.4.8",
     "preact-render-to-string": "^5.1.10",
     "prop-types": "^15.7.2",
