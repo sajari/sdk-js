@@ -579,7 +579,15 @@ export default class App extends Component {
             page={page}
             onChange={this.setPage}
           />
-          <div className="absolute inset-0 z-0 opacity-25 bg-gradient-b-white" aria-hidden="true" />
+          <Box
+            position="absolute"
+            offset="inset-0"
+            zIndex="z-0"
+            opacity="opacity-50"
+            backgroundImage="bg-gradient-to-b"
+            gradientColorStops={['from-transparent', 'to-white']}
+            aria-hidden="true"
+          />
         </Box>
       </Fragment>
     );

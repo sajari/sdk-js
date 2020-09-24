@@ -17,7 +17,7 @@
     "lint:fix": "eslint --fix src"
   },
   "devDependencies": {
-    "@sampotts/eslint-config": "^1.0.0",
+    "@sampotts/eslint-config": "^1.1.4",
     "autoprefixer": "^9.8.6",
     "babel-eslint": "^10.1.0",
     "cross-env": "^7.0.2",
@@ -34,14 +34,13 @@
   },
   "dependencies": {
     "@sajari/sdk-js": "next",
-    "@sajari-ui/core": "^0.1.157",
+    "@sajari-ui/core": "^0.1.168",
     "classnames": "^2.2.6",
     "downshift": "^6.0.5",
     "node-fetch": "^2.6.0",
     "preact": "^10.4.8",
     "preact-render-to-string": "^5.1.10",
     "prop-types": "^15.7.2",
-    "tailwindcss": "^1.7.6",
-    "tailwindcss-gradients": "^3.0.0"
+    "tailwindcss": "^1.7.6"
   }
 }
