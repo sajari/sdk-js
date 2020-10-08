@@ -349,7 +349,7 @@ export default class App extends Component {
   setPipeline = (event) => {
     event.preventDefault();
 
-    const formData = new FormData(event.target);
+    const formData = new FormData(event.target.form);
 
     this.setState(
       {
@@ -444,7 +444,15 @@ export default class App extends Component {
 
             <Parameters parameters={parameters} onChange={this.setParameters} margin="mb-6" />
 
-            <Box as="form" margin="mb-6" onSubmit={this.setPipeline}>
+            <Box
+              as="form"
+              margin="mb-6"
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  this.setPipeline(event);
+                }
+              }}
+            >
               <Heading as="h2" size="xs" margin="mb-2">
                 Pipeline
               </Heading>
