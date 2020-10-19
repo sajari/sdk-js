@@ -700,9 +700,15 @@ export class DefaultSession extends EventEmitter implements Session {
 /**
  * mergeTrackingData combines the provided session data with the requesters
  * google analytics ID and/or Sajari ID if present in the documents cookie.
+ *
+ * Because this is meant to be used on the client side, when in SSR mode
+ * it will always return empty object
  * @hidden
  */
 function mergeTrackingData(data?: Record<string, string>) {
+  if (typeof window === "undefined") {
+    return {};
+  }
   const cookieData = document.cookie
     .split(";")
     .filter((item) => item.includes("_ga") || item.includes("sjID"))
