@@ -4,4 +4,4 @@
  * user agent of sdk
  * @hidden
  */
-export const USER_AGENT = "sdk-js-2.0.0-alpha.11";
+export const USER_AGENT = "sdk-js-2.0.0-alpha.12";
