@@ -376,6 +376,11 @@ class QueryPipeline extends EventEmitter {
             t = { click: clickTokenURL + token.click.token };
           } else if ("pos" in token) {
             t = { ...token };
+          } else if ("posNeg" in token) {
+            t = {
+              pos: token.posNeg.pos,
+              neg: token.posNeg.neg,
+            };
           }
         }
 
@@ -506,6 +511,12 @@ type TokenProto =
   | {
       pos: string;
       neg: string;
+    }
+  | {
+      posNeg: {
+        pos: string;
+        neg: string;
+      };
     };
 
 /**
