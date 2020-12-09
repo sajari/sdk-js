@@ -61,6 +61,7 @@ export class Client {
     this.project = project;
     this.collection = collection;
     this.endpoint = endpoint;
+    this.interactionConsume = this.interactionConsume.bind(this);
   }
 
   /**
