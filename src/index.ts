@@ -71,7 +71,7 @@ export class Client {
     request: Record<string, any>,
     signal?: AbortSignal
   ): Promise<Response> {
-    if (!navigator.onLine) {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
       throw new NetworkError(
         "Search request failed due to a network error. Please check your network connection."
       );
