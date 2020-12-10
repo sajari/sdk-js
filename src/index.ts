@@ -106,7 +106,7 @@ export class Client {
     // Only allow key/secret for SSR contexts
     if (isSSR() && [this.key, this.secret].every(Boolean)) {
       Object.assign(metadata, {
-        authorization: `keysecret ${this.key} ${this.secret}`,
+        authorization: [`keysecret ${this.key} ${this.secret}`],
       });
     }
 
