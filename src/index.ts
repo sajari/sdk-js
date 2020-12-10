@@ -40,8 +40,8 @@ export class Client {
   project: string;
   collection: string;
   endpoint: string;
-  key: string;
-  secret: string;
+  key?: string;
+  secret?: string;
 
   /**
    * Constructs an instance of Client for a specific project and collection.
@@ -64,8 +64,8 @@ export class Client {
     project: string,
     collection: string,
     endpoint: string = "//jsonapi.sajari.net",
-    key: string = "",
-    secret: string = ""
+    key?: string,
+    secret?: string
   ) {
     // Key/secret is only allowed in non SSR context
     if (!isSSR() && [key, secret].some(Boolean)) {
