@@ -63,7 +63,7 @@ export class Client {
   constructor(
     project: string,
     collection: string,
-    endpoint: string = "//jsonapi.sajari.net",
+    endpoint: string = `${isSSR() ? "https:" : ""}//jsonapi.sajari.net`,
     key?: string,
     secret?: string
   ) {
