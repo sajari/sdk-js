@@ -29,12 +29,19 @@ export class RequestError extends Error {
 }
 
 /**
+ * Check if we're in a server-side rendering context
+ */
+const isSSR = () => typeof window === "undefined";
+
+/**
  * Client defines a client for interacting with the Sajari API.
  */
 export class Client {
   project: string;
   collection: string;
   endpoint: string;
+  key?: string;
+  secret?: string;
 
   /**
    * Constructs an instance of Client for a specific project and collection.
@@ -56,11 +63,22 @@ export class Client {
   constructor(
     project: string,
     collection: string,
-    endpoint: string = "//jsonapi.sajari.net"
+    endpoint: string = "//jsonapi.sajari.net",
+    key?: string,
+    secret?: string
   ) {
+    // Key/secret is only allowed in non SSR context
+    if (!isSSR() && [key, secret].some(Boolean)) {
+      throw new Error(
+        "key/secret authorization is only supported for server-side rendering."
+      );
+    }
+
     this.project = project;
     this.collection = collection;
     this.endpoint = endpoint;
+    this.key = key;
+    this.secret = secret;
     this.interactionConsume = this.interactionConsume.bind(this);
   }
 
@@ -72,10 +90,24 @@ export class Client {
     request: Record<string, any>,
     signal?: AbortSignal
   ): Promise<Response> {
-    if (typeof navigator !== "undefined" && !navigator.onLine) {
+    // Check we have a connection in non SSR context
+    if (!isSSR() && !navigator.onLine) {
       throw new NetworkError(
         "Search request failed due to a network error. Please check your network connection."
       );
+    }
+
+    const metadata = {
+      project: [this.project],
+      collection: [this.collection],
+      "user-agent": [USER_AGENT],
+    };
+
+    // Only allow key/secret for SSR contexts
+    if (isSSR() && [this.key, this.secret].every(Boolean)) {
+      Object.assign(metadata, {
+        authorization: `keysecret ${this.key} ${this.secret}`,
+      });
     }
 
     const resp = await fetch(`${this.endpoint}${path}`, {
@@ -88,11 +120,7 @@ export class Client {
         "Content-Type": "text/plain",
       },
       body: JSON.stringify({
-        metadata: {
-          project: [this.project],
-          collection: [this.collection],
-          "user-agent": [USER_AGENT],
-        },
+        metadata,
         request,
       }),
     });

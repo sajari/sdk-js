@@ -30,6 +30,14 @@ describe("Client", () => {
       expect(err.message).toEqual("oh noes");
     });
   });
+
+  it("call with keys error", () => {
+    const create = () => {
+      new Client("test", "test", "test.com", "key", "secret");
+    };
+
+    expect(create).toThrow(Error);
+  });
 });
 
 describe("Pipeline", () => {
