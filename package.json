@@ -35,12 +35,14 @@
   ],
   "scripts": {
     "start": "tsdx watch --format cjs,esm,umd --name SajariSDK",
-    "prebuild": "node scripts/gen-useragent",
+    "prebuild": "yarn generate:user-agent",
     "build": "tsdx build --format cjs,esm,umd --name SajariSDK",
+    "pretest": "yarn generate:user-agent",
     "test": "tsdx test",
     "test:coverage": "tsdx test --coverage",
     "prepublishOnly": "npm-run-all test build",
-    "docs": "typedoc --out docs --mode file"
+    "docs": "typedoc --out docs --mode file",
+    "generate:user-agent": "node scripts/gen-useragent"
   },
   "husky": {
     "hooks": {
