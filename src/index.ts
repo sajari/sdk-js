@@ -42,6 +42,8 @@ export class Client {
   endpoint: string;
   key?: string;
   secret?: string;
+  // Callers can set this to add an additional user agent value to the request's metadata.
+  userAgent: string = "";
 
   /**
    * Constructs an instance of Client for a specific project and collection.
@@ -100,7 +102,7 @@ export class Client {
     const metadata = {
       project: [this.project],
       collection: [this.collection],
-      "user-agent": [USER_AGENT],
+      "user-agent": [USER_AGENT, this.userAgent].filter(Boolean).join(" "),
     };
 
     // Only allow key/secret for SSR contexts
