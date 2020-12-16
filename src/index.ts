@@ -443,7 +443,7 @@ class QueryPipeline extends EventEmitter {
  * returned by the engine.
  * @hidden
  */
-const clickTokenURL = "https://www.sajari.com/token/";
+const clickTokenURL = "https://re.sajari.com/token/";
 
 export interface SearchResponse {
   /**
