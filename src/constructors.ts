@@ -89,7 +89,7 @@ export const newAggregates = (aggregateProto: any = {}): AggregateResponse =>
 /**
  * @hidden
  */
-export const clickTokenURL = "https://www.sajari.com/token/";
+export const clickTokenURL = "https://re.sajari.com/token/";
 
 /**
  * newResults constructs a Results object from a search reponse and array of tokens.
