@@ -1,5 +1,6 @@
 import { USER_AGENT } from "./user-agent";
 import EventEmitter from "./events";
+import { isSSR } from "./ssr";
 export { EventEmitter };
 
 /**
@@ -27,11 +28,6 @@ export class RequestError extends Error {
     this.error = error;
   }
 }
-
-/**
- * Check if we're in a server-side rendering context
- */
-const isSSR = () => typeof window === "undefined";
 
 /**
  * Client defines a client for interacting with the Sajari API.
