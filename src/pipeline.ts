@@ -79,7 +79,7 @@ export class pipeline implements Pipeline {
       return;
     }
 
-    let pipelineIdentifer: { name: string; version?: string } = {
+    const pipelineIdentifer: { name: string; version?: string } = {
       name: this.name,
     };
     if (this.version) {

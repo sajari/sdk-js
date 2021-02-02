@@ -1,4 +1,4 @@
-import { AggregateResponse, Result, Response, Token } from "./results";
+import { AggregateResponse, Response, Result, Token } from "./results";
 
 /** @hidden */
 export interface ProtoSingleValue {
@@ -111,8 +111,8 @@ export const processSearchResponse = (
     }
     if (token.posNeg !== undefined) {
       result.token = {
-        pos: token.posNeg.pos,
         neg: token.posNeg.neg,
+        pos: token.posNeg.pos,
       };
       return result;
     }
