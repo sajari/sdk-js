@@ -2,13 +2,25 @@
 
 import { isSSR } from "./ssr";
 
-const scriptTag = !isSSR()
-  ? (document.currentScript as HTMLScriptElement | null)?.src
-  : null;
+const getHost = (url: string) => {
+  const a = document.createElement("a");
+  a.href = url;
+  return a.host;
+};
+
+let scriptSrc = null;
 let suffix = "";
 
-if (scriptTag) {
-  const source = new URL(scriptTag).host;
+if (!isSSR()) {
+  const scriptElement = document.currentScript as HTMLScriptElement | null;
+
+  if (scriptElement) {
+    scriptSrc = scriptElement.src;
+  }
+}
+
+if (scriptSrc) {
+  const source = getHost(scriptSrc);
   suffix = `(via ${source})`;
 } else if (isSSR()) {
   suffix = "(SSR)";
