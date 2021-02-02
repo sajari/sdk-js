@@ -6,13 +6,26 @@ const template = `// Code Generated. DO NOT EDIT!
 
 import { isSSR } from "./ssr";
 
+/**
+ * Parse a host from a URL
+ * @hidden
+ */
 const getHost = (url: string) => {
   const a = document.createElement("a");
   a.href = url;
   return a.host;
 };
 
+/**
+ * The source of the script
+ * @hidden
+ */
 let scriptSrc = null;
+
+/**
+ * The suffix to add to the user agent
+ * @hidden
+ */
 let suffix = "";
 
 if (!isSSR()) {
