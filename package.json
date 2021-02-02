@@ -1,6 +1,12 @@
 {
   "name": "@sajari/sdk-js",
   "description": "Sajari JavaScript SDK",
+  "version": "1.0.11",
+  "main": "dist.umd/index.js",
+  "types": "dist.types/index.d.ts",
+  "files": [
+    "dist*"
+  ],
   "license": "MIT",
   "contributors": [
     "Ben Hinchley <bhinchley@sajari.com> (https://www.sajari.com)",
@@ -14,14 +20,8 @@
     "url": "git://github.com/sajari/sajari-sdk-js.git"
   },
   "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
-  "version": "1.0.11",
-  "main": "dist.umd/index.js",
-  "types": "dist.types/index.d.ts",
-  "files": [
-    "dist*"
-  ],
   "scripts": {
-    "prebuild": "rimraf dist*",
+    "prebuild": "rimraf dist* && yarn generate:user-agent",
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "docs": "typedoc src/index.ts --mode file --out docs --exclude \"**/*+(.test).ts\"",
@@ -30,7 +30,8 @@
     "prepublishOnly": "npm-run-all test build",
     "pretest": "npm-run-all type-check",
     "test": "jest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "generate:user-agent": "node scripts/gen-useragent"
   },
   "dependencies": {},
   "devDependencies": {
