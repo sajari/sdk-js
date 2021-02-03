@@ -98,7 +98,7 @@ export class Client {
     const metadata = {
       project: [this.project],
       collection: [this.collection],
-      "user-agent": [USER_AGENT, this.userAgent].filter(Boolean).join(" "),
+      "user-agent": [[USER_AGENT, this.userAgent].filter(Boolean).join(" ")],
     };
 
     // Only allow key/secret for SSR contexts
