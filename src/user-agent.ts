@@ -16,7 +16,7 @@ if (scriptTag) {
  * user agent of sdk
  * @hidden
  */
-export const USER_AGENT = ["sajari-sdk-js/2.0.0-alpha.18", suffix]
+export const USER_AGENT = ["sajari-sdk-js/2.0.0-rc.1", suffix]
   .filter(Boolean)
   .join(" ");
 

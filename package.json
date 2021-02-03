@@ -1,6 +1,14 @@
 {
   "name": "@sajari/sdk-js",
   "description": "Sajari JavaScript SDK",
+  "version": "2.0.0-rc.1",
+  "main": "dist/index.js",
+  "umd:main": "dist/sajarisdk.umd.production.js",
+  "module": "dist/sajarisdk.esm.production.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "contributors": [
     "Ben Hinchley <bhinchley@sajari.com> (https://www.sajari.com)",
@@ -24,14 +32,6 @@
     "sajari",
     "search",
     "search api"
-  ],
-  "version": "2.0.0-alpha.18",
-  "main": "dist/index.js",
-  "umd:main": "dist/sajarisdk.umd.production.js",
-  "module": "dist/sajarisdk.esm.production.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist"
   ],
   "scripts": {
     "start": "tsdx watch --format cjs,esm,umd --name SajariSDK",
