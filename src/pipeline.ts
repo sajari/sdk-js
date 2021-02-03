@@ -4,11 +4,7 @@ import { request, RequestError } from "./lib/request";
 import { Response } from "./results";
 import { Session } from "./session";
 import { Values } from "./types";
-
-/**
- * @hidden
- */
-const UserAgent = "sdk-js-1.0.0";
+import { USER_AGENT } from "./user-agent";
 
 /**
  * Pipeline is a client for running query pipelines on a collection.  See
@@ -83,7 +79,7 @@ export class pipeline implements Pipeline {
       return;
     }
 
-    let pipelineIdentifer: { name: string; version?: string } = {
+    const pipelineIdentifer: { name: string; version?: string } = {
       name: this.name,
     };
     if (this.version) {
@@ -94,7 +90,7 @@ export class pipeline implements Pipeline {
       metadata: {
         collection: [this.client.collection],
         project: [this.client.project],
-        "user-agent": [UserAgent],
+        "user-agent": [USER_AGENT],
       },
       request: {
         tracking,

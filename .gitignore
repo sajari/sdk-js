@@ -26,3 +26,6 @@ docs/
 
 # Env
 .env
+
+# Cache
+.rpt2_cache

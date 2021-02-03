@@ -1,4 +1,5 @@
 import { pipeline, Pipeline } from "./pipeline";
+import { isSSR } from "./ssr";
 
 /**
  * Option is a function type which defines functions for setting config options
@@ -16,7 +17,7 @@ export const withEndpoint = (endpoint: string) => (client: Client) => {
 /**
  * @hidden
  */
-const defaultEndpoint = "https://jsonapi.sajari.net";
+const defaultEndpoint = `${isSSR() ? "https:" : ""}//jsonapi.sajari.net`;
 
 /**
  * Client constructs a client for interacting with the Sajari API.
