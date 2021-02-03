@@ -1,7 +1,7 @@
 {
   "name": "@sajari/sdk-js",
   "description": "Sajari JavaScript SDK",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "main": "dist/index.js",
   "umd:main": "dist/sajarisdk.umd.production.js",
   "module": "dist/sajarisdk.esm.production.js",
