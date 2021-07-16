@@ -9,11 +9,11 @@ const client = new Client("test", "test", "test.com");
 
 describe("Client", () => {
   beforeEach(() => {
-    global.fetch.resetMocks();
+    fetchMock.resetMocks();
   });
 
   it("call", () => {
-    global.fetch.mockResponseOnce(JSON.stringify({ data: "12345" }));
+    fetchMock.mockResponseOnce(JSON.stringify({ data: "12345" }));
 
     expect.assertions(1);
     return client.call("/hello", { foo: "bar" }).then((res) => {
@@ -22,7 +22,7 @@ describe("Client", () => {
   });
 
   it("call error", () => {
-    global.fetch.mockRejectOnce(new RequestError(500, "oh noes"));
+    fetchMock.mockRejectOnce(new RequestError(500, "oh noes"));
 
     expect.assertions(2);
     return client.call("/hello", { foo: "bar" }).catch((err) => {
@@ -42,11 +42,11 @@ describe("Client", () => {
 
 describe("Pipeline", () => {
   beforeEach(() => {
-    global.fetch.resetMocks();
+    fetchMock.resetMocks();
   });
 
   it("search", async () => {
-    global.fetch.mockResponseOnce(
+    fetchMock.mockResponseOnce(
       JSON.stringify({ searchResponse: { time: "0.003s", totalResults: 0 } })
     );
 
@@ -64,8 +64,8 @@ describe("Pipeline", () => {
       aggregateFilters: {},
     });
 
-    expect(global.fetch.mock.calls.length).toEqual(1);
-    expect(global.fetch.mock.calls[0][0]).toEqual(
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
       "test.com/sajari.api.pipeline.v1.Query/Search"
     );
   });
