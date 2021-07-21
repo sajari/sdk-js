@@ -42,7 +42,7 @@ import { Client, DefaultSession, TrackingType, etc... } from "@sajari/sdk-js";
 Note that when using the SDK via a `<script>` tag in a browser, all components will live under `window.SajariSDK`:
 
 ```html
-<script src="https://unpkg.com/@sajari/sdk-js/dist/sajarisdk.umd.production.min.js"></script>
+<script src="https://unpkg.com/@sajari/sdk-js@^2/dist/sajarisdk.umd.production.min.js"></script>
 <script>
   // new SajariSDK.Client("project", "collection")...
 </script>
@@ -78,7 +78,7 @@ websitePipeline
   .then(([response, values]) => {
     // Handle response...
   })
-  .catch(error => {
+  .catch((error) => {
     // Handle error...
   });
 ```
@@ -93,7 +93,7 @@ const values = { q: "FAQ" };
 websitePipeline
   .search(values, clickTrackedSession.next(values))
   .then(([response, values]) => {
-    response.results.forEach(r => {
+    response.results.forEach((r) => {
       const title = document.createElement("a");
       title.textContent = r.values.title;
       title.href = r.values.url;
@@ -104,7 +104,7 @@ websitePipeline
       document.body.appendChild(title);
     });
   })
-  .catch(error => {
+  .catch((error) => {
     // Handle error...
   });
 ```
@@ -121,7 +121,7 @@ const { Client } = require("@sajari/sdk-js");
 
 const client = new Client("<project>", "<collection>", {
   key: "<key from console>",
-  secret: "<secret from console>"
+  secret: "<secret from console>",
 });
 
 /*
@@ -130,7 +130,7 @@ interaction was a "purchase" and the user purchasing the item was 20 years old
 (this information coming from some system that you operate.)
 */
 client.interactionConsume(token, "purchase", 1.0, {
-  age: "20"
+  age: "20",
 });
 ```
 
