@@ -1,7 +1,7 @@
 # Sajari Javascript SDK
 
 [![npm (scoped)](https://img.shields.io/npm/v/@sajari/sdk-js.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
-[![build status](https://img.shields.io/travis/sajari/sajari-sdk-js/master.svg?style=flat-square)](https://travis-ci.org/sajari/sajari-sdk-js)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/571108bf-6e93-4aab-8671-09a6f3b90722/deploy-status)](https://app.netlify.com/sites/sajari-sdk-js/deploys)
 [![build size](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
