@@ -29,6 +29,23 @@ export class RequestError extends Error {
   }
 }
 
+type ConfigObj = {
+  /**
+   * Redirect URL for click tracking.  Prepended to the the front of the token
+   * returned by the engine.
+   */
+  clickTokenURL: string;
+  /**
+   * Callers can set this to add an additional user agent value to the request's metadata.
+   */
+  userAgent: string;
+};
+
+const configDefaults: ConfigObj = {
+  clickTokenURL: "https://re.sajari.com/token/",
+  userAgent: "",
+};
+
 /**
  * Client defines a client for interacting with the Sajari API.
  */
@@ -38,7 +55,7 @@ export class Client {
   endpoint: string;
   key?: string;
   secret?: string;
-  // Callers can set this to add an additional user agent value to the request's metadata.
+  config: ConfigObj;
   userAgent: string = "";
 
   /**
@@ -63,7 +80,8 @@ export class Client {
     collection: string,
     endpoint: string = `${isSSR() ? "https:" : ""}//jsonapi.sajari.net`,
     key?: string,
-    secret?: string
+    secret?: string,
+    config?: Partial<ConfigObj>
   ) {
     // Key/secret is only allowed in non SSR context
     if (!isSSR() && [key, secret].some(Boolean)) {
@@ -77,6 +95,7 @@ export class Client {
     this.endpoint = endpoint;
     this.key = key;
     this.secret = secret;
+    this.config = Object.assign(configDefaults, config);
     this.interactionConsume = this.interactionConsume.bind(this);
   }
 
@@ -98,7 +117,11 @@ export class Client {
     const metadata = {
       project: [this.project],
       collection: [this.collection],
-      "user-agent": [[USER_AGENT, this.userAgent].filter(Boolean).join(" ")],
+      "user-agent": [
+        [USER_AGENT, this.userAgent, this.config.userAgent]
+          .filter(Boolean)
+          .join(" "),
+      ],
     };
 
     // Only allow key/secret for SSR contexts
@@ -400,7 +423,7 @@ class QueryPipeline extends EventEmitter {
         const token = (jsonProto.tokens || [])[index];
         if (token !== undefined) {
           if ("click" in token) {
-            t = { click: clickTokenURL + token.click.token };
+            t = { click: this.client.config.clickTokenURL + token.click.token };
           } else if ("pos" in token) {
             t = { ...token };
           } else if ("posNeg" in token) {
@@ -435,13 +458,6 @@ class QueryPipeline extends EventEmitter {
     ];
   }
 }
-
-/**
- * Redirect URL for click tracking.  Prepended to the the front of the token
- * returned by the engine.
- * @hidden
- */
-const clickTokenURL = "https://re.sajari.com/token/";
 
 export interface SearchResponse {
   /**
