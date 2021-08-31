@@ -1001,3 +1001,74 @@ export class Values extends EventEmitter {
     return values;
   }
 }
+
+export type TokenState = {
+  token: PosNegToken;
+  clickSubmitted: boolean;
+};
+
+export const POS_NEG_STORAGE_KEY = "sajari_tokens";
+
+/**
+ * PosNegLocalStorageManager is a utility class for manipulating Sajari's localstorage based
+ * management of PosNeg tokens. Typical use case is storing tokens for later consumption
+ * as users move through an ecommerce purchase funnel.
+ */
+export class PosNegLocalStorageManager {
+  currentTokens: Record<string | number, TokenState>;
+  client: Client;
+  constructor(client: Client) {
+    const storageContent = localStorage.getItem(POS_NEG_STORAGE_KEY);
+    try {
+      this.currentTokens = storageContent ? JSON.parse(storageContent) : {};
+    } catch (e) {
+      this.currentTokens = {};
+      console.error(
+        "Sajari PosNeg local storage key contains corrupt data.",
+        storageContent
+      );
+    }
+    this.client = client;
+  }
+  add(fieldValue: string | number, token: PosNegToken) {
+    this.currentTokens[fieldValue] = { token, clickSubmitted: false };
+    localStorage.setItem(
+      POS_NEG_STORAGE_KEY,
+      JSON.stringify(this.currentTokens)
+    );
+  }
+  get(fieldValue: string | number): TokenState | undefined {
+    return this.currentTokens[fieldValue];
+  }
+  sendPosEvent(
+    fieldValue: string | number,
+    identifier: string,
+    weight: number
+  ) {
+    const tokenState = this.get(fieldValue);
+    if (tokenState === undefined) {
+      return;
+    }
+    this.client.interactionConsume(tokenState.token.pos, identifier, weight);
+  }
+  sendClickEvent(fieldValue: string | number) {
+    const tokenState = this.get(fieldValue);
+    if (tokenState === undefined || tokenState.clickSubmitted !== false) {
+      return;
+    }
+    this.sendPosEvent(fieldValue, "click", 1);
+    this.currentTokens[fieldValue].clickSubmitted = true;
+    localStorage.setItem(
+      POS_NEG_STORAGE_KEY,
+      JSON.stringify(this.currentTokens)
+    );
+  }
+  sendPendingClicks() {
+    Object.keys(this.currentTokens).forEach((fieldValue) => {
+      if (this.currentTokens[fieldValue].clickSubmitted === false) {
+        this.sendClickEvent(fieldValue);
+        this.currentTokens[fieldValue].clickSubmitted = true;
+      }
+    });
+  }
+}
