@@ -1008,6 +1008,19 @@ export type TokenState = {
 };
 
 export const POS_NEG_STORAGE_KEY = "sajari_tokens";
+// Just here to handle SSR execution (docs)
+const setItem = (key: string, value: string) => {
+  if (isSSR()) {
+    return;
+  }
+  return localStorage.setItem(key, value);
+};
+const getItem = (key: string): string | null => {
+  if (isSSR()) {
+    return "";
+  }
+  return localStorage.getItem(key);
+};
 
 /**
  * PosNegLocalStorageManager is a utility class for manipulating Sajari's localstorage based
@@ -1018,7 +1031,7 @@ export class PosNegLocalStorageManager {
   currentTokens: Record<string | number, TokenState>;
   client: Client;
   constructor(client: Client) {
-    const storageContent = localStorage.getItem(POS_NEG_STORAGE_KEY);
+    const storageContent = getItem(POS_NEG_STORAGE_KEY);
     try {
       this.currentTokens = storageContent ? JSON.parse(storageContent) : {};
     } catch (e) {
@@ -1032,10 +1045,7 @@ export class PosNegLocalStorageManager {
   }
   add(fieldValue: string | number, token: PosNegToken) {
     this.currentTokens[fieldValue] = { token, clickSubmitted: false };
-    localStorage.setItem(
-      POS_NEG_STORAGE_KEY,
-      JSON.stringify(this.currentTokens)
-    );
+    setItem(POS_NEG_STORAGE_KEY, JSON.stringify(this.currentTokens));
   }
   get(fieldValue: string | number): TokenState | undefined {
     return this.currentTokens[fieldValue];
@@ -1058,10 +1068,7 @@ export class PosNegLocalStorageManager {
     }
     this.sendPosEvent(fieldValue, "click", 1);
     this.currentTokens[fieldValue].clickSubmitted = true;
-    localStorage.setItem(
-      POS_NEG_STORAGE_KEY,
-      JSON.stringify(this.currentTokens)
-    );
+    setItem(POS_NEG_STORAGE_KEY, JSON.stringify(this.currentTokens));
   }
   sendPendingClicks() {
     Object.keys(this.currentTokens).forEach((fieldValue) => {
