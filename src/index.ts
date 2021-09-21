@@ -553,7 +553,7 @@ export interface Redirects {
 /**
  * @hidden
  */
-interface SearchResponseProto {
+export interface SearchResponseProto {
   searchResponse?: Partial<{
     time: string;
     totalResults: string;
