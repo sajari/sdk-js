@@ -299,7 +299,7 @@ class QueryPipeline extends EventEmitter {
   async search(
     values: Record<string, string>,
     tracking?: Tracking
-  ): Promise<[SearchResponse, Record<string, string>]> {
+  ): Promise<[SearchResponse, Record<string, string | Redirects>]> {
     let pt: TrackingProto = { type: TrackingType.None };
     if (tracking !== undefined) {
       const { queryID, ...rest } = tracking;
@@ -453,7 +453,6 @@ class QueryPipeline extends EventEmitter {
         results: results,
         aggregates: aggregates,
         aggregateFilters: aggregateFilters,
-        redirects: jsonProto.redirects,
       },
       jsonProto.values || {},
     ];
@@ -485,10 +484,6 @@ export interface SearchResponse {
    * AggregateFilters computed on the query results (see [[Aggregates]]).
    */
   aggregateFilters: Aggregates;
-  /**
-   * All Redirects for which the current query is a starting substring (see [[Redirects]]).
-   */
-  redirects?: Redirects;
 }
 
 export interface Result {
@@ -562,8 +557,7 @@ export interface SearchResponseProto {
     aggregateFilters: AggregatesProto;
   }>;
   tokens?: TokenProto[];
-  values?: Record<string, string>;
-  redirects?: Redirects;
+  values?: Record<string, string | Redirects>;
 }
 
 /**

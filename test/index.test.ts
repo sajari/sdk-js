@@ -63,7 +63,6 @@ describe("Pipeline", () => {
       results: [],
       aggregates: {},
       aggregateFilters: {},
-      redirects: undefined,
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -78,11 +77,14 @@ describe("Pipeline", () => {
         time: "0.003s",
         totalResults: "0",
       },
-      redirects: {
-        "hello world": {
-          id: "1",
-          target: "https://www.google.com",
-          token: "https://re.sajari.com/12345abcd",
+      values: {
+        suggestions: "hello world",
+        redirects: {
+          "hello world": {
+            id: "1",
+            target: "https://www.google.com",
+            token: "https://re.sajari.com/12345abcd",
+          },
         },
       },
     };
@@ -90,16 +92,11 @@ describe("Pipeline", () => {
 
     const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
-      .pipeline("test", "test")
+      .pipeline("autocomplete", "test-autocomplete")
       .search({ q: "hello" }, session.next());
 
-    expect(values).toEqual({});
-    expect(response).toStrictEqual({
-      time: 0.003,
-      totalResults: 0,
-      results: [],
-      aggregates: {},
-      aggregateFilters: {},
+    expect(values).toEqual({
+      suggestions: "hello world",
       redirects: {
         "hello world": {
           id: "1",
@@ -107,6 +104,13 @@ describe("Pipeline", () => {
           token: "https://re.sajari.com/12345abcd",
         },
       },
+    });
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 0,
+      results: [],
+      aggregates: {},
+      aggregateFilters: {},
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
