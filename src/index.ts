@@ -299,7 +299,7 @@ class QueryPipeline extends EventEmitter {
   async search(
     values: Record<string, string>,
     tracking?: Tracking
-  ): Promise<[SearchResponse, Record<string, string | Redirects>]> {
+  ): Promise<[SearchResponse, Record<string, string>]> {
     let pt: TrackingProto = { type: TrackingType.None };
     if (tracking !== undefined) {
       const { queryID, ...rest } = tracking;
@@ -453,6 +453,7 @@ class QueryPipeline extends EventEmitter {
         results: results,
         aggregates: aggregates,
         aggregateFilters: aggregateFilters,
+        redirects: jsonProto.redirects,
       },
       jsonProto.values || {},
     ];
@@ -484,6 +485,10 @@ export interface SearchResponse {
    * AggregateFilters computed on the query results (see [[Aggregates]]).
    */
   aggregateFilters: Aggregates;
+  /**
+   * All Redirects for which the current query is a starting substring (see [[Redirects]]).
+   */
+  redirects?: Redirects;
 }
 
 export interface Result {
@@ -529,20 +534,25 @@ export interface CountAggregate {
 export type MetricAggregate = number;
 
 /**
- * Redirects define queries which clients should handle by sending users to a specific location instead of
- * a standard search results screen. In a default setup, these are only returned by an autocomplete pipeline.
- * Web search clients handle redirects by sending the web browser to the `target` or `token` URL. Other
- * clients (mobile) may handle redirect forwarding differently.
- *
- * All redirects which match the current query substring are returned. An autocomplete query for "foo" could
- * result in redirects for "foobar" and "foo qux" being returned.
+ * A Redirect defines a search string which clients should handle by sending users to a specific location
+ * instead of a standard search results screen. In a default setup, these are only returned by an autocomplete
+ * pipeline. Web search clients handle redirects by sending the web browser to the `target` or `token` URL.
+ * Other clients (mobile) may handle redirect forwarding differently.
+ * See [[Redirects]] for redirect collection details.
+ */
+export interface RedirectTarget {
+  id: string;
+  target: string;
+  token?: string;
+}
+
+/**
+ * All redirects which match the current query substring are returned. An autocomplete query where `q` is "foo"
+ * could result in a redirects collection containing `{"foobar": {…}, "foo qux": {…}}` being returned.
+ * See [[RedirectTarget]] for shape of target object.
  */
 export interface Redirects {
-  [redirectQuery: string]: {
-    id: string;
-    target: string;
-    token?: string;
-  };
+  [redirectQuery: string]: RedirectTarget;
 }
 
 /**
@@ -557,7 +567,8 @@ export interface SearchResponseProto {
     aggregateFilters: AggregatesProto;
   }>;
   tokens?: TokenProto[];
-  values?: Record<string, string | Redirects>;
+  values?: Record<string, string>;
+  redirects?: Redirects;
 }
 
 /**
