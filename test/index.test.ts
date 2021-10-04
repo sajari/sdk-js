@@ -63,7 +63,7 @@ describe("Pipeline", () => {
       results: [],
       aggregates: {},
       aggregateFilters: {},
-      redirects: undefined,
+      redirects: {},
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -82,7 +82,7 @@ describe("Pipeline", () => {
         "hello world": {
           id: "1",
           target: "https://www.google.com",
-          token: "https://re.sajari.com/12345abcd",
+          token: "12345abcd",
         },
       },
     };
@@ -104,7 +104,7 @@ describe("Pipeline", () => {
         "hello world": {
           id: "1",
           target: "https://www.google.com",
-          token: "https://re.sajari.com/12345abcd",
+          token: "https://re.sajari.com/token/12345abcd",
         },
       },
     });
