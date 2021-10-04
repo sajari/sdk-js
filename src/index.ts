@@ -443,6 +443,19 @@ class QueryPipeline extends EventEmitter {
       }
     );
 
+    let redirects = {} as Redirects;
+    if (jsonProto.redirects) {
+      redirects = Object.entries(jsonProto.redirects).reduce(
+        (acc, [queryString, target]) => {
+          acc[queryString] = target;
+          acc[queryString]["token"] =
+            this.client.config.clickTokenURL + acc[queryString]["token"];
+          return acc;
+        },
+        {} as Redirects
+      );
+    }
+
     return [
       {
         time: parseFloat(jsonProto.searchResponse?.time || "0.0"),
@@ -453,7 +466,7 @@ class QueryPipeline extends EventEmitter {
         results: results,
         aggregates: aggregates,
         aggregateFilters: aggregateFilters,
-        redirects: jsonProto.redirects,
+        redirects: redirects,
       },
       jsonProto.values || {},
     ];
@@ -488,7 +501,7 @@ export interface SearchResponse {
   /**
    * All Redirects for which the current query is a starting substring (see [[Redirects]]).
    */
-  redirects?: Redirects;
+  redirects: Redirects;
 }
 
 export interface Result {
