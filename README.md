@@ -34,7 +34,7 @@ Usage within your application:
 ```javascript
 import { Client, DefaultSession, TrackingType, etc... } from "@sajari/sdk-js";
 
-// new Client("project", "collection")...
+// new Client("<account_id>", "<collection_id>")...
 ```
 
 ### Browser
@@ -44,7 +44,7 @@ Note that when using the SDK via a `<script>` tag in a browser, all components w
 ```html
 <script src="https://unpkg.com/@sajari/sdk-js@^2/dist/sajarisdk.umd.production.min.js"></script>
 <script>
-  // new SajariSDK.Client("project", "collection")...
+  // new SajariSDK.Client("<account_id>", "<collection_id>")...
 </script>
 ```
 
@@ -55,7 +55,7 @@ Create a `Client` for interacting with our API, and then initialise a pipeline t
 _If you don't have a Sajari account you can sign up [here](https://www.sajari.com/console/sign-up)._
 
 ```javascript
-const websitePipeline = new Client("<project>", "<collection>").pipeline(
+const websitePipeline = new Client("<account_id>", "<collection_id>").pipeline(
   "website"
 );
 ```
@@ -119,9 +119,9 @@ information.
 ```js
 const { Client } = require("@sajari/sdk-js");
 
-const client = new Client("<project>", "<collection>", {
-  key: "<key from console>",
-  secret: "<secret from console>",
+const client = new Client("<account_id>", "<collection_id>", {
+  key: "<key_id>",
+  secret: "<key_secret>",
 });
 
 /*

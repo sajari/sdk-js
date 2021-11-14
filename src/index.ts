@@ -50,7 +50,9 @@ const configDefaults: ConfigObj = {
  * Client defines a client for interacting with the Sajari API.
  */
 export class Client {
+  // The account ID (formerly called project).
   project: string;
+  // The collection ID.
   collection: string;
   endpoint: string;
   key?: string;
@@ -59,16 +61,16 @@ export class Client {
   userAgent: string = "";
 
   /**
-   * Constructs an instance of Client for a specific project and collection.
+   * Constructs an instance of Client for a specific account and collection.
    *
    * ```javascript
-   * const client = new Client("<project>", "<collection>");
+   * const client = new Client("<account_id>", "<collection_id>");
    * ```
    *
-   * It is also possible to optionally set the api endpoint
+   * It is also possible to optionally set the API endpoint:
    *
    * ```javascript
-   * const client = new Client("<project>", "<collection>", "<endpoint>");
+   * const client = new Client("<account_id>", "<collection_id>", "<endpoint>");
    * ```
    *
    * @param project
