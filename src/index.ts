@@ -611,6 +611,7 @@ type TokenProto =
 type ValueProto =
   | { single: string }
   | { repeated: { values: string[] } }
+  | { singleBytes: string }
   | { null: boolean };
 
 /**
@@ -635,6 +636,8 @@ function valueFromProto(value: ValueProto): string | string[] | null {
     return value.single;
   } else if ("repeated" in value) {
     return value.repeated.values;
+  } else if ("singleBytes" in value) {
+    return value.singleBytes;
   }
   return null;
 }
