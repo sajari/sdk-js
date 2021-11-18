@@ -114,4 +114,49 @@ describe("Pipeline", () => {
       "test.com/sajari.api.pipeline.v1.Query/Search"
     );
   });
+
+  it("process proto values", async () => {
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "1",
+        results: [
+          {
+            indexScore: 1,
+            score: 0.4649218,
+            values: {
+              neuralTitleHash: {
+                singleBytes: "JmW0p9EzjBH...",
+              },
+            },
+          },
+        ],
+      },
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.None, "url");
+    const [response, values] = await client
+      .pipeline("test", "test")
+      .search({ q: "" }, session.next());
+
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 1,
+      results: [
+        {
+          indexScore: 1,
+          score: 0.4649218,
+          token: undefined,
+          values: {
+            neuralTitleHash: "JmW0p9EzjBH...",
+          },
+        },
+      ],
+      aggregates: {},
+      aggregateFilters: {},
+      redirects: {},
+    });
+  });
 });
