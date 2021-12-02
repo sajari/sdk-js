@@ -419,16 +419,12 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
-    let activePromotions = [] as ActivePromotion[];
-    let activePins = [] as string[];
+    let activePins = new Set();
     if (jsonProto.activePromotions) {
-      activePromotions = jsonProto.activePromotions;
-      activePromotions.forEach((promotion) => {
+      jsonProto.activePromotions.forEach((promotion) => {
         if (promotion.activePins) {
           promotion.activePins.forEach((pin) => {
-            if (activePins.indexOf(pin.key.value) === -1) {
-              activePins.push(pin.key.value);
-            }
+            activePins.add(pin.key.value);
           });
         }
       });
@@ -452,9 +448,9 @@ class QueryPipeline extends EventEmitter {
         }
 
         let promotionPinned = false;
-        if (activePins.length > 0) {
+        if (activePins.size > 0) {
           const val = valueFromProto(values["_id"]) as string;
-          if (activePins.indexOf(val) !== -1) {
+          if (activePins.has(val)) {
             promotionPinned = true;
           }
         }
@@ -464,7 +460,7 @@ class QueryPipeline extends EventEmitter {
           score,
           values: processProtoValues(values),
           token: t,
-          promotionPinned: promotionPinned,
+          promotionPinned,
         };
       }
     );
