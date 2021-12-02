@@ -152,11 +152,92 @@ describe("Pipeline", () => {
           values: {
             neuralTitleHash: "JmW0p9EzjBH...",
           },
+          promotionPinned: false,
         },
       ],
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
     });
+  });
+
+  it("search with promotions", async () => {
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "2",
+        results: [
+          {
+            indexScore: 1,
+            score: 0.231125,
+            values: {
+              _id: { single: "876120cc-c9c6-95f2-bafb-58b8e2aa962f" },
+            },
+          },
+          {
+            indexScore: 1,
+            score: 0.12938,
+            values: {
+              _id: { single: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac" },
+            },
+          },
+        ],
+      },
+      activePromotions: [
+        {
+          promotionId: "1",
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+              },
+              position: 1,
+            },
+          ],
+          activeExclusions: [],
+        },
+      ],
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.None, "url");
+    const [response, values] = await client
+      .pipeline("test", "test")
+      .search({ q: "hello" }, session.next());
+
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 2,
+      results: [
+        {
+          indexScore: 1,
+          score: 0.231125,
+          token: undefined,
+          values: {
+            _id: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+          },
+          promotionPinned: true,
+        },
+        {
+          indexScore: 1,
+          score: 0.12938,
+          token: undefined,
+          values: {
+            _id: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac",
+          },
+          promotionPinned: false,
+        },
+      ],
+      aggregates: {},
+      aggregateFilters: {},
+      redirects: {},
+    });
+
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
   });
 });
