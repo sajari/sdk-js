@@ -419,12 +419,15 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
-    let activePins = new Set();
+    let activePins = {} as Record<string, Set<string>>;
     if (jsonProto.activePromotions) {
       jsonProto.activePromotions.forEach((promotion) => {
         if (promotion.activePins) {
           promotion.activePins.forEach((pin) => {
-            activePins.add(pin.key.value);
+            if (!activePins[pin.key.field]) {
+              activePins[pin.key.field] = new Set<string>();
+            }
+            activePins[pin.key.field].add(pin.key.value);
           });
         }
       });
@@ -448,11 +451,17 @@ class QueryPipeline extends EventEmitter {
         }
 
         let promotionPinned = false;
-        if (activePins.size > 0) {
-          const val = valueFromProto(values["_id"]) as string;
-          if (activePins.has(val)) {
-            promotionPinned = true;
-          }
+        if (Object.keys(activePins).length > 0) {
+          Object.entries(activePins).forEach(
+            ([pinKeyFieldName, pinKeyFieldValues]) => {
+              const fieldValue = valueFromProto(
+                values[pinKeyFieldName]
+              ) as string;
+              if (pinKeyFieldValues.has(fieldValue)) {
+                promotionPinned = true;
+              }
+            }
+          );
         }
 
         return {
