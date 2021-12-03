@@ -419,15 +419,15 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
-    let activePins = {} as Record<string, Set<string>>;
+    const activePins: Record<string, Set<string>> = {};
     if (jsonProto.activePromotions) {
       jsonProto.activePromotions.forEach((promotion) => {
         if (promotion.activePins) {
-          promotion.activePins.forEach((pin) => {
-            if (!activePins[pin.key.field]) {
-              activePins[pin.key.field] = new Set<string>();
+          promotion.activePins.forEach(({ key }) => {
+            if (!activePins[key.field]) {
+              activePins[key.field] = new Set<string>();
             }
-            activePins[pin.key.field].add(pin.key.value);
+            activePins[key.field].add(key.value);
           });
         }
       });

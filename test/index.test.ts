@@ -240,4 +240,132 @@ describe("Pipeline", () => {
       "test.com/sajari.api.pipeline.v1.Query/Search"
     );
   });
+
+  it("search with promotions that have active pins with different key fields", async () => {
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "3",
+        results: [
+          {
+            indexScore: 1,
+            score: 0.231125,
+            values: {
+              _id: { single: "876120cc-c9c6-95f2-bafb-58b8e2aa962f" },
+              sku: { single: "sku-1" },
+              name: { single: "apple" },
+            },
+          },
+          {
+            indexScore: 1,
+            score: 0.12938,
+            values: {
+              _id: { single: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac" },
+              sku: { single: "sku-2" },
+              name: { single: "orange" },
+            },
+          },
+          {
+            indexScore: 1,
+            score: 0.12341,
+            values: {
+              _id: { single: "bx874f21-9sj2-h12l-2e9d-j219dsjdk971" },
+              sku: { single: "sku-3" },
+              name: { single: "pear" },
+            },
+          },
+        ],
+      },
+      activePromotions: [
+        {
+          promotionId: "1",
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+              },
+              position: 1,
+            },
+            {
+              key: {
+                field: "sku",
+                value: "sku-2",
+              },
+              position: 4,
+            },
+          ],
+          activeExclusions: [],
+        },
+        {
+          promotionId: "2",
+          activePins: [
+            {
+              key: {
+                field: "name",
+                value: "pear",
+              },
+              position: 2,
+            },
+          ],
+          activeExclusions: [],
+        },
+      ],
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.None, "url");
+    const [response, values] = await client
+      .pipeline("test", "test")
+      .search({ q: "hello" }, session.next());
+
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 3,
+      results: [
+        {
+          indexScore: 1,
+          score: 0.231125,
+          token: undefined,
+          values: {
+            _id: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+            sku: "sku-1",
+            name: "apple",
+          },
+          promotionPinned: true,
+        },
+        {
+          indexScore: 1,
+          score: 0.12938,
+          token: undefined,
+          values: {
+            _id: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac",
+            sku: "sku-2",
+            name: "orange",
+          },
+          promotionPinned: true,
+        },
+        {
+          indexScore: 1,
+          score: 0.12341,
+          token: undefined,
+          values: {
+            _id: "bx874f21-9sj2-h12l-2e9d-j219dsjdk971",
+            sku: "sku-3",
+            name: "pear",
+          },
+          promotionPinned: true,
+        },
+      ],
+      aggregates: {},
+      aggregateFilters: {},
+      redirects: {},
+    });
+
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+  });
 });
