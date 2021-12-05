@@ -419,6 +419,20 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
+    const activePins: Record<string, Set<string>> = {};
+    if (jsonProto.activePromotions) {
+      jsonProto.activePromotions.forEach((promotion) => {
+        if (promotion.activePins) {
+          promotion.activePins.forEach(({ key }) => {
+            if (!activePins[key.field]) {
+              activePins[key.field] = new Set<string>();
+            }
+            activePins[key.field].add(key.value);
+          });
+        }
+      });
+    }
+
     const results: Result[] = (jsonProto.searchResponse?.results || []).map(
       ({ indexScore, score, values }, index) => {
         let t: Token | undefined = undefined;
@@ -436,11 +450,26 @@ class QueryPipeline extends EventEmitter {
           }
         }
 
+        let promotionPinned = false;
+        if (Object.keys(activePins).length > 0) {
+          Object.entries(activePins).forEach(
+            ([pinKeyFieldName, pinKeyFieldValues]) => {
+              const fieldValue = valueFromProto(
+                values[pinKeyFieldName]
+              ) as string;
+              if (pinKeyFieldValues.has(fieldValue)) {
+                promotionPinned = true;
+              }
+            }
+          );
+        }
+
         return {
           indexScore,
           score,
           values: processProtoValues(values),
           token: t,
+          promotionPinned,
         };
       }
     );
@@ -523,6 +552,10 @@ export interface Result {
    * token is the [[Token]] associated with this [[Result]] (if any).
    */
   token?: Token;
+  /**
+   * promotionPinned indicates whether this [[Result]] is pinned via an [[ActivePromotion]].
+   */
+  promotionPinned?: boolean;
 }
 
 export type Token = ClickToken | PosNegToken;
@@ -571,6 +604,37 @@ export interface Redirects {
 }
 
 /**
+ * PromotionPin defines a promotion pin.
+ */
+export interface PromotionPin {
+  key: {
+    field: string;
+    value: string;
+  };
+  position: number;
+}
+
+/**
+ * PromotionExclusion defines a promotion exclusion.
+ */
+export interface PromotionExclusion {
+  key: {
+    field: string;
+    value: string;
+  };
+}
+
+/**
+ * A Promotion adjusts search results via a set of rules configured by the client.
+ * All promotions which are triggered by the current search are returned.
+ */
+export interface ActivePromotion {
+  promotionId: string;
+  activePins: PromotionPin[];
+  activeExclusions: PromotionExclusion[];
+}
+
+/**
  * @hidden
  */
 export interface SearchResponseProto {
@@ -584,6 +648,7 @@ export interface SearchResponseProto {
   tokens?: TokenProto[];
   values?: Record<string, string>;
   redirects?: Redirects;
+  activePromotions?: ActivePromotion[];
 }
 
 /**
