@@ -64,6 +64,7 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      activePromotions: [],
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -107,6 +108,7 @@ describe("Pipeline", () => {
           token: "https://re.sajari.com/token/12345abcd",
         },
       },
+      activePromotions: [],
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -158,6 +160,7 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      activePromotions: [],
     });
   });
 
@@ -233,6 +236,21 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      activePromotions: [
+        {
+          activeExclusions: [],
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+              },
+              position: 1,
+            },
+          ],
+          promotionId: "1",
+        },
+      ],
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -361,6 +379,41 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      activePromotions: [
+        {
+          activeExclusions: [],
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+              },
+              position: 1,
+            },
+            {
+              key: {
+                field: "sku",
+                value: "sku-2",
+              },
+              position: 4,
+            },
+          ],
+          promotionId: "1",
+        },
+        {
+          activeExclusions: [],
+          activePins: [
+            {
+              key: {
+                field: "name",
+                value: "pear",
+              },
+              position: 2,
+            },
+          ],
+          promotionId: "2",
+        },
+      ],
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
