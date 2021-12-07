@@ -419,9 +419,11 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
+    let activePromotions: ActivePromotion[] = [];
     const activePins: Record<string, Set<string>> = {};
     if (jsonProto.activePromotions) {
-      jsonProto.activePromotions.forEach((promotion) => {
+      activePromotions = jsonProto.activePromotions;
+      activePromotions.forEach((promotion) => {
         if (promotion.activePins) {
           promotion.activePins.forEach(({ key }) => {
             if (!activePins[key.field]) {
@@ -498,6 +500,7 @@ class QueryPipeline extends EventEmitter {
         aggregates: aggregates,
         aggregateFilters: aggregateFilters,
         redirects: redirects,
+        activePromotions: activePromotions,
       },
       jsonProto.values || {},
     ];
@@ -529,10 +532,16 @@ export interface SearchResponse {
    * AggregateFilters computed on the query results (see [[Aggregates]]).
    */
   aggregateFilters: Aggregates;
+
   /**
    * All Redirects for which the current query is a starting substring (see [[Redirects]]).
    */
   redirects: Redirects;
+
+  /**
+   * All Promotions activated by the current query (see [[ActivePromotion]]).
+   */
+  activePromotions: ActivePromotion[];
 }
 
 export interface Result {
