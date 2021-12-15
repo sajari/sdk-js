@@ -436,7 +436,7 @@ class QueryPipeline extends EventEmitter {
     }
 
     const results: Result[] = (jsonProto.searchResponse?.results || []).map(
-      ({ indexScore, score, values }, index) => {
+      ({ indexScore, score, values, neuralScore, featureScore }, index) => {
         let t: Token | undefined = undefined;
         const token = (jsonProto.tokens || [])[index];
         if (token !== undefined) {
@@ -472,6 +472,8 @@ class QueryPipeline extends EventEmitter {
           values: processProtoValues(values),
           token: t,
           promotionPinned,
+          ...(neuralScore && { neuralScore }),
+          ...(featureScore && { featureScore }),
         };
       }
     );
@@ -501,6 +503,7 @@ class QueryPipeline extends EventEmitter {
         aggregateFilters: aggregateFilters,
         redirects: redirects,
         activePromotions: activePromotions,
+        featureScoreWeight: jsonProto.searchResponse?.featureScoreWeight || 0,
       },
       jsonProto.values || {},
     ];
@@ -542,17 +545,30 @@ export interface SearchResponse {
    * All Promotions activated by the current query (see [[ActivePromotion]]).
    */
   activePromotions: ActivePromotion[];
+
+  /**
+   * Feature score weight determines the weighting of featureScore vs neural and index scores.
+   */
+  featureScoreWeight: number;
 }
 
 export interface Result {
   /**
-   * indexScore is the index-matched score of this Result.
+   * indexScore is the index-matched score of this [[Result]].
    */
   indexScore: number;
   /**
    * score is the overall score of this [[Result]].
    */
   score: number;
+  /**
+   * neuralScore is the neural score of this [[Result]].
+   */
+  neuralScore?: number;
+  /**
+   * featureScore is the feature based search score of this [[Result]].
+   */
+  featureScore?: number;
   /**
    * values is an object of field-value pairs.
    */
@@ -653,6 +669,7 @@ export interface SearchResponseProto {
     results: ResultProto[];
     aggregates: AggregatesProto;
     aggregateFilters: AggregatesProto;
+    featureScoreWeight?: number;
   }>;
   tokens?: TokenProto[];
   values?: Record<string, string>;
@@ -721,6 +738,8 @@ function valueFromProto(value: ValueProto): string | string[] | null {
  */
 interface ResultProto {
   indexScore: number;
+  neuralScore?: number;
+  featureScore?: number;
   score: number;
   values: Record<string, ValueProto>;
 }

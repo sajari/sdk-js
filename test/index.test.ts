@@ -65,6 +65,7 @@ describe("Pipeline", () => {
       aggregateFilters: {},
       redirects: {},
       activePromotions: [],
+      featureScoreWeight: 0,
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -109,6 +110,7 @@ describe("Pipeline", () => {
         },
       },
       activePromotions: [],
+      featureScoreWeight: 0,
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -161,6 +163,7 @@ describe("Pipeline", () => {
       aggregateFilters: {},
       redirects: {},
       activePromotions: [],
+      featureScoreWeight: 0,
     });
   });
 
@@ -236,6 +239,7 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      featureScoreWeight: 0,
       activePromotions: [
         {
           activeExclusions: [],
@@ -379,6 +383,7 @@ describe("Pipeline", () => {
       aggregates: {},
       aggregateFilters: {},
       redirects: {},
+      featureScoreWeight: 0,
       activePromotions: [
         {
           activeExclusions: [],
@@ -414,6 +419,64 @@ describe("Pipeline", () => {
           promotionId: "2",
         },
       ],
+    });
+
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+  });
+
+  it("search with neural and feature scores", async () => {
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "1",
+        featureScoreWeight: 0.2,
+        results: [
+          {
+            indexScore: 1,
+            score: 0.4649218,
+            neuralScore: 0.333,
+            featureScore: 0.6666,
+            values: {
+              title: {
+                single: "the result",
+              },
+            },
+          },
+        ],
+      },
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.None, "url");
+    const [response, values] = await client
+      .pipeline("test", "test")
+      .search({ q: "hello" }, session.next());
+
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 1,
+      results: [
+        {
+          indexScore: 1,
+          score: 0.4649218,
+          promotionPinned: false,
+          token: undefined,
+          neuralScore: 0.333,
+          featureScore: 0.6666,
+          values: {
+            title: "the result",
+          },
+        },
+      ],
+      aggregates: {},
+      aggregateFilters: {},
+      activePromotions: [],
+      redirects: {},
+      featureScoreWeight: 0.2,
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
