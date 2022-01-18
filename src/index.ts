@@ -468,12 +468,12 @@ class QueryPipeline extends EventEmitter {
 
         return {
           indexScore,
+          ...(neuralScore && { neuralScore }),
+          ...(featureScore && { featureScore }),
           score,
           values: processProtoValues(values),
           token: t,
           promotionPinned,
-          ...(neuralScore && { neuralScore }),
-          ...(featureScore && { featureScore }),
         };
       }
     );
@@ -498,12 +498,12 @@ class QueryPipeline extends EventEmitter {
           jsonProto.searchResponse?.totalResults || "0",
           10
         ),
+        featureScoreWeight: jsonProto.searchResponse?.featureScoreWeight || 0,
         results: results,
         aggregates: aggregates,
         aggregateFilters: aggregateFilters,
         redirects: redirects,
         activePromotions: activePromotions,
-        featureScoreWeight: jsonProto.searchResponse?.featureScoreWeight || 0,
       },
       jsonProto.values || {},
     ];
@@ -520,6 +520,11 @@ export interface SearchResponse {
    * totalResults is the total number of results.
    */
   totalResults: number;
+
+  /**
+   * Feature score weight determines the weighting of featureScore vs neural and index scores.
+   */
+  featureScoreWeight: number;
 
   /**
    * Results of the query.
@@ -545,11 +550,6 @@ export interface SearchResponse {
    * All Promotions activated by the current query (see [[ActivePromotion]]).
    */
   activePromotions: ActivePromotion[];
-
-  /**
-   * Feature score weight determines the weighting of featureScore vs neural and index scores.
-   */
-  featureScoreWeight: number;
 }
 
 export interface Result {
@@ -558,10 +558,6 @@ export interface Result {
    */
   indexScore: number;
   /**
-   * score is the overall score of this [[Result]].
-   */
-  score: number;
-  /**
    * neuralScore is the neural score of this [[Result]].
    */
   neuralScore?: number;
@@ -569,6 +565,10 @@ export interface Result {
    * featureScore is the feature based search score of this [[Result]].
    */
   featureScore?: number;
+  /**
+   * score is the overall score of this [[Result]].
+   */
+  score: number;
   /**
    * values is an object of field-value pairs.
    */
@@ -666,10 +666,10 @@ export interface SearchResponseProto {
   searchResponse?: Partial<{
     time: string;
     totalResults: string;
+    featureScoreWeight?: number;
     results: ResultProto[];
     aggregates: AggregatesProto;
     aggregateFilters: AggregatesProto;
-    featureScoreWeight?: number;
   }>;
   tokens?: TokenProto[];
   values?: Record<string, string>;
