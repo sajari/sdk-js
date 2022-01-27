@@ -484,4 +484,56 @@ describe("Pipeline", () => {
       "test.com/sajari.api.pipeline.v1.Query/Search"
     );
   });
+
+  it("search with banners", async () => {
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "0",
+        results: [],
+      },
+      banners: [
+        {
+          height: 2,
+          id: "1",
+          imageUrl: "imageUrl",
+          position: 5,
+          targetUrl: "targetUrl",
+          width: 2,
+        },
+      ],
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.None, "url");
+    const [response, values] = await client
+      .pipeline("test", "test")
+      .search({ q: "hello" }, session.next());
+
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 0,
+      banners: [
+        {
+          height: 2,
+          id: "1",
+          imageUrl: "imageUrl",
+          position: 5,
+          targetUrl: "targetUrl",
+          width: 2,
+        },
+      ],
+      featureScoreWeight: 0,
+      results: [],
+      aggregates: {},
+      aggregateFilters: {},
+      activePromotions: [],
+      redirects: {},
+    });
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+  });
 });
