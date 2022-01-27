@@ -66,6 +66,7 @@ describe("Pipeline", () => {
       redirects: {},
       activePromotions: [],
       featureScoreWeight: 0,
+      banners: undefined,
     });
 
     expect(fetchMock.mock.calls.length).toEqual(1);
@@ -97,6 +98,7 @@ describe("Pipeline", () => {
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
+      banners: undefined,
       time: 0.003,
       totalResults: 0,
       results: [],
@@ -146,6 +148,7 @@ describe("Pipeline", () => {
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
+      banners: undefined,
       time: 0.003,
       totalResults: 1,
       results: [
@@ -214,6 +217,7 @@ describe("Pipeline", () => {
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
+      banners: undefined,
       time: 0.003,
       totalResults: 2,
       results: [
@@ -343,6 +347,7 @@ describe("Pipeline", () => {
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
+      banners: undefined,
       time: 0.003,
       totalResults: 3,
       results: [
@@ -457,6 +462,7 @@ describe("Pipeline", () => {
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
+      banners: undefined,
       time: 0.003,
       totalResults: 1,
       results: [
