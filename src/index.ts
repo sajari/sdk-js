@@ -1240,11 +1240,13 @@ export type TokenState = {
 
 export const POS_NEG_STORAGE_KEY = "sajari_tokens";
 // Just here to handle SSR execution (docs)
-const setItem = (key: string, value: string) => {
+export const setItem = (key: string, value: string) => {
   if (isSSR()) {
     return;
   }
-  return localStorage.setItem(key, value);
+  try {
+    localStorage.setItem(key, value);
+  } catch (_) {}
 };
 const getItem = (key: string): string | null => {
   if (isSSR()) {

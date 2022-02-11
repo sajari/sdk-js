@@ -4,6 +4,7 @@ import {
   DefaultSession,
   TrackingType,
   SearchResponseProto,
+  setItem,
 } from "../src/index";
 
 const client = new Client("test", "test", "test.com");
@@ -38,6 +39,23 @@ describe("Client", () => {
     };
 
     expect(create).toThrow(Error);
+  });
+});
+
+describe("setItem", () => {
+  it("catches exceptions", () => {
+    const setItemMock = jest
+      .spyOn(Object.getPrototypeOf(localStorage), "setItem")
+      .mockImplementationOnce(() => {
+        throw new Error("pretend QuotaExceededError");
+      });
+
+    expect(() => {
+      setItem("foo", "bar");
+    }).not.toThrowError();
+    expect(setItemMock).toHaveBeenCalled();
+
+    setItemMock.mockRestore();
   });
 });
 
