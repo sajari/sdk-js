@@ -2,6 +2,7 @@ import { USER_AGENT } from "./user-agent";
 import EventEmitter from "./events";
 import { isSSR } from "./ssr";
 export { EventEmitter };
+export { SearchIOAnalytics } from "./tracking";
 
 /**
  * NetworkError defines an error occuring from the network.
@@ -1248,7 +1249,7 @@ export const setItem = (key: string, value: string) => {
     localStorage.setItem(key, value);
   } catch (_) {}
 };
-const getItem = (key: string): string | null => {
+export const getItem = (key: string): string | null => {
   if (isSSR()) {
     return "";
   }
