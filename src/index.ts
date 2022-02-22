@@ -1247,7 +1247,9 @@ export const setItem = (key: string, value: string) => {
   }
   try {
     localStorage.setItem(key, value);
-  } catch (_) {}
+  } catch (_) {
+    console.error(`Search.io local storage "${key}" cannot be saved.`, value);
+  }
 };
 export const getItem = (key: string): string | null => {
   if (isSSR()) {

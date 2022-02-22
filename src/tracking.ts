@@ -15,6 +15,11 @@ interface EventState {
 type Value = string | number;
 type Identifier = "result_id" | "redirect_id" | "promotion_id";
 
+/**
+ * SearchIOAnalytics is a utility class for tracking and sending Search.io events.
+ * Event data is persisted to localStorage before being sent to track how users use
+ * search results and/or move through an ecommerce purchase funnel.
+ */
 export class SearchIOAnalytics {
   account: string;
   collection: string;
@@ -188,14 +193,24 @@ export class SearchIOAnalytics {
     }
   }
 
+  /**
+   * Update the current queryId
+   * @param queryId queryId that events calling track should be tracked against
+   */
   updateQueryID(queryId: string) {
     this.queryId = queryId;
   }
 
+  /**
+   * Track events against the current queryId
+   * @param type name of event to track (e.g. click, add_to_cart, purchase)
+   * @param value unique result identifier (e.g. product sku)
+   * @param metadata key/value pair of information relevant to the event
+   */
   track(type: string, value: Value, metadata?: Metadata) {
     let queryId = this.queryId;
     if (!FUNNEL_ENTRY_TYPES.includes(type)) {
-      const lastEvent = this.getEvents(value).reverse().pop();
+      const lastEvent = this.getEvents(value).pop();
 
       if (lastEvent) {
         queryId = lastEvent.queryId;
@@ -211,6 +226,13 @@ export class SearchIOAnalytics {
     this.trackForQuery(queryId, type, value, metadata);
   }
 
+  /**
+   * Track events against a specific current queryId
+   * @param queryId queryId that event should be tracked against
+   * @param type name of event to track (e.g. click, add_to_cart, purchase)
+   * @param value unique result identifier (e.g. product sku)
+   * @param metadata key/value pair of information relevant to the event
+   */
   trackForQuery(
     queryId: string,
     type: string,

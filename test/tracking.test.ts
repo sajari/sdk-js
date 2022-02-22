@@ -24,7 +24,7 @@ declare global {
 
 const setItemSpy = jest.spyOn(Object.getPrototypeOf(localStorage), "setItem");
 const sendEventSpy = jest.spyOn(SearchIOAnalytics.prototype, "sendEvent");
-const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+const consoleErrorSpy = jest.spyOn(console, "error");
 const saveSpy = jest.spyOn(SearchIOAnalytics.prototype, "save");
 const flushSpy = jest.spyOn(SearchIOAnalytics.prototype, "flush");
 const addSpy = jest.spyOn(SearchIOAnalytics.prototype, "add");
@@ -413,14 +413,14 @@ describe("SearchIOAnalytics", () => {
         "test_collection"
       );
       analytics.events = {
-        sku1: [eventState],
+        sku1: [eventState, { ...eventState, queryId: "ghi789" }],
       };
 
       analytics.updateQueryID("def456");
       analytics.track("add_to_cart", "sku1");
 
       expect(trackForQuerySpy).toHaveBeenCalledWith(
-        "abc123",
+        "ghi789",
         "add_to_cart",
         "sku1",
         undefined
@@ -433,7 +433,7 @@ describe("SearchIOAnalytics", () => {
         "test_collection"
       );
       analytics.events = {
-        sku1: [eventState],
+        sku1: [eventState, { ...eventState, queryId: "ghi789" }],
       };
 
       analytics.updateQueryID("def456");

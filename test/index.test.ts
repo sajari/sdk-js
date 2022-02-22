@@ -8,6 +8,8 @@ import {
 } from "../src/index";
 
 const client = new Client("test", "test", "test.com");
+const setItemMock = jest.spyOn(Object.getPrototypeOf(localStorage), "setItem");
+const consoleErrorSpy = jest.spyOn(console, "error");
 
 describe("Client", () => {
   beforeEach(() => {
@@ -43,19 +45,24 @@ describe("Client", () => {
 });
 
 describe("setItem", () => {
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   it("catches exceptions", () => {
-    const setItemMock = jest
-      .spyOn(Object.getPrototypeOf(localStorage), "setItem")
-      .mockImplementationOnce(() => {
-        throw new Error("pretend QuotaExceededError");
-      });
+    consoleErrorSpy.mockImplementation();
+    setItemMock.mockImplementationOnce(() => {
+      throw new Error("pretend QuotaExceededError");
+    });
 
     expect(() => {
       setItem("foo", "bar");
     }).not.toThrowError();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Search.io local storage "foo" cannot be saved.',
+      "bar"
+    );
     expect(setItemMock).toHaveBeenCalled();
-
-    setItemMock.mockRestore();
   });
 });
 
