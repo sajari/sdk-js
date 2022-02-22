@@ -4,6 +4,28 @@ import { isSSR } from "./ssr";
 export { EventEmitter };
 export { SearchIOAnalytics } from "./tracking";
 
+interface APIError {
+  code:
+    | 0
+    | 1
+    | 2
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | 11
+    | 12
+    | 13
+    | 14
+    | 15
+    | 16;
+  message: string;
+}
+
 /**
  * NetworkError defines an error occuring from the network.
  */
@@ -20,13 +42,15 @@ export class NetworkError extends Error {
  * RequestError defines an error occuring from a request.
  */
 export class RequestError extends Error {
-  statusCode: number;
-  error?: Error;
-
-  constructor(statusCode: number, message: string, error?: Error) {
+  constructor(
+    public readonly statusCode: number,
+    message: string,
+    public readonly error?: Error
+  ) {
     super(message);
-    this.statusCode = statusCode;
-    this.error = error;
+
+    // TODO(jingram): Remove this when compilation target is higher than ES5.
+    Object.setPrototypeOf(this, RequestError.prototype);
   }
 }
 
@@ -150,23 +174,30 @@ export class Client {
     });
 
     if (resp.status !== 200) {
+      let code;
       let message = resp.statusText;
       try {
-        let response = await resp.json();
-        message = response.message;
+        ({ code, message } = (await resp.json()) as APIError);
       } catch (_) {}
 
+      console.error(
+        `Search request failed due to an error. HTTP code: ${resp.status}, Code: ${code}, Message: ${message}`
+      );
+
       if (resp.status === 403) {
+        console.error(
+          `Check the domain ${window.location.origin} is an authorized query domain. See https://app.search.io/collection/domains`
+        );
         throw new RequestError(
           resp.status,
-          "This domain is not authorized to make this search request.",
+          `Search request failed due to a permission denied error.`,
           new Error(message)
         );
       }
 
       throw new RequestError(
         resp.status,
-        "Search request failed due to a configuration error.",
+        `Search request failed due to an error.`,
         new Error(message)
       );
     }
