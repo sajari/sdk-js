@@ -4,9 +4,12 @@ import {
   DefaultSession,
   TrackingType,
   SearchResponseProto,
+  setItem,
 } from "../src/index";
 
 const client = new Client("test", "test", "test.com");
+const setItemMock = jest.spyOn(Object.getPrototypeOf(localStorage), "setItem");
+const consoleErrorSpy = jest.spyOn(console, "error");
 
 describe("Client", () => {
   beforeEach(() => {
@@ -38,6 +41,28 @@ describe("Client", () => {
     };
 
     expect(create).toThrow(Error);
+  });
+});
+
+describe("setItem", () => {
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("catches exceptions", () => {
+    consoleErrorSpy.mockImplementation();
+    setItemMock.mockImplementationOnce(() => {
+      throw new Error("pretend QuotaExceededError");
+    });
+
+    expect(() => {
+      setItem("foo", "bar");
+    }).not.toThrowError();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Search.io local storage "foo" cannot be saved.',
+      "bar"
+    );
+    expect(setItemMock).toHaveBeenCalled();
   });
 });
 

@@ -2,6 +2,7 @@ import { USER_AGENT } from "./user-agent";
 import EventEmitter from "./events";
 import { isSSR } from "./ssr";
 export { EventEmitter };
+export { SearchIOAnalytics } from "./tracking";
 
 /**
  * NetworkError defines an error occuring from the network.
@@ -1240,13 +1241,17 @@ export type TokenState = {
 
 export const POS_NEG_STORAGE_KEY = "sajari_tokens";
 // Just here to handle SSR execution (docs)
-const setItem = (key: string, value: string) => {
+export const setItem = (key: string, value: string) => {
   if (isSSR()) {
     return;
   }
-  return localStorage.setItem(key, value);
+  try {
+    localStorage.setItem(key, value);
+  } catch (_) {
+    console.error(`Search.io local storage "${key}" cannot be saved.`, value);
+  }
 };
-const getItem = (key: string): string | null => {
+export const getItem = (key: string): string | null => {
   if (isSSR()) {
     return "";
   }
