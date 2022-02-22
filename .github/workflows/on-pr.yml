@@ -1,0 +1,9 @@
+name: Run tests
+
+on:
+  pull_request:
+
+jobs:
+  call-workflow-1:
+    name: Run tests
+    uses: sajari/sdk-js/.github/workflows/run-tests.yml@master
