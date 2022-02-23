@@ -110,4 +110,32 @@ describe("Client", () => {
       })
     );
   });
+
+  test("works with non-JSON erroring response", async () => {
+    server.use(
+      rest.post(
+        "https://test-jsonapi.search.io/sajari.api.pipeline.v1.Query/Search",
+        async (_, res, ctx) =>
+          res(ctx.status(500), ctx.text("plain text error"))
+      )
+    );
+
+    const client = new Client("acc1", "col1", "https://test-jsonapi.search.io");
+
+    await expect(
+      client.pipeline("my-query-pipeline", "1").search({
+        q: "my search query",
+      })
+    ).rejects.toThrow(RequestError);
+    await expect(
+      client.pipeline("my-query-pipeline", "1").search({
+        q: "my search query",
+      })
+    ).rejects.toThrow(
+      expect.objectContaining({
+        statusCode: 500,
+        error: new Error("Internal Server Error"),
+      })
+    );
+  });
 });
