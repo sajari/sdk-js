@@ -186,7 +186,7 @@ export class Client {
 
       if (resp.status === 403) {
         console.error(
-          `Check the domain ${window.location.origin} is an authorized query domain. See https://app.search.io/collection/domains`
+          `Check the domain ${window.location.hostname} is an authorized query domain. See https://app.search.io/collection/domains`
         );
         throw new RequestError(
           resp.status,
