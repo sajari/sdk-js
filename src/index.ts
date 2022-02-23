@@ -180,10 +180,6 @@ export class Client {
         ({ code, message } = (await resp.json()) as APIError);
       } catch (_) {}
 
-      console.error(
-        `Search request failed due to an error. HTTP code: ${resp.status}, Code: ${code}, Message: ${message}`
-      );
-
       if (resp.status === 403) {
         console.error(
           `Check the domain ${window.location.hostname} is an authorized query domain. See https://app.search.io/collection/domains`
@@ -195,6 +191,9 @@ export class Client {
         );
       }
 
+      console.error(
+        `Search request failed due to an error. HTTP code: ${resp.status}, Code: ${code}, Message: ${message}`
+      );
       throw new RequestError(
         resp.status,
         `Search request failed due to an error.`,
