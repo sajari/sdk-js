@@ -23,7 +23,6 @@ if (scriptTag) {
 export const USER_AGENT = ["sajari-sdk-js/${pkg.version}", suffix]
   .filter(Boolean)
   .join(" ");
-
 `;
 
 fs.writeFileSync(path.join(__dirname, "../src/user-agent.ts"), template);
