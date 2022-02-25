@@ -567,4 +567,43 @@ describe("Pipeline", () => {
       "test.com/sajari.api.pipeline.v1.Query/Search"
     );
   });
+
+  it("search request with simplified tracking", async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({}));
+
+    const session = new DefaultSession(TrackingType.Event, "url");
+    await client
+      .pipeline("test", "test")
+      .search({ q: "hello" }, { ...session.next(), queryID: "test-query-id" });
+
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    const firstCall = fetchMock.mock.calls[0];
+    expect(firstCall[0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+    const bodyParsed = JSON.parse(firstCall[1]!.body as any);
+    expect(bodyParsed).toEqual({
+      metadata: {
+        project: ["test"],
+        collection: ["test"],
+        "user-agent": ["sajari-sdk-js/2.9.0"],
+      },
+      request: {
+        pipeline: {
+          name: "test",
+          version: "test",
+        },
+        tracking: {
+          query_id: "test-query-id",
+          type: "EVENT",
+          sequence: 0,
+          field: "url",
+          data: {},
+        },
+        values: {
+          q: "hello",
+        },
+      },
+    });
+  });
 });

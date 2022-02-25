@@ -124,7 +124,7 @@ export class SearchIOAnalytics {
           // XXX: This is to remove the need for the OPTIONS request
           // https://stackoverflow.com/questions/29954037/why-is-an-options-request-sent-and-can-i-disable-it
           "Content-Type": "text/plain",
-          "X-Account-Id": this.account,
+          "Account-Id": this.account,
         },
         body: JSON.stringify({
           query_id: queryId,

@@ -125,7 +125,7 @@ describe("SearchIOAnalytics", () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "text/plain",
-            "X-Account-Id": "test_account",
+            "Account-Id": "test_account",
           },
           body: JSON.stringify({
             query_id: "abc123",

@@ -946,6 +946,10 @@ export enum TrackingType {
    * PosNeg creates pos/neg tracking tokens.
    */
   PosNeg = "POS_NEG",
+  /**
+   * Event uses simplified tracking.
+   */
+  Event = "EVENT",
 }
 
 /**
