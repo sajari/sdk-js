@@ -7,12 +7,14 @@ describe("Client", () => {
   // avoid mocking fetch so we can test real requests. So we need to make sure
   // to put fetch back to what it was.
   let oldFetch: typeof fetch;
+  const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   beforeAll(() => {
     oldFetch = global.fetch;
     global.fetch = fetchPonyfill().fetch;
   });
   afterAll(() => {
     global.fetch = oldFetch;
+    consoleErrorSpy.mockRestore();
   });
 
   test("works with successful response", async () => {
