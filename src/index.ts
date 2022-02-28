@@ -351,10 +351,9 @@ class QueryPipeline extends EventEmitter {
         values,
       }
     );
+    const { searchResponse, activePromotions, banners, queryId } = jsonProto;
 
-    const aggregates = Object.entries(
-      jsonProto.searchResponse?.aggregates || {}
-    )
+    const aggregates = Object.entries(searchResponse?.aggregates || {})
       .map(([key, aggregate]) => {
         if ("metric" in aggregate) {
           let [t, k] = key.split(".");
@@ -402,7 +401,7 @@ class QueryPipeline extends EventEmitter {
       }, {});
 
     const aggregateFilters = Object.entries(
-      jsonProto.searchResponse?.aggregateFilters || {}
+      searchResponse?.aggregateFilters || {}
     )
       .map(([key, aggregate]) => {
         if ("metric" in aggregate) {
@@ -450,10 +449,8 @@ class QueryPipeline extends EventEmitter {
         return obj;
       }, {});
 
-    let activePromotions: ActivePromotion[] = [];
     const activePins: Record<string, Set<string>> = {};
-    if (jsonProto.activePromotions) {
-      activePromotions = jsonProto.activePromotions;
+    if (activePromotions) {
       activePromotions.forEach((promotion) => {
         if (promotion.activePins) {
           promotion.activePins.forEach(({ key }) => {
@@ -466,7 +463,7 @@ class QueryPipeline extends EventEmitter {
       });
     }
 
-    const results: Result[] = (jsonProto.searchResponse?.results || []).map(
+    const results: Result[] = (searchResponse?.results || []).map(
       ({ indexScore, score, values, neuralScore, featureScore }, index) => {
         let t: Token | undefined = undefined;
         const token = (jsonProto.tokens || [])[index];
@@ -524,18 +521,16 @@ class QueryPipeline extends EventEmitter {
 
     return [
       {
-        time: parseFloat(jsonProto.searchResponse?.time || "0.0"),
-        totalResults: parseInt(
-          jsonProto.searchResponse?.totalResults || "0",
-          10
-        ),
-        banners: jsonProto?.banners,
-        featureScoreWeight: jsonProto.searchResponse?.featureScoreWeight || 0,
-        results: results,
-        aggregates: aggregates,
-        aggregateFilters: aggregateFilters,
-        redirects: redirects,
-        activePromotions: activePromotions,
+        time: parseFloat(searchResponse?.time || "0.0"),
+        totalResults: parseInt(searchResponse?.totalResults || "0", 10),
+        banners,
+        featureScoreWeight: searchResponse?.featureScoreWeight || 0,
+        results,
+        aggregates,
+        aggregateFilters,
+        redirects,
+        activePromotions: activePromotions ?? [],
+        ...(queryId && { queryId }),
       },
       jsonProto.values || {},
     ];
@@ -588,6 +583,11 @@ export interface SearchResponse {
    * All Promotions activated by the current query (see [[ActivePromotion]]).
    */
   activePromotions: ActivePromotion[];
+
+  /**
+   * Id of the query.
+   */
+  queryId?: string;
 }
 
 /**
@@ -798,6 +798,7 @@ export interface SearchResponseProto {
   banners?: Banner[];
   redirects?: Redirects;
   activePromotions?: ActivePromotion[];
+  queryId?: string;
 }
 
 /**
