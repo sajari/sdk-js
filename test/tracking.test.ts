@@ -314,9 +314,9 @@ describe("SearchIOAnalytics", () => {
       expect(analytics.getIdentifierForType("redirect")).toEqual("redirect_id");
     });
 
-    it("returns 'promotion_id' for promotions", () => {
+    it("returns 'banner_id' for promotions", () => {
       expect(analytics.getIdentifierForType("promotion_click")).toEqual(
-        "promotion_id"
+        "banner_id"
       );
     });
 

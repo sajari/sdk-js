@@ -13,7 +13,7 @@ interface EventState {
   metadata?: Metadata;
 }
 type Value = string | number;
-type Identifier = "result_id" | "redirect_id" | "promotion_id";
+type Identifier = "result_id" | "redirect_id" | "banner_id";
 
 /**
  * SearchIOAnalytics is a utility class for tracking and sending Search.io events.
@@ -71,7 +71,7 @@ export class SearchIOAnalytics {
       case "redirect":
         return "redirect_id";
       case "promotion_click":
-        return "promotion_id";
+        return "banner_id";
       default:
         return "result_id";
     }
@@ -121,8 +121,6 @@ export class SearchIOAnalytics {
         method: "POST",
         headers: {
           Accept: "application/json",
-          // XXX: This is to remove the need for the OPTIONS request
-          // https://stackoverflow.com/questions/29954037/why-is-an-options-request-sent-and-can-i-disable-it
           "Content-Type": "text/plain",
           "Account-Id": this.account,
         },
