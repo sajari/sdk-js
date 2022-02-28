@@ -197,7 +197,7 @@ export class SearchIOAnalytics {
    * Update the current queryId
    * @param queryId queryId that events calling track should be tracked against
    */
-  updateQueryID(queryId: string) {
+  updateQueryId(queryId: string) {
     this.queryId = queryId;
   }
 
@@ -219,7 +219,7 @@ export class SearchIOAnalytics {
 
     if (!queryId) {
       console.error(
-        "No queryId found. Use updateQueryID to set the current queryId or call trackForQuery with a specific queryId."
+        "No queryId found. Use updateQueryId to set the current queryId or call trackForQuery with a specific queryId."
       );
       return;
     }
