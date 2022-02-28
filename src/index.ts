@@ -343,7 +343,7 @@ class QueryPipeline extends EventEmitter {
     }
 
     this.emit(EVENT_SEARCH_SENT, values);
-    let jsonProto = await this.client.call<SearchResponseProto>(
+    const jsonProto = await this.client.call<SearchResponseProto>(
       "/sajari.api.pipeline.v1.Query/Search",
       {
         pipeline: this.identifier,
@@ -351,122 +351,21 @@ class QueryPipeline extends EventEmitter {
         values,
       }
     );
-    const { searchResponse, activePromotions, banners, queryId } = jsonProto;
+    const {
+      searchResponse,
+      redirects,
+      tokens,
+      activePromotions,
+      banners,
+      queryId,
+    } = jsonProto;
 
-    const aggregates = Object.entries(searchResponse?.aggregates || {})
-      .map(([key, aggregate]) => {
-        if ("metric" in aggregate) {
-          let [t, k] = key.split(".");
-          return {
-            type: t,
-            key: k,
-            value: aggregate.metric.value,
-          };
-        }
-        if ("count" in aggregate) {
-          return {
-            type: "count",
-            key: key.replace(/^count./, ""),
-            value: aggregate.count.counts,
-          };
-        }
-        if ("buckets" in aggregate) {
-          return {
-            type: "count",
-            key: "buckets",
-            value: Object.values(aggregate.buckets?.buckets ?? {}).reduce(
-              (obj, { name, count }) =>
-                Object.assign(obj, {
-                  [name]: count,
-                }),
-              {}
-            ),
-          };
-        }
-        return { key, value: aggregate };
-      })
-      .reduce<Aggregates>((obj, item) => {
-        if (item.type === undefined) {
-          console.debug(item);
-          return obj;
-        }
-
-        if (obj[item.key] === undefined) {
-          obj[item.key] = {};
-        }
-        // @ts-ignore
-        obj[item.key][item.type] = item.value;
-
-        return obj;
-      }, {});
-
-    const aggregateFilters = Object.entries(
-      searchResponse?.aggregateFilters || {}
-    )
-      .map(([key, aggregate]) => {
-        if ("metric" in aggregate) {
-          let [t, k] = key.split(".");
-          return {
-            type: t,
-            key: k,
-            value: aggregate.metric.value,
-          };
-        }
-        if ("count" in aggregate) {
-          return {
-            type: "count",
-            key: key.replace(/^count./, ""),
-            value: aggregate.count.counts,
-          };
-        }
-        if ("buckets" in aggregate) {
-          return {
-            type: "count",
-            key: "buckets",
-            value: Object.values(aggregate.buckets?.buckets ?? {}).reduce(
-              (obj, { name, count }) =>
-                Object.assign(obj, {
-                  [name]: count,
-                }),
-              {}
-            ),
-          };
-        }
-        return { key, value: aggregate };
-      })
-      .reduce<Aggregates>((obj, item) => {
-        if (item.type === undefined) {
-          console.debug(item);
-          return obj;
-        }
-
-        if (obj[item.key] === undefined) {
-          obj[item.key] = {};
-        }
-        // @ts-ignore
-        obj[item.key][item.type] = item.value;
-
-        return obj;
-      }, {});
-
-    const activePins: Record<string, Set<string>> = {};
-    if (activePromotions) {
-      activePromotions.forEach((promotion) => {
-        if (promotion.activePins) {
-          promotion.activePins.forEach(({ key }) => {
-            if (!activePins[key.field]) {
-              activePins[key.field] = new Set<string>();
-            }
-            activePins[key.field].add(key.value);
-          });
-        }
-      });
-    }
+    const activePins = formatActivePins(activePromotions);
 
     const results: Result[] = (searchResponse?.results || []).map(
       ({ indexScore, score, values, neuralScore, featureScore }, index) => {
         let t: Token | undefined = undefined;
-        const token = (jsonProto.tokens || [])[index];
+        const token = (tokens || [])[index];
         if (token !== undefined) {
           if ("click" in token) {
             t = { click: this.client.config.clickTokenURL + token.click.token };
@@ -506,19 +405,6 @@ class QueryPipeline extends EventEmitter {
       }
     );
 
-    let redirects = {} as Redirects;
-    if (jsonProto.redirects) {
-      redirects = Object.entries(jsonProto.redirects).reduce(
-        (acc, [queryString, target]) => {
-          acc[queryString] = target;
-          acc[queryString]["token"] =
-            this.client.config.clickTokenURL + acc[queryString]["token"];
-          return acc;
-        },
-        {} as Redirects
-      );
-    }
-
     return [
       {
         time: parseFloat(searchResponse?.time || "0.0"),
@@ -526,15 +412,96 @@ class QueryPipeline extends EventEmitter {
         banners,
         featureScoreWeight: searchResponse?.featureScoreWeight || 0,
         results,
-        aggregates,
-        aggregateFilters,
-        redirects,
+        aggregates: formatAggregates(searchResponse?.aggregates),
+        aggregateFilters: formatAggregates(searchResponse?.aggregateFilters),
+        redirects: prependClickTokenUrl(
+          this.client.config.clickTokenURL,
+          redirects
+        ),
         activePromotions: activePromotions ?? [],
         ...(queryId && { queryId }),
       },
       jsonProto.values || {},
     ];
   }
+}
+
+function formatActivePins(
+  activePromotions: ActivePromotion[] = []
+): Record<string, Set<string>> {
+  const pins: Record<string, Set<string>> = {};
+  activePromotions.forEach(({ activePins }) => {
+    activePins.forEach(({ key }) => {
+      if (!pins[key.field]) {
+        pins[key.field] = new Set<string>();
+      }
+      pins[key.field].add(key.value);
+    });
+  });
+  return pins;
+}
+
+function prependClickTokenUrl(
+  clickTokenURL: string,
+  redirects: Redirects = {}
+): Redirects {
+  return Object.entries(redirects).reduce<Redirects>(
+    (acc, [queryString, target]) => {
+      acc[queryString] = target;
+      acc[queryString]["token"] = clickTokenURL + acc[queryString]["token"];
+      return acc;
+    },
+    {}
+  );
+}
+
+function formatAggregates(aggregatesProto: AggregatesProto = {}): Aggregates {
+  return Object.entries(aggregatesProto)
+    .map(([key, aggregate]) => {
+      if ("metric" in aggregate) {
+        let [t, k] = key.split(".");
+        return {
+          type: t,
+          key: k,
+          value: aggregate.metric.value,
+        };
+      }
+      if ("count" in aggregate) {
+        return {
+          type: "count",
+          key: key.replace(/^count./, ""),
+          value: aggregate.count.counts,
+        };
+      }
+      if ("buckets" in aggregate) {
+        return {
+          type: "count",
+          key: "buckets",
+          value: Object.values(aggregate.buckets?.buckets ?? {}).reduce(
+            (obj, { name, count }) =>
+              Object.assign(obj, {
+                [name]: count,
+              }),
+            {}
+          ),
+        };
+      }
+      return { key, value: aggregate };
+    })
+    .reduce<Aggregates>((obj, item) => {
+      if (item.type === undefined) {
+        console.debug(item);
+        return obj;
+      }
+
+      if (obj[item.key] === undefined) {
+        obj[item.key] = {};
+      }
+      // @ts-ignore
+      obj[item.key][item.type] = item.value;
+
+      return obj;
+    }, {});
 }
 
 export interface SearchResponse {
