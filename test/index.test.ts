@@ -569,13 +569,35 @@ describe("Pipeline", () => {
   });
 
   it("search request with simplified tracking", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify({}));
+    const responseObj: SearchResponseProto = {
+      searchResponse: {
+        time: "0.003s",
+        totalResults: "0",
+        results: [],
+      },
+      banners: [],
+      queryId: "1f2d7ae0-fdd6-4eaf-85e9-cb5f3256e8c4",
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
     const session = new DefaultSession(TrackingType.Event, "url");
-    await client
+    const [response, values] = await client
       .pipeline("test", "test")
       .search({ q: "hello" }, { ...session.next(), queryID: "test-query-id" });
 
+    expect(values).toEqual({});
+    expect(response).toStrictEqual({
+      time: 0.003,
+      totalResults: 0,
+      banners: [],
+      featureScoreWeight: 0,
+      results: [],
+      aggregates: {},
+      aggregateFilters: {},
+      activePromotions: [],
+      redirects: {},
+      queryId: "1f2d7ae0-fdd6-4eaf-85e9-cb5f3256e8c4",
+    });
     expect(fetchMock.mock.calls.length).toEqual(1);
     const firstCall = fetchMock.mock.calls[0];
     expect(firstCall[0]).toEqual(

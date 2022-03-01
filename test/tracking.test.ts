@@ -243,8 +243,8 @@ describe("SearchIOAnalytics", () => {
     });
   });
 
-  describe("updateQueryID", () => {
-    it("updates the current queryID", () => {
+  describe("updateQueryId", () => {
+    it("updates the current queryId", () => {
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection"
@@ -252,7 +252,7 @@ describe("SearchIOAnalytics", () => {
 
       expect(analytics.queryId).toBeUndefined();
 
-      analytics.updateQueryID("abc123");
+      analytics.updateQueryId("abc123");
 
       expect(analytics.queryId).toEqual("abc123");
     });
@@ -314,9 +314,9 @@ describe("SearchIOAnalytics", () => {
       expect(analytics.getIdentifierForType("redirect")).toEqual("redirect_id");
     });
 
-    it("returns 'promotion_id' for promotions", () => {
+    it("returns 'banner_id' for promotions", () => {
       expect(analytics.getIdentifierForType("promotion_click")).toEqual(
-        "promotion_id"
+        "banner_id"
       );
     });
 
@@ -396,7 +396,7 @@ describe("SearchIOAnalytics", () => {
         "test_collection"
       );
 
-      analytics.updateQueryID("abc123");
+      analytics.updateQueryId("abc123");
       analytics.track("add_to_cart", "sku1");
 
       expect(trackForQuerySpy).toHaveBeenCalledWith(
@@ -416,7 +416,7 @@ describe("SearchIOAnalytics", () => {
         sku1: [eventState, { ...eventState, queryId: "ghi789" }],
       };
 
-      analytics.updateQueryID("def456");
+      analytics.updateQueryId("def456");
       analytics.track("add_to_cart", "sku1");
 
       expect(trackForQuerySpy).toHaveBeenCalledWith(
@@ -436,7 +436,7 @@ describe("SearchIOAnalytics", () => {
         sku1: [eventState, { ...eventState, queryId: "ghi789" }],
       };
 
-      analytics.updateQueryID("def456");
+      analytics.updateQueryId("def456");
       analytics.track("click", "sku1");
 
       expect(trackForQuerySpy).toHaveBeenCalledWith(
