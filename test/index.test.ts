@@ -6,6 +6,7 @@ import {
   SearchResponseProto,
   setItem,
 } from "../src/index";
+import { USER_AGENT } from "../src/user-agent";
 
 const client = new Client("test", "test", "test.com");
 const setItemMock = jest.spyOn(Object.getPrototypeOf(localStorage), "setItem");
@@ -608,7 +609,7 @@ describe("Pipeline", () => {
       metadata: {
         project: ["test"],
         collection: ["test"],
-        "user-agent": ["sajari-sdk-js/2.9.0"],
+        "user-agent": [USER_AGENT],
       },
       request: {
         pipeline: {
