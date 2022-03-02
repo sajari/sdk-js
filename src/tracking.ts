@@ -2,7 +2,7 @@ import { getItem, RequestError, setItem } from ".";
 
 export const STORAGE_KEY = "searchio_events";
 const EXPIRY_DAYS = 30;
-const FUNNEL_ENTRY_TYPES = ["click"];
+const FUNNEL_ENTRY_TYPES = ["click", "redirect", "promotion_click"];
 
 type Metadata = Record<string, boolean | number | string>;
 interface EventState {

@@ -427,25 +427,28 @@ describe("SearchIOAnalytics", () => {
       );
     });
 
-    it("calls trackForQuery with current queryId if type is click", () => {
-      const analytics = new SearchIOAnalytics(
-        "test_account",
-        "test_collection"
-      );
-      analytics.events = {
-        sku1: [eventState, { ...eventState, queryId: "ghi789" }],
-      };
+    it.each(["click", "redirect", "promotion_click"])(
+      "calls trackForQuery with current queryId if type is %s",
+      (type) => {
+        const analytics = new SearchIOAnalytics(
+          "test_account",
+          "test_collection"
+        );
+        analytics.events = {
+          sku1: [eventState, { ...eventState, queryId: "ghi789" }],
+        };
 
-      analytics.updateQueryId("def456");
-      analytics.track("click", "sku1");
+        analytics.updateQueryId("def456");
+        analytics.track(type, "sku1");
 
-      expect(trackForQuerySpy).toHaveBeenCalledWith(
-        "def456",
-        "click",
-        "sku1",
-        undefined
-      );
-    });
+        expect(trackForQuerySpy).toHaveBeenCalledWith(
+          "def456",
+          type,
+          "sku1",
+          undefined
+        );
+      }
+    );
   });
 
   describe("flush", () => {
