@@ -455,7 +455,9 @@ function prependClickTokenUrl(
   );
 }
 
-function formatAggregates(aggregatesProto: AggregatesProto = {}): Aggregates {
+export function formatAggregates(
+  aggregatesProto: AggregatesProto = {}
+): Aggregates {
   return Object.entries(aggregatesProto)
     .map(([key, aggregate]) => {
       if ("metric" in aggregate) {
@@ -497,8 +499,23 @@ function formatAggregates(aggregatesProto: AggregatesProto = {}): Aggregates {
       if (obj[item.key] === undefined) {
         obj[item.key] = {};
       }
-      // @ts-ignore
-      obj[item.key][item.type] = item.value;
+
+      let field = obj[item.key][item.type];
+      if (
+        item.type === "count" &&
+        item.key === "buckets" &&
+        typeof field === "object" &&
+        typeof item.value === "object"
+      ) {
+        field = {
+          // to prevent overwriting old value
+          ...field,
+          ...item.value,
+        };
+      } else {
+        // @ts-ignore
+        obj[item.key][item.type] = item.value;
+      }
 
       return obj;
     }, {});
