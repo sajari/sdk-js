@@ -512,6 +512,7 @@ export function formatAggregates(
           ...field,
           ...item.value,
         };
+        obj[item.key][item.type] = field;
       } else {
         // @ts-ignore
         obj[item.key][item.type] = item.value;
