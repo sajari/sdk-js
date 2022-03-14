@@ -632,7 +632,7 @@ export default class App extends Component {
             <Flex alignItems="items-center">
               <Logomark size="md" margin={['mr-4', 'lg:mr-6']} />
 
-              <VisuallyHidden as="h1">Sajari Ecommerce Demo</VisuallyHidden>
+              <VisuallyHidden as="h1">Search.io Ecommerce Demo</VisuallyHidden>
 
               <Box as="form" onSubmit={this.handleSubmit} flex="flex-1" display="lg:flex" alignItems="lg:items-center">
                 <Combobox
