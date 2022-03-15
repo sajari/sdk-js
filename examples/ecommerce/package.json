@@ -33,13 +33,15 @@
     "webpack": "^4.44.1"
   },
   "dependencies": {
+    "@sajari-ui/core": "^0.22.0",
     "@sajari/sdk-js": "next",
-    "@sajari-ui/core": "^0.1.168",
     "classnames": "^2.2.6",
     "downshift": "^6.0.5",
     "preact": "^10.4.8",
     "preact-render-to-string": "^5.1.10",
     "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "tailwindcss": "^1.7.6"
   }
 }
