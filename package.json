@@ -1,6 +1,6 @@
 {
   "name": "@sajari/sdk-js",
-  "description": "Sajari JavaScript SDK",
+  "description": "Search.io JavaScript SDK",
   "version": "2.10.2",
   "main": "dist/index.js",
   "umd:main": "dist/sajarisdk.umd.production.js",
@@ -11,17 +11,16 @@
   ],
   "license": "MIT",
   "contributors": [
-    "Ben Hinchley <bhinchley@sajari.com> (https://www.sajari.com)",
-    "David Howden <dhowden@sajari.com> (https://www.sajari.com)",
-    "Sajari Support <support@sajari.com> (https://www.sajari.com)",
-    "Trent Billington <tbillington@sajari.com> (https://www.sajari.com)"
+    "Ben Hinchley <bhinchley@search.io> (https://www.search.io)",
+    "David Howden <dhowden@search.io> (https://www.search.io)",
+    "Search.io Support <support@search.io> (https://www.search.io)"
   ],
-  "homepage": "https://github.com/sajari/sajari-sdk-js",
+  "homepage": "https://github.com/sajari/sdk-js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/sajari/sajari-sdk-js.git"
+    "url": "https://github.com/sajari/sdk-js.git"
   },
-  "bugs": "https://github.com/sajari/sajari-sdk-js/issues",
+  "bugs": "https://github.com/sajari/sdk-js/issues",
   "keywords": [
     "autocomplete",
     "hosted",
@@ -31,7 +30,9 @@
     "recommend",
     "sajari",
     "search",
-    "search api"
+    "search api",
+    "search.io",
+    "search io"
   ],
   "scripts": {
     "start": "tsdx watch --format cjs,esm,umd --name SajariSDK",
