@@ -1,20 +1,20 @@
-# Sajari Javascript SDK
+# Search.io Javascript SDK
 
 [![npm (scoped)](https://img.shields.io/npm/v/@sajari/sdk-js.svg?style=flat-square)](https://www.npmjs.com/package/@sajari/sdk-js)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/571108bf-6e93-4aab-8671-09a6f3b90722/deploy-status)](https://app.netlify.com/sites/sajari-sdk-js/deploys)
 [![build size](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)](https://img.shields.io/bundlephobia/minzip/@sajari/sdk-js.svg)
 [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](./LICENSE)
 
-This SDK is a lightweight JavaScript client for querying the Sajari API.
+This SDK is a lightweight JavaScript client for querying the Search.io API.
 
-Checkout our [React SDK](https://www.github.com/sajari/sajari-sdk-react), for a complete set of customisable UI components, and more.
+Checkout our [React SDK](https://github.com/sajari/sdk-react), for a complete set of customisable UI components, and more.
 
-You can also quickly generate search interfaces from the [Sajari](https://www.sajari.com/console) admin console.
+You can also quickly generate search interfaces from the Search.io [admin console](https://app.search.io).
 
 ## Table of Contents
 
 - [Install](#install)
-- [Getting Started](#getting-started)
+- [Getting started](#getting-started)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -32,9 +32,9 @@ yarn add @sajari/sdk-js@next
 Usage within your application:
 
 ```javascript
-import { Client, DefaultSession, TrackingType, etc... } from "@sajari/sdk-js";
+import { Client, SearchIOAnalytics, etc... } from "@sajari/sdk-js";
 
-// new Client("<account_id>", "<collection_id>")...
+const client = new Client("<account_id>", "<collection_id>");
 ```
 
 ### Browser
@@ -44,38 +44,34 @@ Note that when using the SDK via a `<script>` tag in a browser, all components w
 ```html
 <script src="https://unpkg.com/@sajari/sdk-js@^2/dist/sajarisdk.umd.production.min.js"></script>
 <script>
-  // new SajariSDK.Client("<account_id>", "<collection_id>")...
+  const client = new SajariSDK.Client("<account_id>", "<collection_id>");
 </script>
 ```
 
-## Getting Started
+## Getting started
 
 Create a `Client` for interacting with our API, and then initialise a pipeline to be used for searching. The pipeline determines how the ranking is performed when performing a search.
 
-_If you don't have a Sajari account you can sign up [here](https://www.sajari.com/console/sign-up)._
+_If you don't have a Search.io account you can [sign up](https://app.search.io/sign-up)._
 
 ```javascript
-const websitePipeline = new Client("<account_id>", "<collection_id>").pipeline(
-  "website"
-);
+const pipeline = new Client("<account_id>", "<collection_id>").pipeline("app");
 ```
 
-Create a session to track the queries being performed via click tracking. In this case we're using `q` to store the query on the `InteractiveSession`.
+Create a `SearchIOAnalytics` instance to track events against the query id that produced a search result.
 
 ```javascript
-const clickTrackedSession = new InteractiveSession(
-  "q",
-  new DefaultSession(TrackingType.Click, "url")
-);
+const searchio = new SearchIOAnalytics("<account_id>", "<collection_id>");
 ```
 
-Perform a search on the specified pipeline and handle the results. Here we're searching our collection using the `website` pipeline with our tracked session.
+Perform a search on the specified pipeline and handle the results. Here we're searching our collection using the `app` pipeline and updating the analytics instance with the current query id. The `field` value you specify must be the name of a field in [your schema](https://app.search.io/collection/schema) with the _Unique_ constraint.
 
 ```javascript
-const values = { q: "FAQ" };
-websitePipeline
-  .search(values, clickTrackedSession.next(values))
+const values = { q: "puppies" };
+pipeline
+  .search(values, { type: "EVENT", field: "id" })
   .then(([response, values]) => {
+    searchio.updateQueryId(response.queryId);
     // Handle response...
   })
   .catch((error) => {
@@ -85,23 +81,24 @@ websitePipeline
 
 ## Handling results
 
-Now we're going to add a basic rendering of the results to the page with integrated click tracking.
-This will redirect the user through the Sajari token endpoint to the real page identified by the result, registering their "click" on the way through.
+Now we're going to add a basic rendering of the results to the page with integrated event tracking.
+This will persist the tracking event against the current query id in localStorage and send the event data to Search.io to track how users use search results and/or move through an ecommerce purchase funnel.
 
 ```javascript
-const values = { q: "FAQ" };
-websitePipeline
-  .search(values, clickTrackedSession.next(values))
+const values = { q: "puppies" };
+pipeline
+  .search(values, { type: "EVENT", field: "id" })
   .then(([response, values]) => {
+    searchio.updateQueryId(response.queryId);
     response.results.forEach((r) => {
-      const title = document.createElement("a");
-      title.textContent = r.values.title;
-      title.href = r.values.url;
-      title.onmousedown = () => {
-        title.href = r.token.click;
+      const item = document.createElement("a");
+      item.textContent = r.values.name;
+      item.href = r.values.url;
+      item.onclick = () => {
+        searchio.track("click", r.id);
       };
 
-      document.body.appendChild(title);
+      document.body.appendChild(item);
     });
   })
   .catch((error) => {
@@ -109,28 +106,19 @@ websitePipeline
   });
 ```
 
-## Consuming an interaction token
+## Tracking additional events
 
-On each result when using TrackingType.Click or TrackingType.PosNeg, there is a
-set of tokens. These tokens allow you to provide feedback to the ranking system.
-When a user interacts with a result, you can send back the token with some extra
-information.
+When a user moves further through your purchase funnel (e.g. adding an item to their shopping cart, completing a purchase, etc) you'll want to track that also, as it will provide feedback to the ranking system. The correct query id will be preserved throughout the ecommerce funnel as long as an event with _type_ `click` was already tracked earlier.
 
-```js
-const { Client } = require("@sajari/sdk-js");
-
-const client = new Client("<account_id>", "<collection_id>", {
-  key: "<key_id>",
-  secret: "<key_secret>",
+```javascript
+document.querySelector(".add-to-cart").addEventListener("click", (e) => {
+  searchio.track("add_to_cart", e.target.id);
 });
 
-/*
-The following invocation of the consume function, is noting that this particular
-interaction was a "purchase" and the user purchasing the item was 20 years old
-(this information coming from some system that you operate.)
-*/
-client.interactionConsume(token, "purchase", 1.0, {
-  age: "20",
+document.querySelector(".complete-purchase").addEventListener("click", (e) => {
+  document.querySelectorAll(".cart-item").forEach((item) => {
+    searchio.track("purchase", item.id);
+  });
 });
 ```
 

@@ -58,6 +58,7 @@ type ConfigObj = {
   /**
    * Redirect URL for click tracking.  Prepended to the the front of the token
    * returned by the engine.
+   * @deprecated
    */
   clickTokenURL: string;
   /**
@@ -214,7 +215,16 @@ export class Client {
   }
 
   /**
-   * interactionConsume consumes an interaction token.
+   * On each result when using [[TrackingType.Click]] or [[TrackingType.PosNeg]], there is a set of tokens. These tokens allow you to provide feedback to the ranking system. When a user interacts with a result, you can send back the token with some extra information.
+   *
+   * The following example invocation of the consume function is noting that this particular interaction was a "purchase" and the user purchasing the item was 20 years old (this information comes from some system that you operate.)
+   *
+   * ```javascript
+   * client.interactionConsume(token, "purchase", 1.0, {
+   *   age: "20",
+   * });
+   * ```
+   * @deprecated
    */
   async interactionConsume(
     token: string,
@@ -682,6 +692,7 @@ export interface Result {
   values: Record<string, string | string[]>;
   /**
    * token is the [[Token]] associated with this [[Result]] (if any).
+   * @deprecated
    */
   token?: Token;
   /**
@@ -690,15 +701,20 @@ export interface Result {
   promotionPinned?: boolean;
 }
 
+/**
+ * @deprecated
+ */
 export type Token = ClickToken | PosNegToken;
 
 /**
  * ClickToken defines a click token.  See [[TrackingType.Click]] for more details.
+ * @deprecated
  */
 export type ClickToken = { click: string };
 
 /**
  * PosNegToken defines a pos/neg token pair. See [[TrackingType.PosNeg]] for more details.
+ * @deprecated
  */
 export type PosNegToken = { pos: string; neg: string };
 
@@ -896,6 +912,7 @@ interface MetricAggregateProto {
 
 /**
  * Tracking defines behaviour for handling search sessions and result interactions.
+ * @deprecated
  */
 export type Tracking = {
   type: TrackingType;
@@ -926,10 +943,12 @@ export enum TrackingType {
   None = "NONE",
   /**
    * Click generates click tracking tokens.
+   * @deprecated
    */
   Click = "CLICK",
   /**
    * PosNeg creates pos/neg tracking tokens.
+   * @deprecated
    */
   PosNeg = "POS_NEG",
   /**
@@ -941,6 +960,7 @@ export enum TrackingType {
 /**
  * Session takes query values, maintains session state, and returns tracking data
  * to be sent with search requests.
+ * @deprecated
  */
 export interface Session {
   /**
@@ -959,6 +979,7 @@ export const EVENT_TRACKING_RESET = "tracking-reset";
 
 /**
  * DefaultSession holds state of a sequence of searches.
+ * @deprecated
  */
 export class DefaultSession extends EventEmitter implements Session {
   private queryID: string = "";
@@ -1062,6 +1083,7 @@ function newQueryID(len: number = 16): string {
  * - Is `undefined`.
  * - First 3 characters have changed (i.e. from a direct replacement)
  * - Cleared after being non-empty (i.e. from a delete)
+ * @deprecated
  */
 export class InteractiveSession implements Session {
   private session: Session;
@@ -1254,6 +1276,9 @@ export class Values extends EventEmitter {
   }
 }
 
+/**
+ * @deprecated
+ */
 export type TokenState = {
   token: PosNegToken;
   clickSubmitted: boolean;
@@ -1282,6 +1307,7 @@ export const getItem = (key: string): string | null => {
  * PosNegLocalStorageManager is a utility class for manipulating Sajari's localstorage based
  * management of PosNeg tokens. Typical use case is storing tokens for later consumption
  * as users move through an ecommerce purchase funnel.
+ * @deprecated
  */
 export class PosNegLocalStorageManager {
   currentTokens: Record<string | number, TokenState>;
