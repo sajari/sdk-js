@@ -7,14 +7,14 @@
 
 This SDK is a lightweight JavaScript client for querying the Search.io API.
 
-Checkout our [React SDK](https://www.github.com/sajari/sajari-sdk-react), for a complete set of customisable UI components, and more.
+Checkout our [React SDK](https://github.com/sajari/sdk-react), for a complete set of customisable UI components, and more.
 
 You can also quickly generate search interfaces from the Search.io [admin console](https://app.search.io).
 
 ## Table of Contents
 
 - [Install](#install)
-- [Getting Started](#getting-started)
+- [Getting started](#getting-started)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -48,7 +48,7 @@ Note that when using the SDK via a `<script>` tag in a browser, all components w
 </script>
 ```
 
-## Getting Started
+## Getting started
 
 Create a `Client` for interacting with our API, and then initialise a pipeline to be used for searching. The pipeline determines how the ranking is performed when performing a search.
 
@@ -119,31 +119,6 @@ document.querySelector(".complete-purchase").addEventListener("click", (e) => {
   document.querySelectorAll(".cart-item").forEach((item) => {
     searchio.track("purchase", item.id);
   });
-});
-```
-
-## DEPRECATED - Consuming an interaction token
-
-On each result when using TrackingType.Click or TrackingType.PosNeg, there is a
-set of tokens. These tokens allow you to provide feedback to the ranking system.
-When a user interacts with a result, you can send back the token with some extra
-information.
-
-```javascript
-const { Client } = require("@sajari/sdk-js");
-
-const client = new Client("<account_id>", "<collection_id>", {
-  key: "<key_id>",
-  secret: "<key_secret>",
-});
-
-/*
-The following invocation of the consume function, is noting that this particular
-interaction was a "purchase" and the user purchasing the item was 20 years old
-(this information coming from some system that you operate.)
-*/
-client.interactionConsume(token, "purchase", 1.0, {
-  age: "20",
 });
 ```
 

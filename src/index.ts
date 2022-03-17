@@ -215,7 +215,15 @@ export class Client {
   }
 
   /**
-   * interactionConsume consumes an interaction token.
+   * On each result when using [[TrackingType.Click]] or [[TrackingType.PosNeg]], there is a set of tokens. These tokens allow you to provide feedback to the ranking system. When a user interacts with a result, you can send back the token with some extra information.
+   *
+   * The following example invocation of the consume function is noting that this particular interaction was a "purchase" and the user purchasing the item was 20 years old (this information comes from some system that you operate.)
+   *
+   * ```javascript
+   * client.interactionConsume(token, "purchase", 1.0, {
+   *   age: "20",
+   * });
+   * ```
    * @deprecated
    */
   async interactionConsume(
