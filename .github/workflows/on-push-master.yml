@@ -1,0 +1,40 @@
+# This workflow will push a release to NPM
+
+name: On push master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  version-package:
+    name: version-package
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: yarn
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Create Release Pull Request or Deploy to prod
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: yarn release
+          title: Release latest to Production
+        env:
+          GITHUB_TOKEN: ${{ secrets.SAJARI_CI_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
