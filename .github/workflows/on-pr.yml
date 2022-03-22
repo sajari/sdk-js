@@ -7,3 +7,9 @@ jobs:
   call-workflow-1:
     name: Run tests
     uses: sajari/sdk-js/.github/workflows/run-tests.yml@master
+  call-workflow-2:
+    name: Check types
+    uses: sajari/sdk-js/.github/workflows/check-types.yml@master
+  call-workflow-3:
+    name: Lint
+    uses: sajari/sdk-js/.github/workflows/lint.yml@master

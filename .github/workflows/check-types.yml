@@ -1,4 +1,4 @@
-name: Run tests
+name: Check types
 
 on:
   workflow_call:
@@ -23,8 +23,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
+      - name: Install
         run: yarn install
-
-      - name: Test
-        run: yarn test
+      - name: Typescript
+        run: yarn tsc
