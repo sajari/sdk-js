@@ -20,11 +20,18 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v2
+      - name: Set the correct Node version using nvm
+        shell: bash -l {0}
+        run: nvm install
+
+      - name: cache npm downloads
+        id: cache-npm
+        uses: actions/cache@v3
         with:
-          node-version: 14
-          cache: yarn
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Dependencies
         run: yarn install
