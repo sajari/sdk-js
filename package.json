@@ -44,7 +44,7 @@
     "prepublishOnly": "npm-run-all test build",
     "docs": "typedoc src/index.ts --out docs",
     "generate:user-agent": "node scripts/gen-useragent",
-    "release": "yarn build && changeset publish"
+    "release": "yarn build && yarn changeset publish"
   },
   "husky": {
     "hooks": {
