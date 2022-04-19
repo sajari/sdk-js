@@ -1,4 +1,4 @@
-import { getItem, RequestError, setItem } from ".";
+import { RequestError, setItem, getItem } from "./util";
 
 export const STORAGE_KEY = "searchio_events";
 const EXPIRY_DAYS = 30;
@@ -207,7 +207,16 @@ export class SearchIOAnalytics {
    */
   track(type: string, value: Value, metadata?: Metadata) {
     let queryId = this.queryId;
-    if (!FUNNEL_ENTRY_TYPES.includes(type)) {
+    if (FUNNEL_ENTRY_TYPES.includes(type)) {
+      // Funnel entry events should always include their own queryId as they are tightly coupled to a specific query
+      if (!queryId) {
+        console.error(
+          "No queryId found. Use updateQueryId to set the current queryId or call trackForQuery with a specific queryId."
+        );
+        return;
+      }
+    } else {
+      // Ad-hoc events always attempt a lookup of a previously saved queryId assocaited with this identifier
       const lastEvent = this.getEvents(value).pop();
 
       if (lastEvent) {
@@ -216,11 +225,9 @@ export class SearchIOAnalytics {
     }
 
     if (!queryId) {
-      console.error(
-        "No queryId found. Use updateQueryId to set the current queryId or call trackForQuery with a specific queryId."
-      );
       return;
     }
+
     this.trackForQuery(queryId, type, value, metadata);
   }
 
