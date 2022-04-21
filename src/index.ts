@@ -43,7 +43,7 @@ type ConfigObj = {
   /**
    * Redirect URL for click tracking.  Prepended to the the front of the token
    * returned by the engine.
-   * @deprecated
+   * @deprecated See [[SearchIOAnalytics]] for new tracking APIs.
    */
   clickTokenURL: string;
   /**
@@ -209,7 +209,7 @@ export class Client {
    *   age: "20",
    * });
    * ```
-   * @deprecated
+   * @deprecated in favor of [[SearchIOAnalytics]] tracking APIs.
    */
   async interactionConsume(
     token: string,
@@ -677,7 +677,7 @@ export interface Result {
   values: Record<string, string | string[]>;
   /**
    * token is the [[Token]] associated with this [[Result]] (if any).
-   * @deprecated
+   * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
    */
   token?: Token;
   /**
@@ -687,19 +687,19 @@ export interface Result {
 }
 
 /**
- * @deprecated
+ * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
  */
 export type Token = ClickToken | PosNegToken;
 
 /**
  * ClickToken defines a click token.  See [[TrackingType.Click]] for more details.
- * @deprecated
+ * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
  */
 export type ClickToken = { click: string };
 
 /**
  * PosNegToken defines a pos/neg token pair. See [[TrackingType.PosNeg]] for more details.
- * @deprecated
+ * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
  */
 export type PosNegToken = { pos: string; neg: string };
 
@@ -897,7 +897,7 @@ interface MetricAggregateProto {
 
 /**
  * Tracking defines behaviour for handling search sessions and result interactions.
- * @deprecated
+ * @deprecated See [[SearchIOAnalytics]] for new tracking APIs.
  */
 export type Tracking = {
   type: TrackingType;
@@ -928,12 +928,12 @@ export enum TrackingType {
   None = "NONE",
   /**
    * Click generates click tracking tokens.
-   * @deprecated
+   * @deprecated Use EVENT for new tracking APIs
    */
   Click = "CLICK",
   /**
    * PosNeg creates pos/neg tracking tokens.
-   * @deprecated
+   * @deprecated Use EVENT for new tracking APIs
    */
   PosNeg = "POS_NEG",
   /**
@@ -945,7 +945,7 @@ export enum TrackingType {
 /**
  * Session takes query values, maintains session state, and returns tracking data
  * to be sent with search requests.
- * @deprecated
+ * @deprecated The modern tracking API ,[[SearchIOAnalytics]], does not tracking search 'sessions'
  */
 export interface Session {
   /**
@@ -964,7 +964,7 @@ export const EVENT_TRACKING_RESET = "tracking-reset";
 
 /**
  * DefaultSession holds state of a sequence of searches.
- * @deprecated
+ * @deprecated Use [[SearchIOAnalytics]] which does not attempt to track search sequences in the client.
  */
 export class DefaultSession extends EventEmitter implements Session {
   private queryID: string = "";
@@ -1068,7 +1068,7 @@ function newQueryID(len: number = 16): string {
  * - Is `undefined`.
  * - First 3 characters have changed (i.e. from a direct replacement)
  * - Cleared after being non-empty (i.e. from a delete)
- * @deprecated
+ * @deprecated  The new API, [[SearchIOAnalytics]], does not track search 'sessions' in the client.
  */
 export class InteractiveSession implements Session {
   private session: Session;
@@ -1262,7 +1262,7 @@ export class Values extends EventEmitter {
 }
 
 /**
- * @deprecated
+ * @deprecated  See [[SearchIOAnalytics]] for new tracking identifier information
  */
 export type TokenState = {
   token: PosNegToken;
@@ -1275,7 +1275,7 @@ export const POS_NEG_STORAGE_KEY = "sajari_tokens";
  * PosNegLocalStorageManager is a utility class for manipulating Sajari's localstorage based
  * management of PosNeg tokens. Typical use case is storing tokens for later consumption
  * as users move through an ecommerce purchase funnel.
- * @deprecated
+ * @deprecated See [[SearchIOAnalytics]] for new tracking APIs.
  */
 export class PosNegLocalStorageManager {
   currentTokens: Record<string | number, TokenState>;
