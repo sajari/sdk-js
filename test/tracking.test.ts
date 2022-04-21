@@ -427,6 +427,40 @@ describe("SearchIOAnalytics", () => {
       );
     });
 
+    it("top-of-funnel events with no queryId throw console error", () => {
+      const analytics = new SearchIOAnalytics(
+        "test_account",
+        "test_collection"
+      );
+      // Top of funnel events don't look up previous query events
+      analytics.events = {
+        sku1: [eventState, { ...eventState, queryId: "ghi789" }],
+      };
+
+      // Note no queryId set ah la analytics.updateQueryId(...);
+      analytics.track("promotion_click", "sku1");
+
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(trackForQuerySpy).not.toHaveBeenCalled();
+    });
+
+    it("ad-hoc events with no previous event don't console error", () => {
+      const analytics = new SearchIOAnalytics(
+        "test_account",
+        "test_collection"
+      );
+      // Top of funnel events look up previous query events but none exist for this `value`
+      analytics.events = {
+        sku1: [eventState, { ...eventState, queryId: "ghi789" }],
+      };
+
+      // Note no queryId set ah la analytics.updateQueryId(...);
+      analytics.track("add_to_cart", "unique-value");
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(trackForQuerySpy).not.toHaveBeenCalled();
+    });
+
     it.each(["click", "redirect", "promotion_click"])(
       "calls trackForQuery with current queryId if type is %s",
       (type) => {

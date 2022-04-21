@@ -1,7 +1,8 @@
 import { USER_AGENT } from "./user-agent";
 import EventEmitter from "./events";
 import { isSSR } from "./ssr";
-export { EventEmitter };
+import { RequestError, setItem, getItem } from "./util";
+export { EventEmitter, RequestError, setItem, getItem };
 export { SearchIOAnalytics } from "./tracking";
 
 interface APIError {
@@ -35,22 +36,6 @@ export class NetworkError extends Error {
   constructor(message: string) {
     super(message);
     this.type = "CONNECTION";
-  }
-}
-
-/**
- * RequestError defines an error occuring from a request.
- */
-export class RequestError extends Error {
-  constructor(
-    public readonly statusCode: number,
-    message: string,
-    public readonly error?: Error
-  ) {
-    super(message);
-
-    // TODO(jingram): Remove this when compilation target is higher than ES5.
-    Object.setPrototypeOf(this, RequestError.prototype);
   }
 }
 
@@ -1285,23 +1270,6 @@ export type TokenState = {
 };
 
 export const POS_NEG_STORAGE_KEY = "sajari_tokens";
-// Just here to handle SSR execution (docs)
-export const setItem = (key: string, value: string) => {
-  if (isSSR()) {
-    return;
-  }
-  try {
-    localStorage.setItem(key, value);
-  } catch (_) {
-    console.error(`Search.io local storage "${key}" cannot be saved.`, value);
-  }
-};
-export const getItem = (key: string): string | null => {
-  if (isSSR()) {
-    return "";
-  }
-  return localStorage.getItem(key);
-};
 
 /**
  * PosNegLocalStorageManager is a utility class for manipulating Sajari's localstorage based

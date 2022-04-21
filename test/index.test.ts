@@ -1,9 +1,9 @@
 import {
   Client,
-  RequestError,
   DefaultSession,
   TrackingType,
   SearchResponseProto,
+  RequestError,
   setItem,
 } from "../src/index";
 import { USER_AGENT } from "../src/user-agent";
