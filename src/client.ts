@@ -1,15 +1,24 @@
-class Client {
+import { isSSR } from "./ssr";
+import { APIError, NetworkError, RequestError } from "./error";
+
+export class Client {
   private readonly account: string;
   private readonly collection: string;
+  private readonly endpoint: string;
 
-  constructor(account: string, collection: string) {
+  constructor(
+    account: string,
+    collection: string,
+    endpoint: string = "api.search.io"
+  ) {
     this.account = account;
     this.collection = collection;
+    this.endpoint = endpoint;
   }
 
   private createRequest(verb: "query" | "trackEvent") {
     return new Request(
-      `https://api.search.io/v4/collections/${this.collection}:${verb}`,
+      `https://${this.endpoint}/v4/collections/${this.collection}:${verb}`,
       {
         method: "POST",
         headers: {
@@ -22,68 +31,79 @@ class Client {
   }
 
   async query(req: QueryRequest): Promise<QueryResponse> {
+    hasNetworkConnection();
+
     const request = this.createRequest("query");
     const resp = await fetch(request, {
       body: JSON.stringify(req),
     });
 
     if (resp.status !== 200) {
-      const { message, code, details } = await resp.json();
-      throw new APIError(message, code, details);
+      await handleErrorResponse(resp);
     }
 
     return await resp.json();
   }
 
   async trackEvent(req: TrackEventRequest) {
+    hasNetworkConnection();
+
     const request = this.createRequest("trackEvent");
     const resp = await fetch(request, {
+      method: "POST",
       body: JSON.stringify(req),
     });
 
     if (resp.status !== 200) {
-      const { message, code, details } = await resp.json();
-      throw new APIError(message, code, details);
+      await handleErrorResponse(resp);
     }
   }
 }
 
-type TrackEventRequest =
-  | {
-      type: "redirect";
-      redirect_id: string;
-      query_id: string;
-      metadata?: Record<string, any>;
-    }
-  | {
-      type: "promotion_click";
-      banner_id: string;
-      query_id: string;
-      metadata?: Record<string, any>;
-    }
-  | {
-      type: "click" | "view_item" | "add_to_cart" | "purchase" | string;
-      result_id: string;
-      query_id: string;
-      metadata?: Record<string, any>;
-    };
-
-class APIError extends Error {
-  readonly code: number;
-  readonly details?: { type_url: string; value: any }[];
-
-  constructor(
-    message: string,
-    code: number,
-    details?: { type_url: string; value: any }[]
-  ) {
-    super(message);
-    this.code = code;
-    this.details = details;
+// Check we have a connection in non SSR context
+function hasNetworkConnection() {
+  if (!isSSR() && !navigator.onLine) {
+    throw new NetworkError(
+      "Search request failed due to a network error. Please check your network connection."
+    );
   }
 }
 
-type QueryRequest = {
+async function handleErrorResponse(resp: Response) {
+  console.log(resp.statusText);
+
+  const { message, code, details } = (await resp.json()) as {
+    code: number;
+    message: string;
+    details?: any[];
+  };
+
+  let errMessage = "Search request failed due to an error.";
+
+  // 16 = Unauthenticated
+  // 7 = PermissionDenied
+  if (code === 16 || code === 7) {
+    console.error(
+      `Check the domain ${window.location.hostname} is an authorized query domain. See https://app.search.io/collection/domains`
+    );
+
+    errMessage = "Search request failed due to a permission denied error.";
+  } else {
+    console.error(`Search request failed due to an error.`, {
+      httpStatusCode: resp.status,
+      gRPCStatusCode: code,
+      message: message,
+    });
+  }
+
+  throw new RequestError(
+    resp.status,
+    errMessage,
+    new APIError(message, code, details)
+  );
+}
+
+export type QueryRequest = {
   pipeline?: { name?: string; version?: string };
   variables: Record<string, string>;
   tracking:
@@ -91,7 +111,7 @@ type QueryRequest = {
     | { type: "EVENT"; field: string; data?: Record<string, string> };
 };
 
-type QueryResponse = {
+export type QueryResponse = {
   pipeline: { name: string; version: string };
   variables: Record<string, string>;
   query_id: string;
@@ -103,28 +123,28 @@ type QueryResponse = {
   aggregate_filters: Record<string, Aggregate>;
 };
 
-type Result = {
+export type Result = {
   score: number;
   record: Record<string, string | string[]>;
 };
 
-type ActivePromotion = {
+export type ActivePromotion = {
   promotion_id: string;
   active_pins: PromotionPin[];
   active_exclusions: PromotionExclusion[];
 };
 
-type PromotionPin = {
+export type PromotionPin = {
   key: { field: string; value: string };
   mode: "PIN" | "PROMOTE";
   position: number;
 };
 
-type PromotionExclusion = {
+export type PromotionExclusion = {
   key: { field: string; value: string };
 };
 
-type Banner = {
+export type Banner = {
   id: string;
   title?: string;
   description?: string;
@@ -143,13 +163,33 @@ type Banner = {
     | "TEXT_POSITION_BOTTOM_RIGHT";
 };
 
-type Redirect = {
+export type Redirect = {
   id: string;
   target: string;
 };
 
-type Aggregate =
+export type Aggregate =
   | { metric: { value: number } }
   | { count: { counts: Record<string, number> } }
   | { buckets: { buckets: Record<string, { name: string; count: number }> } }
   | { date: { dates: Record<string, number> } };
+
+export type TrackEventRequest =
+  | {
+      type: "redirect";
+      redirect_id: string;
+      query_id: string;
+      metadata?: Record<string, any>;
+    }
+  | {
+      type: "promotion_click";
+      banner_id: string;
+      query_id: string;
+      metadata?: Record<string, any>;
+    }
+  | {
+      type: "click" | "view_item" | "add_to_cart" | "purchase";
+      result_id: string;
+      query_id: string;
+      metadata?: Record<string, any>;
+    };
