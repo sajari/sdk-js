@@ -1,19 +1,13 @@
-import fetchPonyfill from "fetch-ponyfill";
 import { server, rest } from "./server";
 import { Client, RequestError, SearchResponse } from "../src";
 
 describe("Client", () => {
-  // NOTE(jingram): The test suite mocks fetch but these tests specifically
-  // avoid mocking fetch so we can test real requests. So we need to make sure
-  // to put fetch back to what it was.
-  let oldFetch: typeof fetch;
-  const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   beforeAll(() => {
-    oldFetch = global.fetch;
-    global.fetch = fetchPonyfill().fetch;
+    fetchMock.disableMocks();
   });
+
+  const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   afterAll(() => {
-    global.fetch = oldFetch;
     consoleErrorSpy.mockRestore();
   });
 
