@@ -426,7 +426,7 @@ function formatActivePins(
 ): Record<string, Set<string>> {
   const pins: Record<string, Set<string>> = {};
   activePromotions.forEach(({ activePins }) => {
-    activePins.forEach(({ key }) => {
+    activePins?.forEach(({ key }) => {
       if (!pins[key.field]) {
         pins[key.field] = new Set<string>();
       }
@@ -763,8 +763,8 @@ export interface PromotionExclusion {
  */
 export interface ActivePromotion {
   promotionId: string;
-  activePins: PromotionPin[];
-  activeExclusions: PromotionExclusion[];
+  activePins?: PromotionPin[];
+  activeExclusions?: PromotionExclusion[];
 }
 
 /**
