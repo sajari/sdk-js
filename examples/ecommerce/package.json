@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "prettier -c --write \"*/**\""
+  },
+  "dependencies": {
+    "@sajari-ui/core": "^0.22.0",
+    "@sajari/sdk-js": "^2.10.5",
+    "classnames": "^2.3.1",
+    "downshift": "^6.1.7",
+    "next": "^11.1.0",
+    "react": "18.1.0",
+    "react-dom": "18.1.0"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.3.1",
+    "@types/node": "17.0.35",
+    "@types/react": "18.0.1",
+    "@types/react-dom": "^18.0.1",
+    "autoprefixer": "^9.8.6",
+    "postcss": "^7.0.32",
+    "postcss-clean": "^1.1.0",
+    "postcss-cli": "^7.1.2",
+    "prettier": "^2.6.2",
+    "tailwindcss": "^1.7.6",
+    "typescript": "4.7.2"
+  }
+}
