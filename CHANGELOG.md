@@ -1,5 +1,11 @@
 # @sajari/sdk-js
 
+## 2.10.6
+
+### Patch Changes
+
+- 5650170: bug: fix package json umd main and module file locations
+
 ## 2.10.5
 
 ### Patch Changes
