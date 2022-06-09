@@ -3,7 +3,7 @@ import filterTypes from 'components/Filters/types';
 /**
  * Your environment configuration
  */
-export default {
+const config: Record<string, any> = {
   // These details can be found in your console
   projectId: '1594153711901724220',
   collectionId: 'bestbuy',
@@ -69,3 +69,5 @@ export default {
     // key: 'value',
   },
 };
+
+export default config;

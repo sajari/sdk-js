@@ -13,6 +13,16 @@ const escape = (input = '') => {
 };
 
 export default class Request {
+  query: string;
+  page: number;
+  pageSize: number;
+  count: any[];
+  buckets: Record<string, any>;
+  filters: Record<string, any>;
+  parameters: Record<string, any>;
+  filter: any;
+  sort: any;
+
   constructor(query = '') {
     this.query = query;
     this.page = 1;

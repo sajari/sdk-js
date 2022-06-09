@@ -279,11 +279,10 @@ const Home: NextPage = () => {
   const toggleSuggest = (event) => {
     const { checked } = event.target;
 
-    setState((prev) => ({
-      ...prev,
+    setState({
       suggest: checked,
       suggestions: [],
-    }));
+    });
   };
 
   const toggleInstant = (event) => {
@@ -636,7 +635,7 @@ const Home: NextPage = () => {
     <Fragment>
       <Head>
         <title>Ecommerce demo | search.io</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <Flex
         alignItems="items-center"
