@@ -1,16 +1,22 @@
-/* eslint-disable react/prop-types */
-import { Box, Label, SearchInput } from '@sajari-ui/core';
+import { Box, Label, SearchInput, SearchInputProps } from '@sajari-ui/core';
 import { useCombobox } from 'downshift';
 
 import is from '../../utils/is';
 import Suggestions from './Suggestions';
 
-const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }) => {
+interface Props extends Omit<SearchInputProps, 'onInput'> {
+  instant: boolean;
+  suggest: boolean;
+  items: string[];
+  value: string;
+  onInput: (value: string, isSelect?: boolean) => void;
+}
+
+const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }: Props) => {
   const {
     isOpen,
     getLabelProps,
     getMenuProps,
-    selectedItem,
     highlightedIndex,
     inputValue,
     getItemProps,
@@ -21,8 +27,8 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
     items,
     initialInputValue: value,
     initialIsOpen: !is.empty(items),
-    onInputValueChange: ({ inputValue }) => onInput(inputValue),
-    onSelectedItemChange: ({ inputValue }) => onInput(inputValue, true),
+    onInputValueChange: ({ inputValue }) => onInput(inputValue ?? ''),
+    onSelectedItemChange: ({ inputValue }) => onInput(inputValue ?? '', true),
   });
 
   return (
@@ -46,6 +52,7 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
                 }
 
                 // Prevent Downshift's default 'Enter' behavior.
+                // @ts-ignore
                 event.nativeEvent.preventDownshiftDefault = true;
 
                 // Perform a search
@@ -78,7 +85,6 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
         getMenuProps={getMenuProps}
         inputValue={inputValue}
         highlightedIndex={highlightedIndex}
-        selectedItem={selectedItem}
       />
     </div>
   );
