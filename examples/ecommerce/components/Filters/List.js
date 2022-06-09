@@ -30,7 +30,7 @@ const formatLabel = (label, type, transform) => {
       return label;
 
     case filterTypes.rating:
-      return <Rating value={Number(label)} />;
+      return <Rating id="filter" value={Number(label)} />;
 
     default:
       return transformCase(label, transform);

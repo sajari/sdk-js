@@ -1,11 +1,11 @@
-/* eslint-disable react/prop-types */
 import { Icon } from '@sajari-ui/core';
+import { ResultItem } from '.';
 
 import { formatNumber } from '../../utils/number';
 import Rating from '../Rating';
 import Image from './Image';
 
-const GridItem = ({ data }) => (
+const GridItem = ({ data }: { data: ResultItem }) => (
   <article className="mb-8 text-center" key={data.id}>
     <a href={data.url} target="_blank" rel="noreferrer noopener" className="relative block h-0 mb-3 pb-full">
       <Image src={data.image} alt={data.title} className="absolute" />
@@ -18,9 +18,9 @@ const GridItem = ({ data }) => (
     </h1>
 
     {data.rating && (
-      <p className="flex items-center justify-center mt-2">
-        <Rating value={Number(data.rating)} />
-      </p>
+      <div className="flex items-center justify-center mt-2">
+        <Rating id={data.id} value={Number(data.rating)} />
+      </div>
     )}
 
     {data.price && <h2 className="mt-2 text-gray-500">{formatNumber(Number(data.price), 'USD', true)}</h2>}

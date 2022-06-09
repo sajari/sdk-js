@@ -1,12 +1,12 @@
-/* eslint-disable react/prop-types */
 import { Icon } from '@sajari-ui/core';
+import { ResultItem } from '.';
 
 import is from '../../utils/is';
 import { formatNumber } from '../../utils/number';
 import Rating from '../Rating';
 import Image from './Image';
 
-const ListItem = ({ data }) => (
+const ListItem = ({ data }: { data: ResultItem }) => (
   <article className="flex items-center w-full mb-8" key={data.id}>
     <a href={data.url} target="_blank" rel="noreferrer noopener" className="block w-24 h-24 mr-6">
       <Image src={data.image} alt={data.title} />
@@ -25,9 +25,9 @@ const ListItem = ({ data }) => (
               {data.category && <p className="hidden text-xs text-gray-400 md:block md:mr-4">{data.category}</p>}
 
               {data.rating && (
-                <p className="flex items-center mt-2 md:mt-0">
-                  <Rating value={Number(data.rating)} />
-                </p>
+                <div className="flex items-center mt-2 md:mt-0">
+                  <Rating id={data.id} value={Number(data.rating)} />
+                </div>
               )}
             </div>
           )}
