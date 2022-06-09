@@ -34,8 +34,10 @@ export default class Request {
     this.filter = null;
   }
 
-  set facets(facets) {
-    this.count = facets.filter(({ buckets }) => is.empty(buckets)).map(({ field }) => field);
+  set facets(facets: any) {
+    this.count = facets
+      .filter(({ buckets }: { buckets: any }) => is.empty(buckets))
+      .map(({ field }: { field: any }) => field);
   }
 
   get countFilters() {
@@ -55,9 +57,9 @@ export default class Request {
         const array = key === 'imageTags';
 
         return values
-          .map((v) => (array ? `${key} ~ ['${v}']` : `${key} = '${v}'`))
-          .map((v) => escape(v))
-          .map((v) => (braces ? `(${v})` : v))
+          .map((v: any) => (array ? `${key} ~ ['${v}']` : `${key} = '${v}'`))
+          .map((v: any) => escape(v))
+          .map((v: any) => (braces ? `(${v})` : v))
           .join(' OR ');
       })
       .filter((f) => f !== null);

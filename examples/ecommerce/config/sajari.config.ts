@@ -61,7 +61,7 @@ const config: Record<string, any> = {
     rating: 'rating',
     price: 'price',
     freeShipping: 'free_shipping',
-    category: (data) => data.level4 || data.level3 || data.level2 || data.level1,
+    category: (data: any) => data.level4 || data.level3 || data.level2 || data.level1,
   },
 
   // Key / Value pairs to add to the request

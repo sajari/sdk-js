@@ -62,8 +62,8 @@ const defaults = {
 
 let time = 0;
 let totalResults = 0;
-let aggregates = null;
-let aggregateFilters = null;
+let aggregates: any[];
+let aggregateFilters: any[];
 
 const Home: NextPage = () => {
   const [state, setInternalState] = useState({
@@ -97,7 +97,7 @@ const Home: NextPage = () => {
   });
 
   const setState = useCallback((values: any, callback?: Function) => {
-    setInternalState((prev) => ({ ...prev, ...values }));
+    setInternalState((prev: any) => ({ ...prev, ...values }));
     if (callback) {
       setTimeout(() => callback());
     }
@@ -125,9 +125,11 @@ const Home: NextPage = () => {
     request.buckets = buckets;
     request.parameters = parameters;
     request.filter = Object.entries(filters)
-      .filter(([key]) => facets.find(({ field, buckets }) => field === key && !is.empty(buckets)))
+      .filter(([key]) =>
+        facets.find(({ field, buckets }: { field: string; buckets: any }) => field === key && !is.empty(buckets)),
+      )
       .reduce((_, [, values]) => {
-        return (values as any).map((v) => buckets[v]);
+        return (values as any).map((v: string) => buckets[v]);
       }, [])
       .map((v) => `(${v})`)
       .join(' OR ');
@@ -143,7 +145,7 @@ const Home: NextPage = () => {
 
     pipeline.current.main
       .search(request.serialize(), session.next(request.serialize()))
-      .then(([response]) => {
+      .then(([response]: any[]) => {
         let results = [];
         if (response) {
           aggregateFilters = response.aggregateFilters;
@@ -177,8 +179,7 @@ const Home: NextPage = () => {
           historyTimer.current = setTimeout(setBrowserHistory, delayHistory ? 1000 : 0);
         }
       })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
+      .catch((error: any) => {
         console.error('Query failed', JSON.stringify(request.serialize(), null, 2));
         setState({ aggregates, aggregateFilters, time, totalResults, results, init: false, error });
       });
@@ -212,13 +213,15 @@ const Home: NextPage = () => {
   const getSuggestions = (query: string) => {
     const request = new Request(query);
     const suggestionsKey = 'q.suggestions';
-    const getSuggestions = (values) => (values && values[suggestionsKey] ? values[suggestionsKey].split(',') : []);
+    const getSuggestions = (values: any) => (values && values[suggestionsKey] ? values[suggestionsKey].split(',') : []);
 
-    pipeline.current.autocomplete.search(request.serialize(), session.next(request.serialize())).then(([, values]) => {
-      setState({
-        suggestions: getSuggestions(values).slice(0, 10),
+    pipeline.current.autocomplete
+      .search(request.serialize(), session.next(request.serialize()))
+      .then(([, values]: any[]) => {
+        setState({
+          suggestions: getSuggestions(values).slice(0, 10),
+        });
       });
-    });
   };
 
   const handleInput = (value: string, isSelect = false) => {
@@ -348,7 +351,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const setFilter = ({ field, values }) => {
+  const setFilter = ({ field, values }: any) => {
     const { filters } = state;
 
     Object.assign(filters, {
@@ -364,7 +367,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const setPipeline = (event) => {
+  const setPipeline = (event: any) => {
     event.preventDefault();
 
     const formData = new FormData(event.target.form);
@@ -389,7 +392,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const setParameters = (params) =>
+  const setParameters = (params: any) =>
     setState(
       {
         parameters: params,
