@@ -1,13 +1,29 @@
-/* eslint-disable react/prop-types */
 import classnames from 'classnames';
 import { Fragment } from 'react';
+import { UseComboboxGetItemPropsOptions, UseComboboxGetMenuPropsOptions, GetPropsCommonOptions } from 'downshift';
 
 import is from 'utils/is';
 
-const Suggestions = ({ items = [], inputValue, highlightedIndex, open, getItemProps, getMenuProps, ...rest }) => {
+interface Props extends React.HTMLProps<HTMLUListElement> {
+  items: string[];
+  inputValue: string;
+  highlightedIndex: number;
+  getItemProps: (options: UseComboboxGetItemPropsOptions<string>) => any;
+  getMenuProps: (options?: UseComboboxGetMenuPropsOptions, otherOptions?: GetPropsCommonOptions) => any;
+}
+
+const Suggestions = ({
+  items = [],
+  inputValue,
+  highlightedIndex,
+  open,
+  getItemProps,
+  getMenuProps,
+  ...rest
+}: Props) => {
   // Highlight the suggested text rather than their input
   // https://baymard.com/blog/autocomplete-design#7-highlight-the-active-suggestion-desktop-specific
-  const highlighter = (item, selected) => {
+  const highlighter = (item: string, selected: boolean) => {
     if (item.startsWith(inputValue)) {
       return (
         <Fragment>
