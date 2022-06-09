@@ -3,8 +3,8 @@
   "description": "Search.io JavaScript SDK",
   "version": "2.10.5",
   "main": "dist/index.js",
-  "umd:main": "dist/sajarisdk.umd.production.js",
-  "module": "dist/sajarisdk.esm.production.js",
+  "umd:main": "dist/sajarisdk.umd.production.min.js",
+  "module": "dist/sajarisdk.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
