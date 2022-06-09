@@ -1,11 +1,11 @@
 {
   "name": "@sajari/sdk-js",
   "description": "Search.io JavaScript SDK",
-  "version": "2.10.6",
-  "main": "dist/index.js",
-  "umd:main": "dist/sajarisdk.umd.production.min.js",
-  "module": "dist/sajarisdk.esm.js",
-  "typings": "dist/index.d.ts",
+  "version": "2.10.5",
+  "main": "./dist/index.js",
+  "umd:main": "./dist/sajarisdk.umd.production.min.js",
+  "module": "./dist/sajarisdk.esm.js",
+  "typings": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
