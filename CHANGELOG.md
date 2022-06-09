@@ -1,5 +1,11 @@
 # @sajari/sdk-js
 
+## 2.10.7
+
+### Patch Changes
+
+- 75f0de4: chore: force bump to next version
+
 ## 2.10.6
 
 ### Patch Changes
