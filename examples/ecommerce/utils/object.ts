@@ -5,7 +5,7 @@ import is from './is';
  * @param {Object} target
  * @param {Object} sources
  */
-export function extend(target = {}, ...sources) {
+export function extend<T = any>(target: T = {} as T, ...sources: any[]): T {
   if (!sources.length) {
     return target;
   }
@@ -38,7 +38,7 @@ export function extend(target = {}, ...sources) {
  * @param {String} prop - Child property to sort on
  * @param {Array} pinned - Pin some items to the top (handy for checkbox lists where you may want to pin selected to the top)
  */
-export const sortObject = (obj, asc = true, prop = null, pinned = []) => {
+export const sortObject = <T = any>(obj: T, asc = true, prop = null, pinned: string[] = []) => {
   const hasProp = is.string(prop) && !is.empty(prop);
 
   return Object.keys(obj)
@@ -49,15 +49,15 @@ export const sortObject = (obj, asc = true, prop = null, pinned = []) => {
       return asc ? l - r : r - l;
     })
     .sort((a, b) => pinned.indexOf(b) - pinned.indexOf(a))
-    .reduce((out, key) => Object.assign(out, { [key]: obj[key] }), {});
+    .reduce((out, key) => Object.assign(out, { [key]: obj[key] }), {} as T);
 };
 
 /**
  * Ghetto clone of an object
  * @param {Object} obj
  */
-export function cloneDeep(obj) {
-  return JSON.parse(JSON.stringify(obj));
+export function cloneDeep<T = any>(obj: T) {
+  return JSON.parse(JSON.stringify(obj)) as T;
 }
 
 /**
@@ -66,12 +66,12 @@ export function cloneDeep(obj) {
  * @param {Number} startIndex
  * @param {Number} length
  */
-export function sliceObject(obj, startIndex, length) {
+export function sliceObject<T = any>(obj: T, startIndex: number, length: number) {
   if (!is.number(startIndex) || !is.number(length) || !is.object(obj)) {
     return obj;
   }
 
   return Object.keys(obj)
     .slice(startIndex, length)
-    .reduce((out, key) => Object.assign(out, { [key]: obj[key] }), {});
+    .reduce((out, key) => Object.assign(out, { [key]: obj[key] }), {} as T);
 }

@@ -5,7 +5,7 @@ import is from './is';
  * @param {String} input
  * @param {...String} args
  */
-export function format(input, ...args) {
+export function format<T extends Object>(input: T, ...args) {
   if (is.empty(input)) {
     return input;
   }
