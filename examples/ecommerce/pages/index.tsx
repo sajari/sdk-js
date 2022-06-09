@@ -19,7 +19,7 @@ import {
 } from '@sajari-ui/core';
 import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
-import { Fragment } from 'react';
+import { ChangeEvent, Fragment } from 'react';
 
 import env from 'config/sajari.config';
 import Checkbox from 'components/Checkbox';
@@ -60,7 +60,6 @@ const defaults = {
   query: '',
 };
 
-let results = null;
 let time = 0;
 let totalResults = 0;
 let aggregates = null;
@@ -114,6 +113,8 @@ const Home: NextPage = () => {
   const inputTimer = useRef<ReturnType<typeof window.setTimeout>>();
   const historyTimer = useRef<ReturnType<typeof window.setTimeout>>();
 
+  const setBrowserHistory = (replace: boolean) => setStateToUrl({ state, replace, defaults });
+
   const search = (setHistory = true, delayHistory = false) => {
     const { filters, page, pageSize, parameters, query, sort } = state;
     const request = new Request(query);
@@ -125,20 +126,20 @@ const Home: NextPage = () => {
     request.parameters = parameters;
     request.filter = Object.entries(filters)
       .filter(([key]) => facets.find(({ field, buckets }) => field === key && !is.empty(buckets)))
-      // @ts-ignore
-      .reduce((filter, [, values]) => values.map((v) => buckets[v]), [])
+      .reduce((_, [, values]) => {
+        return (values as any).map((v) => buckets[v]);
+      }, [])
       .map((v) => `(${v})`)
       .join(' OR ');
 
     if (sort) {
-      // @ts-ignore
       request.sort = sort;
     }
 
     // Hide the suggestions and error
-    // setState({
-    //   error: null,
-    // });
+    setState({
+      error: null,
+    });
 
     pipeline.current.main
       .search(request.serialize(), session.next(request.serialize()))
@@ -173,7 +174,7 @@ const Home: NextPage = () => {
         if (setHistory) {
           clearTimeout(historyTimer.current);
           // @ts-ignore
-          historyTimer.current = setTimeout(setHistory, delayHistory ? 1000 : 0);
+          historyTimer.current = setTimeout(setBrowserHistory, delayHistory ? 1000 : 0);
         }
       })
       .catch((error) => {
@@ -193,13 +194,11 @@ const Home: NextPage = () => {
     };
   }, []);
 
-  const listeners = (toggle) => {
+  const listeners = (toggle: boolean) => {
     const method = toggle ? 'addEventListener' : 'removeEventListener';
 
     window[method]('popstate', () => {}, false);
   };
-
-  const setHistory = (replace) => setStateToUrl({ state, replace, defaults });
 
   const updatePipeline = () => {
     const { pipelineName, pipelineVersion } = state;
@@ -210,7 +209,7 @@ const Home: NextPage = () => {
     };
   };
 
-  const getSuggestions = (query) => {
+  const getSuggestions = (query: string) => {
     const request = new Request(query);
     const suggestionsKey = 'q.suggestions';
     const getSuggestions = (values) => (values && values[suggestionsKey] ? values[suggestionsKey].split(',') : []);
@@ -222,7 +221,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const handleInput = (value, isSelect = false) => {
+  const handleInput = (value: string, isSelect = false) => {
     const { instant, query, suggest } = state;
     const isSearch = instant || isSelect;
 
@@ -260,7 +259,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -276,7 +275,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const toggleSuggest = (event) => {
+  const toggleSuggest = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
 
     setState({
@@ -285,7 +284,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const toggleInstant = (event) => {
+  const toggleInstant = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
 
     setState({
@@ -293,7 +292,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const toggleGrid = (toggle) => {
+  const toggleGrid = (toggle: boolean) => {
     const { grid } = state;
 
     if (toggle === grid) {
@@ -305,7 +304,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const setSorting = (event) => {
+  const setSorting = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
 
     setState(
@@ -316,7 +315,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const setPageSize = (event) => {
+  const setPageSize = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
 
     setState(
@@ -328,7 +327,7 @@ const Home: NextPage = () => {
     );
   };
 
-  const setPage = (page) => {
+  const setPage = (page: number) => {
     window.scrollTo({ top: 0 });
 
     setState(
@@ -441,7 +440,7 @@ const Home: NextPage = () => {
           'lg:w-80',
         )}
       >
-        <div className="h-full overflow-y-auto scrolling-touch bg-white lg:overflow-y-visible lg:h-auto lg:block lg:relative lg:sticky lg:top-20 lg:bg-transparent">
+        <div className="h-full overflow-y-auto scrolling-touch bg-white lg:overflow-y-visible lg:h-auto lg:block lg:sticky lg:top-20 lg:bg-transparent">
           <nav className="px-6 pt-6 overflow-y-auto text-base lg:text-sm lg:p-0 lg:pl-1 lg:pr-12 lg:pt-8 lg:h-(screen-20)">
             <div className="mb-6 lg:hidden">
               <h2 className="mb-2 text-xs font-medium text-gray-400 uppercase">Options</h2>
@@ -685,12 +684,11 @@ const Home: NextPage = () => {
               <Box display={['hidden', 'lg:flex']} alignItems="items-center" margin={['ml-3', 'md:ml-6']}>
                 {
                   // @ts-ignore
-                  <Checkbox id="suggest" label="Suggestions" onInput={toggleSuggest} checked={suggest} />
+                  <Checkbox id="suggest" label="Suggestions" onChange={toggleSuggest} checked={suggest} />
                 }
-
                 {
                   // @ts-ignore
-                  <Checkbox id="instant" label="Instant" margin="ml-4" onInput={toggleInstant} checked={instant} />
+                  <Checkbox id="instant" label="Instant" margin="ml-4" onChange={toggleInstant} checked={instant} />
                 }
               </Box>
             </Box>
