@@ -4,16 +4,16 @@ import { parseUrl } from './url';
 
 const { facets } = env;
 
-type Params = {
+interface Params {
   pageSize: number;
   page: number;
   query: string;
   sort?: string;
-};
+}
 
-type State = Params & {
+interface State extends Params {
   filters?: Record<string, string[]>;
-};
+}
 
 const params = {
   query: 'q',
