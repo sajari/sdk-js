@@ -15,15 +15,6 @@ const isImage = (input): input is HTMLImageElement => instanceOf(input, HTMLImag
 const isMedia = (input): input is HTMLMediaElement => instanceOf(input, HTMLMediaElement);
 const isEvent = (input): input is Event => instanceOf(input, Event);
 const isNullOrUndefined = (input): input is null | undefined => input === null || typeof input === 'undefined';
-const isBase64 = (input) =>
-  !isNullOrUndefined(input) &&
-  (() => {
-    try {
-      return btoa(atob(input)) === input;
-    } catch (err) {
-      return false;
-    }
-  })();
 
 const isEmpty = (input) =>
   isNullOrUndefined(input) ||
@@ -53,5 +44,4 @@ export default {
   empty: isEmpty,
   image: isImage,
   media: isMedia,
-  base64: isBase64,
 };
