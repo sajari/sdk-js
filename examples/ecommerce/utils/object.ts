@@ -5,7 +5,7 @@ import is from './is';
  * @param {Object} target
  * @param {Object} sources
  */
-export function extend<T = any>(target: T = {} as T, ...sources: any[]): T {
+export function extend<T extends Record<any, any>>(target: T = {} as T, ...sources: any[]): T {
   if (!sources.length) {
     return target;
   }
@@ -38,7 +38,12 @@ export function extend<T = any>(target: T = {} as T, ...sources: any[]): T {
  * @param {String} prop - Child property to sort on
  * @param {Array} pinned - Pin some items to the top (handy for checkbox lists where you may want to pin selected to the top)
  */
-export const sortObject = <T = any>(obj: T, asc = true, prop = null, pinned: string[] = []) => {
+export const sortObject = <T extends Record<any, any>>(
+  obj: T,
+  asc = true,
+  prop: string | null = null,
+  pinned: string[] = [],
+) => {
   const hasProp = is.string(prop) && !is.empty(prop);
 
   return Object.keys(obj)
@@ -56,7 +61,7 @@ export const sortObject = <T = any>(obj: T, asc = true, prop = null, pinned: str
  * Ghetto clone of an object
  * @param {Object} obj
  */
-export function cloneDeep<T = any>(obj: T) {
+export function cloneDeep<T extends Record<any, any>>(obj: T) {
   return JSON.parse(JSON.stringify(obj)) as T;
 }
 
@@ -66,7 +71,7 @@ export function cloneDeep<T = any>(obj: T) {
  * @param {Number} startIndex
  * @param {Number} length
  */
-export function sliceObject<T = any>(obj: T, startIndex: number, length: number) {
+export function sliceObject<T extends Record<any, any>>(obj: T, startIndex: number, length: number) {
   if (!is.number(startIndex) || !is.number(length) || !is.object(obj)) {
     return obj;
   }

@@ -1,11 +1,20 @@
 /* eslint-disable react/prop-types */
+import { Aggregates, CountAggregate } from '@sajari/sdk-js';
 import { Fragment } from 'react';
 
 import is from '../../utils/is';
-import Filter from './Filter';
-import filterTypes from './types';
+import Filter, { FilterProps } from './Filter';
+import filterTypes, { Facet } from './types';
 
-const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => {
+interface FiltersProps extends FilterProps {
+  aggregates: Aggregates;
+  aggregateFilters: Record<string, CountAggregate>;
+  facets: Facet[];
+  filters: Record<string, string[]>;
+}
+
+const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }: FiltersProps) => {
+  console.log(aggregateFilters, facets, filters);
   if (is.empty(facets)) {
     return null;
   }
@@ -46,7 +55,7 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
               Object.assign(obj, {
                 [title]: {
                   value: type,
-                  count: aggregates.buckets.count[type],
+                  count: (aggregates.buckets as any).count[type],
                 },
               }),
             {},
@@ -55,6 +64,7 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
 
         return (
           <Filter
+            {...rest}
             field={field}
             title={title}
             type={type}
@@ -62,7 +72,6 @@ const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }) => 
             values={values}
             sort={sort}
             transform={transform}
-            {...rest}
           />
         );
       })}

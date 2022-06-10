@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 
 import { Icon, Label } from '@sajari-ui/core';
-import { Fragment } from 'react';
+import { ChangeEventHandler, Fragment } from 'react';
 
 import is from 'utils/is';
 import { toKebabCase } from 'utils/string';
-import Header from './Header';
+import Header, { HeaderProps } from './Header';
+import { FilterItems, FitterItem } from './types';
 
-const allowedColors = {
+const allowedColors: Record<string, string> = {
   White: 'bg-white border-gray-300 text-gray-600 outline-shadow',
   Silver: 'bg-gray-300 border-gray-400 text-gray-700',
   Black: 'bg-black border-black text-white',
@@ -30,15 +31,17 @@ const allowedColors = {
   Violet: 'bg-purple-600 border-purple-700 text-purple-100',
 };
 
-const sortColors = (raw) =>
+type ColorItems = Record<string, FitterItem & { className: string }>;
+
+const sortColors = (raw: ColorItems) =>
   Object.keys(allowedColors).reduce((obj, key) => {
     if (raw[key]) {
       obj[key] = raw[key];
     }
     return obj;
-  }, {});
+  }, {} as ColorItems);
 
-const filterColors = (items) => {
+const filterColors = (items: FilterItems) => {
   const keys = Object.keys(allowedColors);
 
   return sortColors(
@@ -52,12 +55,20 @@ const filterColors = (items) => {
               className: allowedColors[key],
             },
           }),
-        {},
+        {} as ColorItems,
       ),
   );
 };
 
-const ColorSwatch = ({ values, items, title, type, onChange, onReset }) => {
+export interface ColorSwatchProps extends Pick<HeaderProps, 'onReset'> {
+  values: string[];
+  items: FilterItems;
+  title: string;
+  type: number;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+}
+
+const ColorSwatch = ({ values, items, title, type, onChange, onReset }: ColorSwatchProps) => {
   if (!items || !Object.keys(items).length) {
     return null;
   }
