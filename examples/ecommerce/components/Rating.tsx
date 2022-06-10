@@ -1,4 +1,4 @@
-import { Box, Icon } from '@sajari-ui/core';
+import { Icon } from '@sajari-ui/core';
 
 interface Props {
   id: string;
@@ -10,7 +10,7 @@ const Rating = ({ value, max = 6, id }: Props) => {
   const remainder = max - value;
 
   return (
-    <Box display="inline-flex" alignItems="items-center" space="space-x-1">
+    <div className="inline-flex items-center space-x-1">
       {Array.from(Array(value)).map((_, i) => (
         <Icon key={`rating-active-${i}-${id}`} name="small-star" textColor="text-orange-400" />
       ))}
@@ -18,7 +18,7 @@ const Rating = ({ value, max = 6, id }: Props) => {
         <Icon key={`rating-${i}-{id}`} name="small-star" textColor="text-gray-300" />
       ))}
       <span className="sr-only">{`${value} stars`}</span>
-    </Box>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Aggregates, CountAggregate } from '@sajari/sdk-js';
 import { Fragment } from 'react';
 
@@ -10,11 +9,13 @@ interface FiltersProps extends FilterProps {
   aggregates: Aggregates;
   aggregateFilters: Record<string, CountAggregate>;
   facets: Facet[];
-  filters: Record<string, string[]>;
+  filters: Record<string, any>;
+  buckets: any;
+  onChange: (values: any) => void;
+  query: string;
 }
 
 const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }: FiltersProps) => {
-  console.log(aggregateFilters, facets, filters);
   if (is.empty(facets)) {
     return null;
   }

@@ -2,7 +2,6 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 
 import {
-  Box,
   Button,
   ButtonGroup,
   Flex,
@@ -16,7 +15,7 @@ import {
   TextInput,
   VisuallyHidden,
 } from '@sajari-ui/core';
-import { Client, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
+import { Aggregates, Client, CountAggregate, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { ChangeEvent, Fragment } from 'react';
 
@@ -34,6 +33,7 @@ import is from 'utils/is';
 import { formatNumber } from 'utils/number';
 import { toSentenceCase } from 'utils/string';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Facet } from 'components/Filters/types';
 
 const {
   projectId,
@@ -63,8 +63,8 @@ interface SearchState {
   filters: Record<string, any>;
   init: boolean;
   results: null | any[];
-  aggregates: null | any[];
-  aggregateFilters: null | any[];
+  aggregates: Aggregates | null;
+  aggregateFilters: Record<string, CountAggregate> | null;
   totalResults: number;
   time: number;
   page: number;
@@ -463,7 +463,6 @@ const Home: NextPage = () => {
           <nav className="px-6 pt-6 overflow-y-auto text-base lg:text-sm lg:p-0 lg:pl-1 lg:pr-12 lg:pt-8 lg:h-(screen-20)">
             <div className="mb-6 lg:hidden">
               <h2 className="mb-2 text-xs font-medium text-gray-400 uppercase">Options</h2>
-
               {
                 // @ts-ignore
                 <Checkbox id="suggest-sm" label="Suggestions" onInput={toggleSuggest} checked={suggest} />
@@ -474,21 +473,23 @@ const Home: NextPage = () => {
               }
             </div>
 
-            <Filters
-              facets={facets}
-              buckets={buckets}
-              aggregates={aggregates}
-              aggregateFilters={aggregateFilters}
-              filters={filters}
-              query={query}
-              onChange={setFilter}
-            />
+            {aggregates && aggregateFilters && (
+              // @ts-ignore
+              <Filters
+                facets={facets as Facet[]}
+                buckets={buckets}
+                aggregates={aggregates}
+                aggregateFilters={aggregateFilters}
+                filters={filters}
+                query={query}
+                onChange={setFilter}
+              />
+            )}
 
             <Parameters parameters={parameters} onChange={setParameters} margin="mb-6" />
 
-            <Box
-              as="form"
-              margin="mb-6"
+            <form
+              className="mb-6"
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   setPipeline(event);
@@ -499,8 +500,8 @@ const Home: NextPage = () => {
                 Pipeline
               </Heading>
 
-              <Flex space="space-x-2">
-                <Box flex="flex-1">
+              <div className="flex space-x-2">
+                <div className="flex-1">
                   <Label htmlFor="pipeline-name" visuallyHidden>
                     Name
                   </Label>
@@ -511,9 +512,9 @@ const Home: NextPage = () => {
                     placeholder="Name"
                     fontSize="text-sm"
                   />
-                </Box>
+                </div>
 
-                <Box flex="flex-1">
+                <div className="flex-1">
                   <Label htmlFor="pipeline-version" visuallyHidden>
                     Version
                   </Label>
@@ -524,9 +525,9 @@ const Home: NextPage = () => {
                     placeholder="Version"
                     fontSize="text-sm"
                   />
-                </Box>
-              </Flex>
-            </Box>
+                </div>
+              </div>
+            </form>
           </nav>
         </div>
       </aside>
@@ -538,7 +539,7 @@ const Home: NextPage = () => {
 
     return (
       <Fragment>
-        <Flex alignItems="items-center" justifyContent="justify-end" margin={['mb-8', 'lg:mb-6']}>
+        <div className="flex items-center justify-end mb-8 lg:mb-6">
           <Text dangerouslySetClassName="text-sm text-gray-600">
             {`${formatNumber(totalResults)} results`}
             {
@@ -547,8 +548,8 @@ const Home: NextPage = () => {
             }
           </Text>
 
-          <Flex flex="flex-1" alignItems="items-center" justifyContent="justify-end" padding="pl-4" margin="ml-auto">
-            <Box display="lg:flex" alignItems="lg:items-center">
+          <div className="flex flex-1 items-center justify-end pl-4 ml-auto">
+            <div className="lg:flex lg:items-center">
               <Label htmlFor="sorting" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
                 Sort
               </Label>
@@ -567,9 +568,9 @@ const Home: NextPage = () => {
                 <option value="popularity">Popularity</option>
                 <option value="bestSellingRank">Best Seller</option>
               </Select>
-            </Box>
+            </div>
 
-            <Box display={['hidden', 'lg:flex']} margin="ml-6">
+            <div className="ml-6 hidden lg:flex">
               <Label htmlFor="page-size" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
                 Size
               </Label>
@@ -585,12 +586,10 @@ const Home: NextPage = () => {
                 <option value="50">50</option>
                 <option value="100">100</option>
               </Select>
-            </Box>
+            </div>
 
-            <Box display={['hidden', 'lg:flex']} alignItems="items-center" margin="ml-6">
-              <Box as="span" fontSize="text-sm" textColor="text-gray-400" margin="mr-2">
-                View
-              </Box>
+            <div className="hidden lg:flex items-center ml-6">
+              <span className="text-gray-400 mr-2 text-sm">View</span>
 
               <ButtonGroup attached>
                 <IconButton
@@ -611,19 +610,13 @@ const Home: NextPage = () => {
                   onClick={() => toggleGrid(false)}
                 />
               </ButtonGroup>
-            </Box>
-          </Flex>
-        </Flex>
+            </div>
+          </div>
+        </div>
 
         <Results results={results || []} grid={grid} />
 
-        <Box
-          position="sticky"
-          offset="bottom-0"
-          padding={['p-4', 'pt-2', 'lg:p-6']}
-          margin={['-mx-8', 'lg:mx-0']}
-          textAlign="text-center"
-        >
+        <div className="sticky bottom-0 p-4 pt-2 lg:p-6 -mx-8 lg:mx-0 text-center">
           <Pagination
             position="relative"
             zIndex="z-10"
@@ -632,16 +625,11 @@ const Home: NextPage = () => {
             page={page}
             onChange={setPage}
           />
-          <Box
-            position="absolute"
-            offset="inset-0"
-            zIndex="z-0"
-            opacity="opacity-50"
-            backgroundImage="bg-gradient-to-b"
-            gradientColorStops={['from-transparent', 'to-white']}
+          <div
+            className="absolute inset-0 z-0 opacity-50 bg-gradient-to-b from-transparent to-white"
             aria-hidden="true"
           />
-        </Box>
+        </div>
       </Fragment>
     );
   };
@@ -655,34 +643,14 @@ const Home: NextPage = () => {
         <title>Ecommerce demo | search.io</title>
         <link rel="icon" href="/favicon.png" />
       </Head>
-      <Flex
-        alignItems="items-center"
-        boxSizing="box-content"
-        position="fixed"
-        offset={['inset-x-0', 'top-0']}
-        zIndex="z-50"
-        height="h-16"
-        padding="py-2"
-        borderWidth="border-b"
-        borderColor="border-gray-200"
-        boxShadow="shadow-sm"
-        backgroundColor="bg-gray-50"
-        backgroundOpacity="bg-opacity-75"
-        backdropFilter="backdrop-blur-1"
-      >
-        <Box
-          position="relative"
-          width="w-full"
-          maxWidth="max-w-screen-xl"
-          margin="mx-auto"
-          padding={['px-4', 'lg:px-6']}
-        >
-          <Flex alignItems="items-center">
+      <div className="flex items-center box-content fixed inset-x-0 top-0 z-50 h-16 py-2 border-b border-gray-200 shadow-sm bg-gray-50 bg-opacity-75 backdrop-blur-1">
+        <div className="relative w-full max-w-screen-xl mx-auto px-4 lg:px-6">
+          <div className="flex items-center">
             <Logomark size="md" margin={['mr-4', 'lg:mr-6']} />
 
             <VisuallyHidden as="h1">Search.io Ecommerce Demo</VisuallyHidden>
 
-            <Box as="form" onSubmit={handleSubmit} flex="flex-1" display="lg:flex" alignItems="lg:items-center">
+            <form onSubmit={handleSubmit} className="flex-1 lg:flex lg:items-center">
               <Combobox
                 id="q"
                 name="q"
@@ -700,7 +668,7 @@ const Home: NextPage = () => {
                 </Button>
               )}
 
-              <Box display={['hidden', 'lg:flex']} alignItems="items-center" margin={['ml-3', 'md:ml-6']}>
+              <div className="hidden lg:flex items-center ml-3 md:ml-6">
                 {
                   // @ts-ignore
                   <Checkbox id="suggest" label="Suggestions" onChange={toggleSuggest} checked={suggest} />
@@ -709,29 +677,21 @@ const Home: NextPage = () => {
                   // @ts-ignore
                   <Checkbox id="instant" label="Instant" margin="ml-4" onChange={toggleInstant} checked={instant} />
                 }
-              </Box>
-            </Box>
+              </div>
+            </form>
 
             <MenuToggle open={menuOpen} onClick={toggleMenu} />
-          </Flex>
-        </Box>
-      </Flex>
+          </div>
+        </div>
+      </div>
 
-      <Box width="w-full" maxWidth="max-w-screen-xl" padding="px-6" margin="mx-auto">
-        <Box display="lg:flex">
+      <div className="w-full max-w-screen-xl px-6 mx-auto">
+        <div className="lg:flex">
           {!init && renderSidebar()}
 
-          <Box
-            as="main"
-            width="w-full"
-            minHeight="min-h-screen"
-            padding={['pt-24', 'lg:pl-10', 'lg:pt-28']}
-            maxHeight="lg:max-h-full"
-            overflow="lg:overflow-visible"
-            flex="lg:flex-1"
-          >
+          <main className="w-full min-h-screen pt-24 lg:pl-10 lg:pt-28 lg:max-h-full lg:flex-1 lg:overflow-visible">
             {!hasResults && !error && !init && (
-              <Box textAlign="text-center">
+              <div className="text-center">
                 {
                   // @ts-ignore
                   <Message title="No results" message={`Sorry, we couldn't find any matches for '${query}'.`} />
@@ -742,15 +702,15 @@ const Home: NextPage = () => {
                     Clear filters
                   </Button>
                 )}
-              </Box>
+              </div>
             )}
 
             {error && <Message type="error" title="Error" message={toSentenceCase(error.message)} />}
 
             {hasResults && renderResults()}
-          </Box>
-        </Box>
-      </Box>
+          </main>
+        </div>
+      </div>
     </Fragment>
   );
 };
