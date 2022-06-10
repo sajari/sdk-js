@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 
 import {
   Box,
@@ -36,11 +35,6 @@ import { formatNumber } from 'utils/number';
 import { toSentenceCase } from 'utils/string';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-/* TODO:
-- Use context for search term and filtering etc
-- Use hooks for shared logic
-*/
-
 const {
   projectId,
   collectionId,
@@ -65,8 +59,31 @@ let totalResults = 0;
 let aggregates: any[];
 let aggregateFilters: any[];
 
+interface SearchState {
+  filters: Record<string, any>;
+  init: boolean;
+  results: null | any[];
+  aggregates: null | any[];
+  aggregateFilters: null | any[];
+  totalResults: number;
+  time: number;
+  page: number;
+  pageSize: number;
+  query: string;
+  sort: any;
+  error: any;
+  instant: boolean;
+  grid: boolean;
+  suggest: boolean;
+  suggestions: any[];
+  menuOpen: boolean;
+  pipelineName: string;
+  pipelineVersion: string;
+  parameters: any;
+}
+
 const Home: NextPage = () => {
-  const [state, setInternalState] = useState({
+  const [state, setInternalState] = useState<SearchState>({
     ...defaults,
     filters: {},
     init: true,
@@ -111,7 +128,7 @@ const Home: NextPage = () => {
   const pipeline = useRef<any>();
   const renderTimer = useRef<ReturnType<typeof window.setTimeout>>();
   const inputTimer = useRef<ReturnType<typeof window.setTimeout>>();
-  const historyTimer = useRef<ReturnType<typeof window.setTimeout>>();
+  const historyTimer = useRef<number>();
 
   const setBrowserHistory = (replace: boolean) => setStateToUrl({ state, replace, defaults });
 
@@ -175,7 +192,6 @@ const Home: NextPage = () => {
 
         if (setHistory) {
           clearTimeout(historyTimer.current);
-          // @ts-ignore
           historyTimer.current = setTimeout(setBrowserHistory, delayHistory ? 1000 : 0);
         }
       })
@@ -599,7 +615,7 @@ const Home: NextPage = () => {
           </Flex>
         </Flex>
 
-        <Results results={results} grid={grid} />
+        <Results results={results || []} grid={grid} />
 
         <Box
           position="sticky"

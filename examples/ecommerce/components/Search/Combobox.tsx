@@ -7,7 +7,7 @@ import Suggestions from './Suggestions';
 interface Props extends Omit<SearchInputProps, 'onInput'> {
   instant: boolean;
   suggest: boolean;
-  items: string[];
+  items?: string[];
   value: string;
   onInput: (value: string, isSelect?: boolean) => void;
   autofocus: boolean;
