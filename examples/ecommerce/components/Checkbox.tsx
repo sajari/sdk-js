@@ -1,8 +1,14 @@
 /* eslint-disable react/prop-types */
 
-import { Flex, Label, Text } from '@sajari-ui/core';
+import { Flex, FlexProps, Label, Text } from '@sajari-ui/core';
+import { ReactNode } from 'react';
 
-const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest }) => {
+export interface CheckboxProps extends Omit<FlexProps, 'label'> {
+  count: number | string;
+  label: ReactNode;
+}
+
+const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest }: CheckboxProps) => {
   return (
     <Flex alignItems="items-start" fontSize="text-sm" {...rest}>
       <Flex alignItems="items-center">
@@ -18,12 +24,12 @@ const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest
         />
       </Flex>
 
-      <Label htmlFor={id} display="inline-flex" alignItems="items-center" margin="ml-2" textColor="text-gray-700">
+      <Label htmlFor={id ?? ''} display="inline-flex" alignItems="items-center" margin="ml-2" textColor="text-gray-700">
         {label}
       </Label>
 
       {count && (
-        <Text as="span" margin="ml-auto" fontSize="text-xs" textColor="text-gray-400">
+        <Text as={'span' as any} margin="ml-auto" fontSize="text-xs" textColor="text-gray-400">
           {count}
         </Text>
       )}

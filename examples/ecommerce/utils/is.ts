@@ -2,26 +2,26 @@
 // Type checking
 // ==========================================================================
 
-const getConstructor = (input) => (input !== null && typeof input !== 'undefined' ? input.constructor : null);
-const instanceOf = (input, constructor) => Boolean(input && constructor && input instanceof constructor);
-const isObject = (input): input is Object => getConstructor(input) === Object;
-const isNumber = (input): input is Number => getConstructor(input) === Number && !Number.isNaN(input);
-const isString = (input): input is String => getConstructor(input) === String;
-const isBoolean = (input): input is Boolean => getConstructor(input) === Boolean;
-const isFunction = (input): input is Function => getConstructor(input) === Function;
-const isArray = <T = any>(input): input is T[] => Array.isArray(input);
-const isElement = (input): input is Element => instanceOf(input, Element);
-const isImage = (input): input is HTMLImageElement => instanceOf(input, HTMLImageElement);
-const isMedia = (input): input is HTMLMediaElement => instanceOf(input, HTMLMediaElement);
-const isEvent = (input): input is Event => instanceOf(input, Event);
-const isNullOrUndefined = (input): input is null | undefined => input === null || typeof input === 'undefined';
+const getConstructor = (input: any) => (input !== null && typeof input !== 'undefined' ? input.constructor : null);
+const instanceOf = (input: unknown, constructor: any) => Boolean(input && constructor && input instanceof constructor);
+const isObject = (input: unknown): input is Object => getConstructor(input) === Object;
+const isNumber = (input: unknown): input is Number => getConstructor(input) === Number && !Number.isNaN(input);
+const isString = (input: unknown): input is String => getConstructor(input) === String;
+const isBoolean = (input: unknown): input is Boolean => getConstructor(input) === Boolean;
+const isFunction = (input: unknown): input is Function => getConstructor(input) === Function;
+const isArray = <T = any>(input: unknown): input is T[] => Array.isArray(input);
+const isElement = (input: unknown): input is Element => instanceOf(input, Element);
+const isImage = (input: unknown): input is HTMLImageElement => instanceOf(input, HTMLImageElement);
+const isMedia = (input: unknown): input is HTMLMediaElement => instanceOf(input, HTMLMediaElement);
+const isEvent = (input: unknown): input is Event => instanceOf(input, Event);
+const isNullOrUndefined = (input: unknown): input is null | undefined => input === null || typeof input === 'undefined';
 
-const isEmpty = (input) =>
+const isEmpty = (input: unknown) =>
   isNullOrUndefined(input) ||
   ((isString(input) || isArray(input)) && !input.length) ||
   (isObject(input) && !Object.keys(input).length);
 
-const isUrl = (input) => {
+const isUrl = (input: string) => {
   try {
     const url = new URL(input);
     return !isEmpty(url.hostname);

@@ -2,12 +2,25 @@
 import { Component } from 'react';
 
 import { arrayEquals } from '../../utils/array';
-import ColorSwatch from './ColorSwatch';
-import List from './List';
-import filterTypes from './types';
+import ColorSwatch, { ColorSwatchProps } from './ColorSwatch';
+import List, { ListProps } from './List';
+import filterTypes, { FilterItems } from './types';
 
-export default class Filter extends Component {
-  constructor(props) {
+export interface FilterProps extends Pick<ListProps, 'transform' | 'sort' | 'query'> {
+  values: string[];
+  items: FilterItems;
+  title: string;
+  type: number;
+  field: string;
+  onChange: (value: { field: string; values: string[] }) => void;
+}
+
+interface FilterState {
+  values: string[];
+}
+
+export default class Filter extends Component<FilterProps, FilterState> {
+  constructor(props: FilterProps) {
     super(props);
 
     const { values = [] } = props;
@@ -17,11 +30,11 @@ export default class Filter extends Component {
     };
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
+  static getDerivedStateFromProps(nextProps: FilterProps, prevState: FilterState) {
     return arrayEquals(nextProps.values, prevState.values) ? {} : { values: nextProps.values || [] };
   }
 
-  onChange = (event) => {
+  onChange: ColorSwatchProps['onChange'] = (event) => {
     const { field, onChange = () => {} } = this.props;
     const { values } = this.state;
     const { checked, value } = event.target;
@@ -38,7 +51,7 @@ export default class Filter extends Component {
 
   onReset = () => {
     const { field, onChange = () => {} } = this.props;
-    const values = [];
+    const values: string[] = [];
     this.setState({ values }, () => onChange({ field, values }));
   };
 
@@ -58,7 +71,6 @@ export default class Filter extends Component {
             values={values}
             items={items}
             type={type}
-            query={query}
             onChange={this.onChange}
             onReset={this.onReset}
           />

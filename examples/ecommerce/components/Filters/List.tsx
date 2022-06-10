@@ -6,12 +6,12 @@ import is from 'utils/is';
 import { formatNumber } from 'utils/number';
 import { sliceObject, sortObject } from 'utils/object';
 import { toKebabCase, transformCase } from 'utils/string';
-import Checkbox from '../Checkbox';
+import Checkbox, { CheckboxProps } from '../Checkbox';
 import Rating from '../Rating';
-import Header from './Header';
-import filterTypes from './types';
+import Header, { HeaderProps } from './Header';
+import filterTypes, { FilterItems } from './types';
 
-const formatLabel = (label, type, transform) => {
+const formatLabel = (label: string, type: number, transform?: string) => {
   switch (type) {
     case filterTypes.price:
       if (label.includes(' - ')) {
@@ -37,8 +37,23 @@ const formatLabel = (label, type, transform) => {
   }
 };
 
-export default class List extends Component {
-  constructor(props) {
+export interface ListProps extends Pick<CheckboxProps, 'onChange'>, Pick<HeaderProps, 'onReset'> {
+  query: string;
+  items: FilterItems;
+  values: string[];
+  sort?: boolean;
+  title: string;
+  transform?: string;
+  type: number;
+}
+
+interface ListState {
+  query: string;
+  expanded: boolean;
+}
+
+export default class List extends Component<ListProps, ListState> {
+  constructor(props: ListProps) {
     super(props);
 
     const { query } = props;
@@ -49,7 +64,7 @@ export default class List extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: ListProps) {
     const { query } = this.state;
 
     if (nextProps.query !== query) {
