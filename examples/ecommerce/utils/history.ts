@@ -3,6 +3,18 @@ import is from './is';
 import { parseUrl } from './url';
 
 const { facets } = env;
+
+interface Params {
+  pageSize: number;
+  page: number;
+  query: string;
+  sort?: string;
+}
+
+interface State extends Params {
+  filters?: Record<string, string[]>;
+}
+
 const params = {
   query: 'q',
   page: 'p',
@@ -10,30 +22,35 @@ const params = {
   sort: 's',
 };
 const arraySeparator = '|';
-let win = {};
+let win: typeof window | undefined = undefined;
 
 if (typeof window !== 'undefined') {
   win = window;
 }
 
-const { history, location } = win;
+const { history, location } = win ?? {};
 const historySupported = history && history.pushState;
 
-export function parseStateFromUrl({ defaults }) {
+export function parseStateFromUrl({ defaults }: { defaults: Params }) {
   if (!location) {
-    return {};
+    return { ...defaults } as State;
   }
 
   const url = parseUrl(location.href);
+
+  if (!url) {
+    return { ...defaults } as State;
+  }
+
   const state = Object.entries({ ...params, ...facets.map((f) => f.field) })
-    .filter(([, param]) => url.searchParams.has(param))
+    .filter(([, param]) => url.searchParams.has(param.toString()))
     .reduce(
       (state, [prop, param]) => {
-        const value = url.searchParams.get(param);
+        const value = url.searchParams.get(param.toString());
 
         // Filters are flattened into the URL
-        if (facets.some((f) => f.field === param)) {
-          state.filters[param] = value.split(arraySeparator);
+        if (state.filters && facets.some((f) => f.field === param)) {
+          state.filters[param.toString()] = value?.split(arraySeparator) ?? [];
           return state;
         }
 
@@ -49,7 +66,7 @@ export function parseStateFromUrl({ defaults }) {
 
         return state;
       },
-      { ...defaults, filters: {} },
+      { ...defaults, filters: {} } as State,
     );
 
   return state;
@@ -61,6 +78,11 @@ export function setStateToUrl({ state, replace, defaults }) {
   }
 
   const url = parseUrl(location.href);
+
+  if (!url) {
+    return;
+  }
+
   const { filters, page, pageSize, query, sort } = state;
   const data = {
     query,
@@ -82,5 +104,5 @@ export function setStateToUrl({ state, replace, defaults }) {
   });
 
   // Update state
-  history[replace ? 'replaceState' : 'pushState'](null, null, `${url.pathname}${url.search}${url.hash}`);
+  history[replace ? 'replaceState' : 'pushState'](null, null as any, `${url.pathname}${url.search}${url.hash}`);
 }
