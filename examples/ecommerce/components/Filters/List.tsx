@@ -1,5 +1,5 @@
 import { Button } from '@sajari-ui/core';
-import { Component, Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import is from 'utils/is';
 import { formatNumber } from 'utils/number';
@@ -51,93 +51,81 @@ interface ListState {
   expanded: boolean;
 }
 
-export default class List extends Component<ListProps, ListState> {
-  constructor(props: ListProps) {
-    super(props);
+export default function List(props: ListProps) {
+  const { query } = props;
+  const [state, setState] = useState({
+    expanded: false,
+    query,
+  });
 
-    const { query } = props;
+  useEffect(() => {
+    setState((prev) => ({ ...prev, expanded: false }));
+  }, [query]);
 
-    this.state = {
-      expanded: false,
-      query,
-    };
-  }
-
-  componentWillReceiveProps(nextProps: ListProps) {
-    const { query } = this.state;
-
-    if (nextProps.query !== query) {
-      this.setState({ expanded: false });
-    }
-  }
-
-  toggleExpanded = () => {
-    const { expanded } = this.state;
-
-    this.setState({
-      expanded: !expanded,
-    });
+  const toggleExpanded = () => {
+    setState((prev) => ({
+      ...prev,
+      expanded: !prev.expanded,
+    }));
   };
 
-  render() {
-    const { values, items, sort, title, transform, type, onChange, onReset } = this.props;
-    const { expanded } = this.state;
+  const { values, items, sort, title, transform, type, onChange, onReset } = props;
+  const { expanded } = state;
 
-    if (!items) {
-      return null;
-    }
-
-    const count = Object.keys(items).length;
-
-    if (count === 0) {
-      return null;
-    }
-
-    const limit = 8;
-    const slice = count > limit;
-    const sorted = sort ? sortObject(items, false, 'count', values) : items;
-    const sliced = slice && !expanded ? sliceObject(sorted, 0, 8) : sorted;
-    const filtered = !is.empty(values);
-
-    return (
-      <Fragment>
-        <Header title={title} filtered={filtered} onReset={onReset} />
-
-        <div id={`list-${type}`}>
-          {Object.entries(sliced).map(([name, { value, count }], index) => {
-            const id = `${type}-${toKebabCase(value)}-${index}`;
-            const checked = filtered && values.includes(value);
-
-            return (
-              <Checkbox
-                label={formatLabel(name, type, transform)}
-                id={id}
-                key={id}
-                value={value}
-                checked={checked}
-                count={formatNumber(count)}
-                className={type === filterTypes.rating ? 'items-center mb-1' : 'mb-1'}
-                onChange={onChange}
-              />
-            );
-          })}
-        </div>
-
-        {slice && (
-          <Button
-            type="button"
-            appearance="link"
-            spacing="none"
-            onClick={this.toggleExpanded}
-            aria-controls={`list-${type}`}
-            aria-expanded={expanded}
-            iconAfter={expanded ? 'small-chevron-up' : 'small-chevron-down'}
-            fontSize="text-sm"
-          >
-            {expanded ? `Show less` : `Show ${count - limit} more`}
-          </Button>
-        )}
-      </Fragment>
-    );
+  if (!items) {
+    return null;
   }
+
+  const count = Object.keys(items).length;
+
+  if (count === 0) {
+    return null;
+  }
+
+  const limit = 8;
+  const slice = count > limit;
+  const sorted = sort ? sortObject(items, false, 'count', values) : items;
+  const sliced = slice && !expanded ? sliceObject(sorted, 0, 8) : sorted;
+  const filtered = !is.empty(values);
+
+  return (
+    <Fragment>
+      <Header title={title} filtered={filtered} onReset={onReset} />
+
+      <div id={`list-${type}`}>
+        {Object.entries(sliced).map(([name, { value, count }], index) => {
+          const id = `${type}-${toKebabCase(value)}-${index}`;
+          const checked = filtered && values.includes(value);
+
+          return (
+            <Checkbox
+              label={formatLabel(name, type, transform)}
+              id={id}
+              key={id}
+              value={value}
+              checked={checked}
+              count={formatNumber(count)}
+              className={type === filterTypes.rating ? 'items-center mb-1' : 'mb-1'}
+              onChange={onChange}
+            />
+          );
+        })}
+      </div>
+
+      {slice && (
+        <Button
+          type="button"
+          appearance="link"
+          spacing="none"
+          onClick={toggleExpanded}
+          aria-controls={`list-${type}`}
+          aria-expanded={expanded}
+          iconAfter={expanded ? 'small-chevron-up' : 'small-chevron-down'}
+          fontSize="text-sm"
+        >
+          {expanded ? `Show less` : `Show ${count - limit} more`}
+        </Button>
+      )}
+    </Fragment>
+  );
 }

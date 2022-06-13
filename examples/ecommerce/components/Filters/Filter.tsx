@@ -1,6 +1,5 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 
-import { arrayEquals } from '../../utils/array';
 import ColorSwatch, { ColorSwatchProps } from './ColorSwatch';
 import List, { ListProps } from './List';
 import filterTypes, { FilterItems } from './types';
@@ -14,80 +13,57 @@ export interface FilterProps extends Pick<ListProps, 'transform' | 'sort' | 'que
   onChange: (value: { field: string; values: string[] }) => void;
 }
 
-interface FilterState {
-  values: string[];
-}
+export default function Filter(props: FilterProps) {
+  const [values, setValues] = useState(props.values || []);
 
-export default class Filter extends Component<FilterProps, FilterState> {
-  constructor(props: FilterProps) {
-    super(props);
+  useEffect(() => {
+    const { field, onChange = () => {} } = props;
+    onChange({ field, values });
+  }, [values, props.field]);
 
-    const { values = [] } = props;
-
-    this.state = {
-      values,
-    };
-  }
-
-  static getDerivedStateFromProps(nextProps: FilterProps, prevState: FilterState) {
-    return arrayEquals(nextProps.values, prevState.values) ? {} : { values: nextProps.values || [] };
-  }
-
-  onChange: ColorSwatchProps['onChange'] = (event) => {
-    const { field, onChange = () => {} } = this.props;
-    const { values } = this.state;
+  const onChange: ColorSwatchProps['onChange'] = (event) => {
+    const { field, onChange = () => {} } = props;
     const { checked, value } = event.target;
-    const index = values.indexOf(value);
+    const newValues = [...values];
+    const index = newValues.indexOf(value);
 
     if (checked && index === -1) {
-      values.push(value);
+      newValues.push(value);
     } else if (!checked && index > -1) {
-      values.splice(index, 1);
+      newValues.splice(index, 1);
     }
-
-    this.setState({ values }, () => onChange({ field, values }));
+    setValues(newValues);
+    onChange({ field, values: newValues });
   };
 
-  onReset = () => {
-    const { field, onChange = () => {} } = this.props;
-    const values: string[] = [];
-    this.setState({ values }, () => onChange({ field, values }));
+  const onReset = () => {
+    setValues([]);
   };
 
-  render() {
-    const { items, query, sort, title, transform, type } = this.props;
-    const { values } = this.state;
+  const { items, query, sort, title, transform, type } = props;
 
-    if (!items || !Object.keys(items).length) {
-      return null;
-    }
-
-    return (
-      <div className="mb-4">
-        {type === filterTypes.color && (
-          <ColorSwatch
-            title={title}
-            values={values}
-            items={items}
-            type={type}
-            onChange={this.onChange}
-            onReset={this.onReset}
-          />
-        )}
-        {type !== filterTypes.color && (
-          <List
-            title={title}
-            values={values}
-            items={items}
-            sort={sort}
-            type={type}
-            query={query}
-            transform={transform}
-            onChange={this.onChange}
-            onReset={this.onReset}
-          />
-        )}
-      </div>
-    );
+  if (!items || !Object.keys(items).length) {
+    return null;
   }
+
+  return (
+    <div className="mb-4">
+      {type === filterTypes.color && (
+        <ColorSwatch title={title} values={values} items={items} type={type} onChange={onChange} onReset={onReset} />
+      )}
+      {type !== filterTypes.color && (
+        <List
+          title={title}
+          values={values}
+          items={items}
+          sort={sort}
+          type={type}
+          query={query}
+          transform={transform}
+          onChange={onChange}
+          onReset={onReset}
+        />
+      )}
+    </div>
+  );
 }

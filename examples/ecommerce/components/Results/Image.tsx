@@ -2,7 +2,7 @@ import { Icon } from '@sajari-ui/core';
 import classnames from 'classnames';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import is from '../../utils/is';
+import is from 'utils/is';
 
 interface Props extends React.HTMLProps<HTMLImageElement> {}
 

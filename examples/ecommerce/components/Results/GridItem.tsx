@@ -1,7 +1,7 @@
 import { Icon } from '@sajari-ui/core';
 import { ResultItem } from '.';
 
-import { formatNumber } from '../../utils/number';
+import { formatNumber } from 'utils/number';
 import Rating from '../Rating';
 import Image from './Image';
 

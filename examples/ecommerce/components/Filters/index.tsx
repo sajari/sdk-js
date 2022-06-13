@@ -1,7 +1,7 @@
 import { Aggregates, CountAggregate } from '@sajari/sdk-js';
 import { Fragment } from 'react';
 
-import is from '../../utils/is';
+import is from 'utils/is';
 import Filter, { FilterProps } from './Filter';
 import filterTypes, { Facet } from './types';
 

@@ -6,7 +6,11 @@ import { formatNumber } from 'utils/number';
 import Rating from '../Rating';
 import Image from './Image';
 
-const ListItem = ({ data }: { data: ResultItem }) => (
+interface Props {
+  data: ResultItem;
+}
+
+const ListItem = ({ data }: Props) => (
   <article className="flex items-center w-full mb-8" key={data.id}>
     <a href={data.url} target="_blank" rel="noreferrer noopener" className="block w-24 h-24 mr-6">
       <Image src={data.image} alt={data.title} />

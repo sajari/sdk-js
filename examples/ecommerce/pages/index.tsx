@@ -55,8 +55,8 @@ const defaults = {
 
 let time = 0;
 let totalResults = 0;
-let aggregates: any[];
-let aggregateFilters: any[];
+let aggregates: Aggregates | null;
+let aggregateFilters: Record<string, CountAggregate> | null;
 
 interface SearchState {
   filters: Record<string, any>;
@@ -111,12 +111,10 @@ const Home: NextPage = () => {
     // Merge state from URL
     ...parseStateFromUrl({ defaults }),
   });
+  const { error, filters, init, instant, menuOpen, query, results, suggest, suggestions } = state;
 
-  const setState = useCallback((values: any, callback?: Function) => {
-    setInternalState((prev: any) => ({ ...prev, ...values }));
-    if (callback) {
-      setTimeout(() => callback());
-    }
+  const setState = useCallback((values: Partial<SearchState>) => {
+    setInternalState((prev) => ({ ...prev, ...values }));
   }, []);
 
   const client = useMemo(() => new Client(projectId, collectionId, endpoint), []);
@@ -263,32 +261,30 @@ const Home: NextPage = () => {
     }
 
     // Perform a full search
-    setState(
-      {
-        query: value,
-        page: 1,
-      },
-      () => {
-        clearTimeout(inputTimer.current);
-        inputTimer.current = setTimeout(() => search(true, instant), 30);
-      },
-    );
+    setState({
+      query: value,
+      page: 1,
+    });
   };
+
+  useEffect(() => {
+    if (state.instant) {
+      clearTimeout(inputTimer.current);
+      inputTimer.current = setTimeout(() => search(true, instant), 30);
+    } else {
+      search();
+    }
+  }, [state.query]);
 
   const handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);
 
-    setState(
-      {
-        query: formData.get('q'),
-        page: 1,
-      },
-      () => {
-        search(true);
-      },
-    );
+    setState({
+      query: formData.get('q') as string,
+      page: 1,
+    });
   };
 
   const toggleSuggest = (event: ChangeEvent<HTMLInputElement>) => {
@@ -324,79 +320,63 @@ const Home: NextPage = () => {
   const setSorting = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
 
-    setState(
-      {
-        sort: value,
-      },
-      () => search(),
-    );
+    setState({
+      sort: value,
+    });
   };
 
   const setPageSize = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
 
-    setState(
-      {
-        pageSize: Number(value),
-        page: 1,
-      },
-      () => search(),
-    );
+    setState({
+      pageSize: Number(value),
+      page: 1,
+    });
   };
 
   const setPage = (page: number) => {
     window.scrollTo({ top: 0 });
 
-    setState(
-      {
-        page,
-      },
-      () => search(),
-    );
+    setState({
+      page,
+    });
   };
 
   const clearFilters = () => {
-    setState(
-      {
-        filters: {},
-        page: 1,
-      },
-      () => search(),
-    );
+    setState({
+      filters: {},
+      page: 1,
+    });
   };
 
   const setFilter = ({ field, values }: any) => {
     const { filters } = state;
 
-    Object.assign(filters, {
-      [field]: values,
+    setState({
+      filters: { ...filters, [field]: values },
+      page: 1,
     });
-
-    setState(
-      {
-        filters,
-        page: 1,
-      },
-      () => search(),
-    );
   };
+
+  useEffect(() => {
+    search();
+  }, [state.filters, state.page, state.pageSize, state.sort, state.parameters]);
 
   const setPipeline = (event: any) => {
     event.preventDefault();
 
     const formData = new FormData(event.target.form);
 
-    setState(
-      {
-        pipelineName: formData.get('pipeline-name'),
-        pipelineVersion: formData.get('pipeline-version'),
-      },
-      () => {
-        updatePipeline();
-        search();
-      },
-    );
+    setState({
+      pipelineName: formData.get('pipeline-name') as string,
+      pipelineVersion: formData.get('pipeline-version') as string,
+    });
   };
+
+  useEffect(() => {
+    updatePipeline();
+    search();
+  }, [state.pipelineName, state.pipelineVersion]);
 
   const toggleMenu = () => {
     const { menuOpen } = state;
@@ -407,12 +387,9 @@ const Home: NextPage = () => {
   };
 
   const setParameters = (params: any) =>
-    setState(
-      {
-        parameters: params,
-      },
-      () => search(),
-    );
+    setState({
+      parameters: params,
+    });
 
   const renderSidebar = () => {
     const {
@@ -626,7 +603,6 @@ const Home: NextPage = () => {
     );
   };
 
-  const { error, filters, init, instant, menuOpen, query, results, suggest, suggestions } = state;
   const hasResults = results && results.length > 0;
 
   return (
