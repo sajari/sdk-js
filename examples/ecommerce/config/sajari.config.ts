@@ -3,13 +3,13 @@ import filterTypes from 'components/Filters/types';
 /**
  * Your environment configuration
  */
-const config: Record<string, any> = {
+const config = {
   // These details can be found in your console
   projectId: '1594153711901724220',
   collectionId: 'bestbuy',
   pipelineName: 'query',
-  endpint: 'https://jsonapi-us-valkyrie.sajari.net',
-  version: '',
+  endpoint: 'https://jsonapi-us-valkyrie.sajari.net',
+  pipelineVersion: '',
   // pipelineVersion: APP_PIPELINE_VERSION,
 
   // For production this can be undefined
@@ -67,7 +67,7 @@ const config: Record<string, any> = {
   },
 
   // Key / Value pairs to add to the request
-  paramaters: {
+  parameters: {
     // key: 'value',
   },
 };

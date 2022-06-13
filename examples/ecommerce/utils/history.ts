@@ -57,10 +57,12 @@ export function parseStateFromUrl({ defaults }: { defaults: Params }) {
         switch (param) {
           case params.page:
           case params.pageSize:
+            // @ts-ignore
             state[prop] = Number(value);
             break;
 
           default:
+            // @ts-ignore
             state[prop] = value;
         }
 
@@ -72,7 +74,7 @@ export function parseStateFromUrl({ defaults }: { defaults: Params }) {
   return state;
 }
 
-export function setStateToUrl({ state, replace, defaults }) {
+export function setStateToUrl({ state, replace, defaults }: any) {
   if (!historySupported || !location) {
     return;
   }
@@ -89,7 +91,7 @@ export function setStateToUrl({ state, replace, defaults }) {
     page,
     pageSize,
     sort,
-    ...facets.reduce((out, { field }) => Object.assign(out, { [field]: filters[field] }), {}),
+    ...facets.reduce((out: any, { field }: any) => Object.assign(out, { [field]: filters[field] }), {}),
   };
 
   Object.entries(data).forEach(([key, value]: [string, any]) => {

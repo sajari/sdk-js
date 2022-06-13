@@ -96,7 +96,7 @@ const Home: NextPage = () => {
     // Options
     sort: null,
     instant: true,
-    grid: display && display === 'grid',
+    grid: display === 'grid',
     suggest: false,
     suggestions: [],
     menuOpen: false,
@@ -141,11 +141,9 @@ const Home: NextPage = () => {
     request.buckets = buckets;
     request.parameters = parameters;
     request.filter = Object.entries(filters)
-      .filter(([key]) =>
-        facets.find(({ field, buckets }: { field: string; buckets: any }) => field === key && !is.empty(buckets)),
-      )
+      .filter(([key]) => facets.find(({ field, buckets }: any) => field === key && !is.empty(buckets)))
       .reduce((_, [, values]) => {
-        return (values as any).map((v: string) => buckets[v]);
+        return (values as any).map((v: keyof typeof buckets) => buckets[v]);
       }, [])
       .map((v) => `(${v})`)
       .join(' OR ');

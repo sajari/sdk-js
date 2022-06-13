@@ -33,13 +33,13 @@ interface RawData {
 
 const fields = { id: '_id', ...env.fields };
 
-const mapEntry = (data: RawData, key: string, value: string | Array<string> | Function) => {
+const mapEntry = (data: RawData, key: string, value: keyof RawData | Array<keyof RawData> | Function) => {
   if (is.function(value)) {
     return { [key]: value(data) };
   }
   if (is.array(value)) {
     const [field, transform] = value;
-    return { [key]: transformCase(data[field], transform) };
+    return { [key]: transformCase(data[field]?.toString(), transform) };
   }
 
   return { [key]: data[value] };
@@ -47,7 +47,7 @@ const mapEntry = (data: RawData, key: string, value: string | Array<string> | Fu
 
 const mapData = (data: RawData) =>
   Object.entries(fields).reduce<ResultItem>(
-    (out, [key, value]) => Object.assign(out, mapEntry(data, key, value)),
+    (out, [key, value]) => Object.assign(out, mapEntry(data, key, value as keyof RawData)),
     {} as ResultItem,
   );
 
