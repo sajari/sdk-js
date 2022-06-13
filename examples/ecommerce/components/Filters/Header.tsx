@@ -1,6 +1,4 @@
-/* eslint-disable react/prop-types */
-import { Button, Flex, Heading } from '@sajari-ui/core';
-import {} from '../Checkbox';
+import { Button, Heading } from '@sajari-ui/core';
 
 export interface HeaderProps {
   title: string;
@@ -9,7 +7,7 @@ export interface HeaderProps {
 }
 
 const Header = ({ title, filtered = false, onReset = () => {} }: HeaderProps) => (
-  <Flex alignItems="items-center" margin="mb-2">
+  <div className="flex items-center mb-2">
     <Heading as="h2" size="xs">
       {title}
     </Heading>
@@ -26,7 +24,7 @@ const Header = ({ title, filtered = false, onReset = () => {} }: HeaderProps) =>
         Reset
       </Button>
     )}
-  </Flex>
+  </div>
 );
 
 export default Header;

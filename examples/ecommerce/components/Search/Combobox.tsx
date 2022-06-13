@@ -1,7 +1,7 @@
-import { Box, Label, SearchInput, SearchInputProps } from '@sajari-ui/core';
+import { Label, SearchInput, SearchInputProps } from '@sajari-ui/core';
 import { useCombobox } from 'downshift';
 
-import is from '../../utils/is';
+import is from 'utils/is';
 import Suggestions from './Suggestions';
 
 interface Props extends Omit<SearchInputProps, 'onInput'> {
@@ -38,7 +38,7 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
         {placeholder}
       </Label>
 
-      <Box position="relative" {...getComboboxProps()}>
+      <div className="relative" {...getComboboxProps()}>
         <SearchInput
           id={id}
           placeholder={placeholder}
@@ -64,20 +64,11 @@ const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, su
         />
 
         {!instant && (
-          <Box
-            position="absolute"
-            offset={['inset-y-0', 'right-0']}
-            display={['hidden', 'md:flex']}
-            alignItems="items-center"
-            padding="pr-4"
-            pointerEvents="pointer-events-none"
-            fontSize="text-sm"
-            textColor="text-gray-500"
-          >
+          <div className="absolute inset-y-0 right-0 hidden md:flex pr-4 items-center pointer-events-none text-sm text-gray-500">
             Press ⏎ to search
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
 
       <Suggestions
         open={isOpen}

@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import { Icon, Label } from '@sajari-ui/core';
 import { ChangeEventHandler, Fragment } from 'react';
 

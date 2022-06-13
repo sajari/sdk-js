@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Button } from '@sajari-ui/core';
 import { Component, Fragment } from 'react';
 
@@ -117,8 +116,7 @@ export default class List extends Component<ListProps, ListState> {
                 value={value}
                 checked={checked}
                 count={formatNumber(count)}
-                alignItems={type === filterTypes.rating ? 'items-center' : undefined}
-                margin="mb-1"
+                className={type === filterTypes.rating ? 'items-center mb-1' : 'mb-1'}
                 onChange={onChange}
               />
             );

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { IconButton, IconButtonProps } from '@sajari-ui/core';
 
 interface MenuToggleProps extends Partial<IconButtonProps> {

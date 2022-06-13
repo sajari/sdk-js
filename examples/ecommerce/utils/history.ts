@@ -42,7 +42,7 @@ export function parseStateFromUrl({ defaults }: { defaults: Params }) {
     return { ...defaults } as State;
   }
 
-  const state = Object.entries({ ...params, ...facets.map((f) => f.field) })
+  const state = Object.entries({ ...params, ...facets.map((f: any) => f.field) })
     .filter(([, param]) => url.searchParams.has(param.toString()))
     .reduce(
       (state, [prop, param]) => {
@@ -92,8 +92,8 @@ export function setStateToUrl({ state, replace, defaults }) {
     ...facets.reduce((out, { field }) => Object.assign(out, { [field]: filters[field] }), {}),
   };
 
-  Object.entries(data).forEach(([key, value]) => {
-    const param = Object.keys(params).includes(key) ? params[key] : key;
+  Object.entries(data).forEach(([key, value]: [string, any]) => {
+    const param = Object.keys(params).includes(key) ? params[key as keyof typeof params] : key;
     const isDefault = value === defaults[key];
 
     if (isDefault || is.empty(value)) {

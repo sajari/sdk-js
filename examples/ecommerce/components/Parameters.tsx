@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-import { Box, BoxProps, Flex, Heading, IconButton, TextInput } from '@sajari-ui/core';
+import { Heading, IconButton, TextInput } from '@sajari-ui/core';
 import { FormEvent, FormEventHandler, useState } from 'react';
 
 interface ParameterProps {
@@ -23,8 +22,8 @@ const Parameter = ({ name: nameProp, value: valueProp, onSubmit }: ParameterProp
   };
 
   return (
-    <Flex as="form" onSubmit={handleSubmit} space="space-x-2">
-      <Box flex="flex-1">
+    <form onSubmit={handleSubmit} className="flex space-x-2">
+      <div className="flex-1">
         <TextInput
           name="key"
           label="Key"
@@ -33,8 +32,8 @@ const Parameter = ({ name: nameProp, value: valueProp, onSubmit }: ParameterProp
           readOnly={isReadonly}
           fontSize="text-sm"
         />
-      </Box>
-      <Box flex="flex-1">
+      </div>
+      <div className="flex-1">
         <TextInput
           name="value"
           label="Value"
@@ -43,7 +42,7 @@ const Parameter = ({ name: nameProp, value: valueProp, onSubmit }: ParameterProp
           readOnly={isReadonly}
           fontSize="text-sm"
         />
-      </Box>
+      </div>
       <IconButton
         type="submit"
         flexShrink="flex-shrink-0"
@@ -51,13 +50,14 @@ const Parameter = ({ name: nameProp, value: valueProp, onSubmit }: ParameterProp
         label={isReadonly ? 'Remove' : 'Add'}
         fontSize="text-sm"
       />
-    </Flex>
+    </form>
   );
 };
 
-interface ParametersProps extends Omit<BoxProps, 'onChange'> {
+interface ParametersProps {
   parameters: Record<string, string>;
   onChange: (parameters: Record<string, string>) => void;
+  className?: string;
 }
 
 const Parameters = ({ parameters = {}, onChange, ...rest }: ParametersProps) => {
@@ -90,19 +90,19 @@ const Parameters = ({ parameters = {}, onChange, ...rest }: ParametersProps) => 
   };
 
   return (
-    <Box {...rest}>
+    <div {...rest}>
       <Heading as="h2" size="xs" margin="mb-2">
         Parameters
       </Heading>
-      <Box margin="mb-4" space="space-y-2">
+      <div className="mb-4 space-y-2">
         {parameters &&
           Object.entries(params).map(([key, value]) => (
             <Parameter key={key} name={key} value={value} onSubmit={remove} />
           ))}
 
         <Parameter key="" onSubmit={add} />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

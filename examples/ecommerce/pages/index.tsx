@@ -4,7 +4,6 @@ import Head from 'next/head';
 import {
   Button,
   ButtonGroup,
-  Flex,
   Heading,
   IconButton,
   Label,
@@ -296,6 +295,7 @@ const Home: NextPage = () => {
 
   const toggleSuggest = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
+    console.log({ checked });
 
     setState({
       suggest: checked,
@@ -463,14 +463,8 @@ const Home: NextPage = () => {
           <nav className="px-6 pt-6 overflow-y-auto text-base lg:text-sm lg:p-0 lg:pl-1 lg:pr-12 lg:pt-8 lg:h-(screen-20)">
             <div className="mb-6 lg:hidden">
               <h2 className="mb-2 text-xs font-medium text-gray-400 uppercase">Options</h2>
-              {
-                // @ts-ignore
-                <Checkbox id="suggest-sm" label="Suggestions" onInput={toggleSuggest} checked={suggest} />
-              }
-              {
-                // @ts-ignore
-                <Checkbox id="instant-sm" label="Instant" margin="mt-1" onInput={toggleInstant} checked={instant} />
-              }
+              <Checkbox id="suggest-sm" label="Suggestions" onChange={toggleSuggest} checked={suggest} />
+              <Checkbox id="instant-sm" label="Instant" className="mt-1" onChange={toggleInstant} checked={instant} />
             </div>
 
             {aggregates && aggregateFilters && (
@@ -486,7 +480,7 @@ const Home: NextPage = () => {
               />
             )}
 
-            <Parameters parameters={parameters} onChange={setParameters} margin="mb-6" />
+            <Parameters parameters={parameters} onChange={setParameters} className="mb-6" />
 
             <form
               className="mb-6"
@@ -668,15 +662,9 @@ const Home: NextPage = () => {
                 </Button>
               )}
 
-              <div className="hidden lg:flex items-center ml-3 md:ml-6">
-                {
-                  // @ts-ignore
-                  <Checkbox id="suggest" label="Suggestions" onChange={toggleSuggest} checked={suggest} />
-                }
-                {
-                  // @ts-ignore
-                  <Checkbox id="instant" label="Instant" margin="ml-4" onChange={toggleInstant} checked={instant} />
-                }
+              <div className="hidden lg:flex items-center ml-3 md:ml-6 space-x-4">
+                <Checkbox id="suggest" label="Suggestions" onChange={toggleSuggest} checked={suggest} />
+                <Checkbox id="instant" label="Instant" onChange={toggleInstant} checked={instant} />
               </div>
             </form>
 
@@ -692,10 +680,7 @@ const Home: NextPage = () => {
           <main className="w-full min-h-screen pt-24 lg:pl-10 lg:pt-28 lg:max-h-full lg:flex-1 lg:overflow-visible">
             {!hasResults && !error && !init && (
               <div className="text-center">
-                {
-                  // @ts-ignore
-                  <Message title="No results" message={`Sorry, we couldn't find any matches for '${query}'.`} />
-                }
+                <Message title="No results" message={`Sorry, we couldn't find any matches for '${query}'.`} />
 
                 {filters && Object.keys(filters).length > 0 && (
                   <Button appearance="primary" onClick={clearFilters}>

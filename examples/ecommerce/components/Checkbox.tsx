@@ -1,17 +1,19 @@
-/* eslint-disable react/prop-types */
+import { Label, Text } from '@sajari-ui/core';
+import { InputHTMLAttributes, ReactNode } from 'react';
+import classnames from 'classnames';
 
-import { Flex, FlexProps, Label, Text } from '@sajari-ui/core';
-import { ReactNode } from 'react';
-
-export interface CheckboxProps extends Omit<FlexProps, 'label'> {
-  count: number | string;
+export interface CheckboxProps
+  extends Pick<InputHTMLAttributes<HTMLInputElement>, 'checked' | 'disabled' | 'onChange' | 'value'> {
+  count?: number | string;
   label: ReactNode;
+  className?: string;
+  id: string;
 }
 
-const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest }: CheckboxProps) => {
+const Checkbox = ({ label, id, checked, disabled, onChange, count, value, className, ...rest }: CheckboxProps) => {
   return (
-    <Flex alignItems="items-start" fontSize="text-sm" {...rest}>
-      <Flex alignItems="items-center">
+    <div className={classnames('flex text-sm items-start', className)} {...rest}>
+      <div className="flex items-center">
         &#8203;
         <input
           id={id}
@@ -19,10 +21,10 @@ const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest
           className="w-4 h-4 text-blue-500 form-checkbox disabled:bg-gray-300 disabled:border-gray-400"
           checked={checked}
           disabled={disabled}
-          onInput={onInput}
+          onChange={onChange}
           value={value}
         />
-      </Flex>
+      </div>
 
       <Label htmlFor={id ?? ''} display="inline-flex" alignItems="items-center" margin="ml-2" textColor="text-gray-700">
         {label}
@@ -33,7 +35,7 @@ const Checkbox = ({ label, id, checked, disabled, onInput, count, value, ...rest
           {count}
         </Text>
       )}
-    </Flex>
+    </div>
   );
 };
 
