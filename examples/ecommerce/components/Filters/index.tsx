@@ -67,6 +67,7 @@ const Filters = (props: FiltersProps) => {
         return (
           <Filter
             {...rest}
+            key={field}
             field={field}
             title={title}
             type={type}

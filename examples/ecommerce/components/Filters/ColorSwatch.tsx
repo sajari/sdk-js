@@ -88,6 +88,7 @@ const ColorSwatch = ({ values, items, title, type, onChange, onReset }: ColorSwa
 
           return (
             <Label
+              key={id}
               htmlFor={id}
               display="flex"
               alignItems="items-center"

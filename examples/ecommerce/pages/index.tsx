@@ -113,6 +113,7 @@ const Home: NextPage = () => {
     ...parseStateFromUrl({ defaults }),
   });
   const { error, filters, init, instant, menuOpen, query, results, suggest, suggestions } = state;
+  const searchDelay = useRef<number>();
 
   const setState = useCallback((values: Partial<SearchState>) => {
     setInternalState((prev) => ({ ...prev, ...values }));
@@ -131,70 +132,73 @@ const Home: NextPage = () => {
   const setBrowserHistory = (replace: boolean) => setStateToUrl({ state, replace, defaults });
 
   const search = (setHistory = true, delayHistory = false) => {
-    const { filters, page, pageSize, parameters, query, sort } = state;
-    const request = new Request(query);
-    request.filters = filters;
-    request.pageSize = pageSize;
-    request.page = page;
-    request.facets = facets;
-    request.buckets = buckets;
-    request.parameters = parameters;
-    request.filter = Object.entries(filters)
-      .filter(([key]) => facets.find(({ field, buckets }: any) => field === key && !is.empty(buckets)))
-      .reduce((_, [, values]) => {
-        return (values as any).map((v: keyof typeof buckets) => buckets[v]);
-      }, [])
-      .map((v) => `(${v})`)
-      .join(' OR ');
+    window.clearTimeout(searchDelay.current);
+    searchDelay.current = window.setTimeout(() => {
+      const { filters, page, pageSize, parameters, query, sort } = state;
+      const request = new Request(query);
+      request.filters = filters;
+      request.pageSize = pageSize;
+      request.page = page;
+      request.facets = facets;
+      request.buckets = buckets;
+      request.parameters = parameters;
+      request.filter = Object.entries(filters)
+        .filter(([key]) => facets.find(({ field, buckets }: any) => field === key && !is.empty(buckets)))
+        .reduce((_, [, values]) => {
+          return (values as any).map((v: keyof typeof buckets) => buckets[v]);
+        }, [])
+        .map((v) => `(${v})`)
+        .join(' OR ');
 
-    if (sort) {
-      request.sort = sort;
-    }
+      if (sort) {
+        request.sort = sort;
+      }
 
-    // Hide the suggestions and error
-    setState({
-      error: null,
-    });
-
-    pipeline.current.main
-      .search(request.serialize(), session.next(request.serialize()))
-      .then(([response]: any[]) => {
-        let results = [];
-        if (response) {
-          aggregateFilters = response.aggregateFilters;
-          aggregates = response.aggregates;
-          time = response.time;
-          totalResults = response.totalResults;
-          results = response.results;
-        }
-
-        clearTimeout(renderTimer.current);
-
-        // Delay slightly longer if no results so if someone is typing they don't get a flash of no results
-        const delay = results.length > 0 ? 20 : 500;
-
-        renderTimer.current = setTimeout(
-          () =>
-            setState({
-              aggregates,
-              aggregateFilters,
-              time,
-              totalResults,
-              results: response.results,
-              init: false,
-            }),
-          delay,
-        );
-
-        if (setHistory) {
-          clearTimeout(historyTimer.current);
-          historyTimer.current = setTimeout(setBrowserHistory, delayHistory ? 1000 : 0);
-        }
-      })
-      .catch((error: any) => {
-        console.error('Query failed', JSON.stringify(request.serialize(), null, 2));
-        setState({ aggregates, aggregateFilters, time, totalResults, results, init: false, error });
+      // Hide the suggestions and error
+      setState({
+        error: null,
       });
+
+      pipeline.current.main
+        .search(request.serialize(), session.next(request.serialize()))
+        .then(([response]: any[]) => {
+          let results = [];
+          if (response) {
+            aggregateFilters = response.aggregateFilters;
+            aggregates = response.aggregates;
+            time = response.time;
+            totalResults = response.totalResults;
+            results = response.results;
+          }
+
+          clearTimeout(renderTimer.current);
+
+          // Delay slightly longer if no results so if someone is typing they don't get a flash of no results
+          const delay = results.length > 0 ? 20 : 500;
+
+          renderTimer.current = setTimeout(
+            () =>
+              setState({
+                aggregates,
+                aggregateFilters,
+                time,
+                totalResults,
+                results: response.results,
+                init: false,
+              }),
+            delay,
+          );
+
+          if (setHistory) {
+            clearTimeout(historyTimer.current);
+            historyTimer.current = setTimeout(setBrowserHistory, delayHistory ? 1000 : 0);
+          }
+        })
+        .catch((error: any) => {
+          console.error('Query failed', JSON.stringify(request.serialize(), null, 2));
+          setState({ aggregates, aggregateFilters, time, totalResults, results, init: false, error });
+        });
+    }, 50);
   };
 
   useEffect(() => {
@@ -359,8 +363,20 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
+    updatePipeline();
+  }, [state.pipelineName, state.pipelineVersion]);
+
+  useEffect(() => {
     search();
-  }, [state.filters, state.page, state.pageSize, state.sort, state.parameters]);
+  }, [
+    state.filters,
+    state.page,
+    state.pageSize,
+    state.sort,
+    state.parameters,
+    state.pipelineName,
+    state.pipelineVersion,
+  ]);
 
   const setPipeline = (event: any) => {
     event.preventDefault();
@@ -372,11 +388,6 @@ const Home: NextPage = () => {
       pipelineVersion: formData.get('pipeline-version') as string,
     });
   };
-
-  useEffect(() => {
-    updatePipeline();
-    search();
-  }, [state.pipelineName, state.pipelineVersion]);
 
   const toggleMenu = () => {
     const { menuOpen } = state;
@@ -623,7 +634,7 @@ const Home: NextPage = () => {
                 onInput={handleInput}
                 items={suggest ? suggestions : undefined}
                 suggest={suggest}
-                autofocus
+                autoFocus
               />
 
               {!instant && (

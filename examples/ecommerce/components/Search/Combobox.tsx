@@ -10,7 +10,7 @@ interface Props extends Omit<SearchInputProps, 'onInput'> {
   items?: string[];
   value: string;
   onInput: (value: string, isSelect?: boolean) => void;
-  autofocus: boolean;
+  autoFocus: boolean;
 }
 
 const Combobox = ({ placeholder = 'Search', id, instant, items = [], onInput, suggest, value, ...rest }: Props) => {
