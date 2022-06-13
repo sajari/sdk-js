@@ -8,6 +8,8 @@ const config: Record<string, any> = {
   projectId: '1594153711901724220',
   collectionId: 'bestbuy',
   pipelineName: 'query',
+  endpint: 'https://jsonapi-us-valkyrie.sajari.net',
+  version: '',
   // pipelineVersion: APP_PIPELINE_VERSION,
 
   // For production this can be undefined
