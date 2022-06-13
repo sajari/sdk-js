@@ -2,20 +2,21 @@ import { Aggregates, CountAggregate } from '@sajari/sdk-js';
 import { Fragment } from 'react';
 
 import is from 'utils/is';
-import Filter, { FilterProps } from './Filter';
+import Filter from './Filter';
 import filterTypes, { Facet } from './types';
 
-interface FiltersProps extends FilterProps {
+interface FiltersProps {
   aggregates: Aggregates;
   aggregateFilters: Record<string, CountAggregate>;
   facets: Facet[];
   filters: Record<string, any>;
   buckets: any;
-  onChange: (values: any) => void;
+  onChange: (values: { field: string; values: any }) => void;
   query: string;
 }
 
-const Filters = ({ aggregates, aggregateFilters, facets, filters, ...rest }: FiltersProps) => {
+const Filters = (props: FiltersProps) => {
+  const { aggregates, aggregateFilters, facets, filters, ...rest } = props;
   if (is.empty(facets)) {
     return null;
   }

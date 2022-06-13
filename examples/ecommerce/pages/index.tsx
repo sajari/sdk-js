@@ -33,6 +33,7 @@ import { formatNumber } from 'utils/number';
 import { toSentenceCase } from 'utils/string';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Facet } from 'components/Filters/types';
+import { TextElements } from '@sajari-ui/core/dist/components/Text/types';
 
 const {
   projectId,
@@ -69,16 +70,16 @@ interface SearchState {
   page: number;
   pageSize: number;
   query: string;
-  sort: any;
+  sort: string;
   error: any;
   instant: boolean;
   grid: boolean;
   suggest: boolean;
-  suggestions: any[];
+  suggestions: string[];
   menuOpen: boolean;
   pipelineName: string;
   pipelineVersion: string;
-  parameters: any;
+  parameters: Record<string, any>;
 }
 
 const Home: NextPage = () => {
@@ -94,7 +95,7 @@ const Home: NextPage = () => {
     error: null,
 
     // Options
-    sort: null,
+    sort: '',
     instant: true,
     grid: display === 'grid',
     suggest: false,
@@ -289,7 +290,6 @@ const Home: NextPage = () => {
 
   const toggleSuggest = (event: ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
-    console.log({ checked });
 
     setState({
       suggest: checked,
@@ -349,7 +349,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const setFilter = ({ field, values }: any) => {
+  const setFilter = ({ field, values }: { field: string; values: any }) => {
     const { filters } = state;
 
     setState({
@@ -386,7 +386,7 @@ const Home: NextPage = () => {
     });
   };
 
-  const setParameters = (params: any) =>
+  const setParameters = (params: Record<string, any>) =>
     setState({
       parameters: params,
     });
@@ -443,7 +443,6 @@ const Home: NextPage = () => {
             </div>
 
             {aggregates && aggregateFilters && (
-              // @ts-ignore
               <Filters
                 facets={facets as Facet[]}
                 buckets={buckets}
@@ -511,10 +510,7 @@ const Home: NextPage = () => {
         <div className="flex items-center justify-end mb-8 lg:mb-6">
           <Text dangerouslySetClassName="text-sm text-gray-600">
             {`${formatNumber(totalResults)} results`}
-            {
-              // @ts-ignore
-              <Text as="span" display={['hidden', 'md:inline']}>{` (${time} secs)`}</Text>
-            }
+            <Text as={'span' as TextElements} display={['hidden', 'md:inline']}>{` (${time} secs)`}</Text>
           </Text>
 
           <div className="flex flex-1 items-center justify-end pl-4 ml-auto">

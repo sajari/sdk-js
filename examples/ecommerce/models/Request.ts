@@ -16,9 +16,9 @@ export default class Request {
   query: string;
   page: number;
   pageSize: number;
-  count: any[];
+  count: string[];
   buckets: Record<string, any>;
-  filters: Record<string, any>;
+  filters: Record<string, string[]>;
   parameters: Record<string, any>;
   filter: any;
   sort: any;
@@ -57,9 +57,9 @@ export default class Request {
         const array = key === 'imageTags';
 
         return values
-          .map((v: any) => (array ? `${key} ~ ['${v}']` : `${key} = '${v}'`))
-          .map((v: any) => escape(v))
-          .map((v: any) => (braces ? `(${v})` : v))
+          .map((v) => (array ? `${key} ~ ['${v}']` : `${key} = '${v}'`))
+          .map((v) => escape(v))
+          .map((v) => (braces ? `(${v})` : v))
           .join(' OR ');
       })
       .filter((f) => f !== null);

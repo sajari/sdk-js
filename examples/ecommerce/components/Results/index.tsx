@@ -53,7 +53,7 @@ const mapData = (data: RawData) =>
 
 interface Props {
   grid: boolean;
-  results: any[];
+  results: { values: RawData }[];
 }
 
 const Results = ({ grid, results }: Props) => {

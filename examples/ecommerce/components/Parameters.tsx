@@ -60,7 +60,8 @@ interface ParametersProps {
   className?: string;
 }
 
-const Parameters = ({ parameters = {}, onChange, ...rest }: ParametersProps) => {
+const Parameters = (props: ParametersProps) => {
+  const { parameters = {}, onChange, ...rest } = props;
   const params = { ...parameters };
 
   const getFormData = (event: FormEvent<HTMLFormElement>) => {
