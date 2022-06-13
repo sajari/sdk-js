@@ -2,7 +2,7 @@
 const { tailwindConfig } = require('@sajari-ui/core');
 
 // Setup purging of CSS
-tailwindConfig.purge.content.push('./**/*.{js,html}');
+tailwindConfig.purge.content.push('./**/*.{js,ts,tsx,html}');
 
 // Add full padding option for images
 tailwindConfig.theme.extend.padding = {
