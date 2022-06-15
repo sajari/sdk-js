@@ -14,7 +14,7 @@ import {
   TextInput,
   VisuallyHidden,
 } from '@sajari-ui/core';
-import { Aggregates, Client, CountAggregate, DefaultSession, InteractiveSession, TrackingType } from '@sajari/sdk-js';
+import { Aggregates, Client, CountAggregate, SearchIOAnalytics } from '@sajari/sdk-js';
 import classnames from 'classnames';
 import { ChangeEvent, Fragment } from 'react';
 
@@ -35,18 +35,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Facet } from 'components/Filters/types';
 import { TextElements } from '@sajari-ui/core/dist/components/Text/types';
 
-const {
-  projectId,
-  collectionId,
-  pipelineName,
-  pipelineVersion,
-  endpoint,
-  facets,
-  buckets,
-  display,
-  tracking,
-  parameters,
-} = env;
+const { projectId, collectionId, pipelineName, pipelineVersion, endpoint, facets, buckets, display, parameters } = env;
 
 const defaults = {
   pageSize: 15,
@@ -120,14 +109,11 @@ const Home: NextPage = () => {
   }, []);
 
   const client = useMemo(() => new Client(projectId, collectionId, endpoint), []);
-  const session = useMemo(
-    () => new InteractiveSession('q', new DefaultSession(TrackingType.Click, tracking.field, {})),
-    [],
-  );
   const pipeline = useRef<any>();
   const renderTimer = useRef<ReturnType<typeof window.setTimeout>>();
   const inputTimer = useRef<ReturnType<typeof window.setTimeout>>();
   const historyTimer = useRef<number>();
+  const searchIOAnalytics = new SearchIOAnalytics(projectId, collectionId);
 
   const setBrowserHistory = (replace: boolean) => setStateToUrl({ state, replace, defaults });
 
@@ -160,8 +146,9 @@ const Home: NextPage = () => {
       });
 
       pipeline.current.main
-        .search(request.serialize(), session.next(request.serialize()))
+        .search(request.serialize())
         .then(([response]: any[]) => {
+          searchIOAnalytics.updateQueryId(response.queryId);
           let results = [];
           if (response) {
             aggregateFilters = response.aggregateFilters;
@@ -231,13 +218,12 @@ const Home: NextPage = () => {
     const suggestionsKey = 'q.suggestions';
     const getSuggestions = (values: any) => (values && values[suggestionsKey] ? values[suggestionsKey].split(',') : []);
 
-    pipeline.current.autocomplete
-      .search(request.serialize(), session.next(request.serialize()))
-      .then(([, values]: any[]) => {
-        setState({
-          suggestions: getSuggestions(values).slice(0, 10),
-        });
+    pipeline.current.autocomplete.search(request.serialize()).then(([response, values]: any[]) => {
+      searchIOAnalytics.updateQueryId(response.queryId);
+      setState({
+        suggestions: getSuggestions(values).slice(0, 10),
       });
+    });
   };
 
   const handleInput = (value: string, isSelect = false) => {
