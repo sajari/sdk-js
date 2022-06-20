@@ -1,47 +1,68 @@
-import {
-  Client,
-  DefaultSession,
-  TrackingType,
-  SearchResponseProto,
-  RequestError,
-  setItem,
-} from "../src/index";
+import { Client, setItem } from "../src/index";
 import { USER_AGENT } from "../src/user-agent";
-
-const client = new Client("test", "test", "test.com");
-const setItemMock = jest.spyOn(Object.getPrototypeOf(localStorage), "setItem");
-const consoleErrorSpy = jest.spyOn(console, "error");
+import { server, rest } from "./server";
+import { QueryResponse } from "../src/client";
 
 describe("Client", () => {
-  beforeEach(() => {
-    fetchMock.resetMocks();
+  beforeAll(() => {
+    fetchMock.disableMocks();
   });
 
-  it("call", () => {
-    fetchMock.mockResponseOnce(JSON.stringify({ data: "12345" }));
+  const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
+  });
 
-    expect.assertions(1);
-    return client.call("/hello", { foo: "bar" }).then((res) => {
-      expect(res.data).toEqual("12345");
+  const client = new Client("a", "b", "test.api.io");
+
+  test("non 200 response code throws error", async () => {
+    server.use(
+      rest.post(
+        "https://test.api.io/v4/collections/b:query",
+        async (_, res, ctx) => {
+          return res(
+            ctx.status(500),
+            ctx.json({ code: 13, message: "something bad happened" })
+          );
+        }
+      )
+    );
+
+    await expect(
+      client.query({
+        tracking: { type: "NONE" },
+        variables: { q: "test" },
+      })
+    ).rejects.toThrow("Request failed due to an error.");
+  });
+
+  test("happy path works", async () => {
+    server.use(
+      rest.post(
+        "https://test.api.io/v4/collections/b:query",
+        async (_, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.json<QueryResponse>({
+              pipeline: { name: "test", version: "test" },
+              total_size: "0",
+              processing_time: "0s",
+            })
+          );
+        }
+      )
+    );
+
+    await expect(
+      client.query({
+        tracking: { type: "NONE" },
+        variables: { q: "test" },
+      })
+    ).resolves.toStrictEqual<QueryResponse>({
+      pipeline: { name: "test", version: "test" },
+      total_size: "0",
+      processing_time: "0s",
     });
-  });
-
-  it("call error", () => {
-    fetchMock.mockRejectOnce(new RequestError(500, "oh noes"));
-
-    expect.assertions(2);
-    return client.call("/hello", { foo: "bar" }).catch((err) => {
-      expect(err.statusCode).toEqual(500);
-      expect(err.message).toEqual("oh noes");
-    });
-  });
-
-  it("call with keys error", () => {
-    const create = () => {
-      new Client("test", "test", "test.com", "key", "secret");
-    };
-
-    expect(create).toThrow(Error);
   });
 });
 
@@ -50,8 +71,16 @@ describe("setItem", () => {
     jest.restoreAllMocks();
   });
 
+  const setItemMock = jest.spyOn(
+    Object.getPrototypeOf(localStorage),
+    "setItem"
+  );
+  const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
   it("catches exceptions", () => {
-    consoleErrorSpy.mockImplementation();
     setItemMock.mockImplementationOnce(() => {
       throw new Error("pretend QuotaExceededError");
     });
@@ -72,15 +101,14 @@ describe("Pipeline", () => {
     fetchMock.resetMocks();
   });
 
+  const client = new Client("test", "test", "test.com");
+
   it("search", async () => {
     fetchMock.mockResponseOnce(
       JSON.stringify({ searchResponse: { time: "0.003s", totalResults: 0 } })
     );
 
-    const session = new DefaultSession(TrackingType.None, "url");
-    const [response, values] = await client
-      .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+    const [response, values] = await client.pipeline().search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -102,25 +130,22 @@ describe("Pipeline", () => {
   });
 
   it("search with redirects", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "0",
-      },
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "0",
       redirects: {
         "hello world": {
           id: "1",
           target: "https://www.google.com",
-          token: "12345abcd",
         },
       },
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -148,29 +173,25 @@ describe("Pipeline", () => {
   });
 
   it("process proto values", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "1",
-        results: [
-          {
-            indexScore: 1,
-            score: 0.4649218,
-            values: {
-              neuralTitleHash: {
-                singleBytes: "JmW0p9EzjBH...",
-              },
-            },
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "1",
+      results: [
+        {
+          index_score: 1,
+          score: 0.4649218,
+          record: {
+            neuralTitleHash: "JmW0p9EzjBH...",
           },
-        ],
-      },
+        },
+      ],
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "" }, session.next());
+      .search({ q: "" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -197,31 +218,30 @@ describe("Pipeline", () => {
   });
 
   it("search with promotions", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "2",
-        results: [
-          {
-            indexScore: 1,
-            score: 0.231125,
-            values: {
-              _id: { single: "876120cc-c9c6-95f2-bafb-58b8e2aa962f" },
-            },
-          },
-          {
-            indexScore: 1,
-            score: 0.12938,
-            values: {
-              _id: { single: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac" },
-            },
-          },
-        ],
-      },
-      activePromotions: [
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "2",
+      results: [
         {
-          promotionId: "1",
-          activePins: [
+          index_score: 1,
+          score: 0.231125,
+          record: {
+            _id: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+          },
+        },
+        {
+          index_score: 1,
+          score: 0.12938,
+          record: {
+            _id: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac",
+          },
+        },
+      ],
+      active_promotions: [
+        {
+          promotion_id: "1",
+          active_pins: [
             {
               key: {
                 field: "_id",
@@ -230,16 +250,15 @@ describe("Pipeline", () => {
               position: 1,
             },
           ],
-          activeExclusions: [],
+          active_exclusions: [],
         },
       ],
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -294,44 +313,43 @@ describe("Pipeline", () => {
   });
 
   it("search with promotions that have active pins with different key fields", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "3",
-        results: [
-          {
-            indexScore: 1,
-            score: 0.231125,
-            values: {
-              _id: { single: "876120cc-c9c6-95f2-bafb-58b8e2aa962f" },
-              sku: { single: "sku-1" },
-              name: { single: "apple" },
-            },
-          },
-          {
-            indexScore: 1,
-            score: 0.12938,
-            values: {
-              _id: { single: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac" },
-              sku: { single: "sku-2" },
-              name: { single: "orange" },
-            },
-          },
-          {
-            indexScore: 1,
-            score: 0.12341,
-            values: {
-              _id: { single: "bx874f21-9sj2-h12l-2e9d-j219dsjdk971" },
-              sku: { single: "sku-3" },
-              name: { single: "pear" },
-            },
-          },
-        ],
-      },
-      activePromotions: [
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "3",
+      results: [
         {
-          promotionId: "1",
-          activePins: [
+          index_score: 1,
+          score: 0.231125,
+          record: {
+            _id: "876120cc-c9c6-95f2-bafb-58b8e2aa962f",
+            sku: "sku-1",
+            name: "apple",
+          },
+        },
+        {
+          index_score: 1,
+          score: 0.12938,
+          record: {
+            _id: "ac369f52-1d84-b28b-5d08-22d5ba9ddeac",
+            sku: "sku-2",
+            name: "orange",
+          },
+        },
+        {
+          index_score: 1,
+          score: 0.12341,
+          record: {
+            _id: "bx874f21-9sj2-h12l-2e9d-j219dsjdk971",
+            sku: "sku-3",
+            name: "pear",
+          },
+        },
+      ],
+      active_promotions: [
+        {
+          promotion_id: "1",
+          active_pins: [
             {
               key: {
                 field: "_id",
@@ -347,11 +365,11 @@ describe("Pipeline", () => {
               position: 4,
             },
           ],
-          activeExclusions: [],
+          active_exclusions: [],
         },
         {
-          promotionId: "2",
-          activePins: [
+          promotion_id: "2",
+          active_pins: [
             {
               key: {
                 field: "name",
@@ -360,16 +378,15 @@ describe("Pipeline", () => {
               position: 2,
             },
           ],
-          activeExclusions: [],
+          active_exclusions: [],
         },
       ],
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -459,32 +476,28 @@ describe("Pipeline", () => {
   });
 
   it("search with neural and feature scores", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "1",
-        featureScoreWeight: 0.2,
-        results: [
-          {
-            indexScore: 1,
-            score: 0.4649218,
-            neuralScore: 0.333,
-            featureScore: 0.6666,
-            values: {
-              title: {
-                single: "the result",
-              },
-            },
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "1",
+      feature_score_weight: 0.2,
+      results: [
+        {
+          index_score: 1,
+          score: 0.4649218,
+          neural_score: 0.333,
+          feature_score: 0.6666,
+          record: {
+            title: "the result",
           },
-        ],
-      },
+        },
+      ],
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -518,29 +531,27 @@ describe("Pipeline", () => {
   });
 
   it("search with banners", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "0",
-        results: [],
-      },
+    const responseObj: QueryResponse = {
+      pipeline: { name: "version", version: "name" },
+      processing_time: "0.003s",
+      total_size: "0",
+      results: [],
       banners: [
         {
           height: 2,
           id: "1",
-          imageUrl: "imageUrl",
+          image_url: "imageUrl",
           position: 5,
-          targetUrl: "targetUrl",
+          target_url: "targetUrl",
           width: 2,
         },
       ],
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.None, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, session.next());
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
@@ -570,21 +581,19 @@ describe("Pipeline", () => {
   });
 
   it("search request with simplified tracking", async () => {
-    const responseObj: SearchResponseProto = {
-      searchResponse: {
-        time: "0.003s",
-        totalResults: "0",
-        results: [],
-      },
+    const responseObj: QueryResponse = {
+      pipeline: { name: "test", version: "test" },
+      processing_time: "0.003s",
+      total_size: "0",
+      results: [],
       banners: [],
-      queryId: "1f2d7ae0-fdd6-4eaf-85e9-cb5f3256e8c4",
+      query_id: "1f2d7ae0-fdd6-4eaf-85e9-cb5f3256e8c4",
     };
     fetchMock.mockResponseOnce(JSON.stringify(responseObj));
 
-    const session = new DefaultSession(TrackingType.Event, "url");
     const [response, values] = await client
       .pipeline("test", "test")
-      .search({ q: "hello" }, { ...session.next(), queryID: "test-query-id" });
+      .search({ q: "hello" });
 
     expect(values).toEqual({});
     expect(response).toStrictEqual({
