@@ -577,8 +577,6 @@ describe("SearchIOAnalytics", () => {
         { ...eventState, type: "add_to_cart", submitted: false },
       ];
 
-      // fetchMock.mockResponse("{}");
-
       await analytics.flush();
 
       expect(analytics.events.foo[0].submitted).toBe(true);
