@@ -53,9 +53,6 @@
   },
   "jest": {
     "automock": false,
-    "setupFiles": [
-      "<rootDir>/setupJest.ts"
-    ],
     "setupFilesAfterEnv": [
       "<rootDir>/test/setupTests.ts"
     ]
@@ -72,6 +69,7 @@
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typedoc": "^0.22.12",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "whatwg-fetch": "^3.6.2"
   }
 }

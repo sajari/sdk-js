@@ -3,10 +3,6 @@ import { Client, RequestError, SearchResponse } from "../src";
 import { QueryResponse } from "../src/client";
 
 describe("Client", () => {
-  beforeAll(() => {
-    fetchMock.disableMocks();
-  });
-
   const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   afterAll(() => {
     consoleErrorSpy.mockRestore();
