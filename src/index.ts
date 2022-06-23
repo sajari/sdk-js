@@ -8,8 +8,15 @@ import {
   ActivePromotion,
   QueryResponse,
 } from "./client";
-export { EventEmitter, RequestError, setItem, getItem };
+export { EventEmitter, RequestError, setItem, getItem, KeySecretCredentials };
 export { SearchIOAnalytics } from "./tracking";
+export {
+  ActivePromotion,
+  PromotionPin,
+  PromotionExclusion,
+  Banner,
+  Redirect,
+} from "./client";
 
 /**
  * Client defines a client for interacting with the Sajari API.
@@ -168,8 +175,8 @@ class QueryPipeline extends EventEmitter {
         banners,
         featureScoreWeight: featureScoreWeight || 0,
         results,
-        aggregates: aggregates || {}, // formatAggregates(aggregates),
-        aggregateFilters: aggregateFilters || {}, // formatAggregates(aggregateFilters),
+        aggregates: formatAggregates(aggregates),
+        aggregateFilters: formatAggregates(aggregateFilters),
         redirects: redirects || {},
         activePromotions: activePromotions ?? [],
         ...(queryId && { queryId }),
@@ -195,7 +202,9 @@ function formatActivePins(
 }
 
 export function formatAggregates(
-  aggregatesProto: AggregatesProto = {}
+  aggregatesProto:
+    | QueryResponse["aggregates"]
+    | QueryResponse["aggregate_filters"] = {}
 ): Aggregates {
   return Object.entries(aggregatesProto)
     .map(([key, aggregate]) => {
@@ -261,47 +270,6 @@ export function formatAggregates(
     }, {});
 }
 
-/**
- * @hidden
- */
-type AggregatesProto = Record<
-  string,
-  CountAggregateProto | MetricAggregateProto | BucketAggregateProto
->;
-
-/**
- * @hidden
- */
-interface CountAggregateProto {
-  count: {
-    counts: Record<string, number>;
-  };
-}
-
-/**
- * @hidden
- */
-interface BucketAggregateProto {
-  buckets?: {
-    buckets?: Record<
-      string,
-      {
-        name: string;
-        count: number;
-      }
-    >;
-  };
-}
-
-/**
- * @hidden
- */
-interface MetricAggregateProto {
-  metric: {
-    value: number;
-  };
-}
-
 export interface SearchResponse {
   /**
    * Time in seconds taken to perform the query.
@@ -332,12 +300,12 @@ export interface SearchResponse {
   /**
    * Aggregates computed on the query results (see [[Aggregates]]).
    */
-  aggregates: NonNullable<QueryResponse["aggregates"]>;
+  aggregates: Aggregates;
 
   /**
    * AggregateFilters computed on the query results (see [[Aggregates]]).
    */
-  aggregateFilters: NonNullable<QueryResponse["aggregates"]>;
+  aggregateFilters: Aggregates;
 
   /**
    * All Redirects for which the current query is a starting substring (see [[Redirects]]).
@@ -355,89 +323,16 @@ export interface SearchResponse {
   queryId?: string;
 }
 
-/**
- * TextPosition describes the position of text in a box.
- *
- *  - TEXT_POSITION_UNSPECIFIED: No position specified.
- *  - TEXT_POSITION_CENTER: The text is positioned in the horizontal and vertical center.
- *  - TEXT_POSITION_TOP_LEFT: The text is positioned in the top left corner.
- *  - TEXT_POSITION_TOP_RIGHT: The text is positioned in the top right corner.
- *  - TEXT_POSITION_BOTTOM_LEFT: The text is positioned in the bottom left corner.
- *  - TEXT_POSITION_BOTTOM_RIGHT: The text is positioned in the bottom right corner.
- * @export
- * @enum {string}
- */
-export enum TextPosition {
-  Unspecified = "TEXT_POSITION_UNSPECIFIED",
-  Center = "TEXT_POSITION_CENTER",
-  TopLeft = "TEXT_POSITION_TOP_LEFT",
-  TopRight = "TEXT_POSITION_TOP_RIGHT",
-  BottomLeft = "TEXT_POSITION_BOTTOM_LEFT",
-  BottomRight = "TEXT_POSITION_BOTTOM_RIGHT",
+export type Aggregates = Record<
+  string,
+  Record<string, CountAggregate | MetricAggregate>
+>;
+
+export interface CountAggregate {
+  count: Record<string, number>;
 }
 
-export interface Banner {
-  /**
-   * The description of the banner, displayed in sub-head font.
-   * @type {string}
-   * @memberof Banner
-   */
-  description?: string;
-  /**
-   * The height the banner occupies in grid cells.
-   * @type {number}
-   * @memberof Banner
-   */
-  height?: number;
-  /**
-   * The ID of the banner, used to identify clicked banners.
-   * @type {string}
-   * @memberof Banner
-   */
-  id?: string;
-  /**
-   * The URL of the image used for the banner.
-   * @type {string}
-   * @memberof Banner
-   */
-  imageUrl?: string;
-  /**
-   * The 1-based index indicating where the banner appears in search results.
-   * @type {number}
-   * @memberof Banner
-   */
-  position?: number;
-  /**
-   * The URL to redirect the user to when the banner is clicked.
-   * @type {string}
-   * @memberof Banner
-   */
-  targetUrl?: string;
-  /**
-   * The color of the text as a hex code with a # prefix, e.g. #FFCC00 or #FC0.
-   * @type {string}
-   * @memberof Banner
-   */
-  textColor?: string;
-  /**
-   *
-   * @type {TextPosition}
-   * @memberof Banner
-   */
-  textPosition?: TextPosition;
-  /**
-   * The title of the banner, displayed in header font.
-   * @type {string}
-   * @memberof Banner
-   */
-  title?: string;
-  /**
-   * The width the banner occupies in grid cells.
-   * @type {number}
-   * @memberof Banner
-   */
-  width?: number;
-}
+export type MetricAggregate = number;
 
 export interface Result {
   /**
@@ -464,77 +359,6 @@ export interface Result {
    * promotionPinned indicates whether this [[Result]] is pinned via an [[ActivePromotion]].
    */
   promotionPinned?: boolean;
-}
-
-/**
- * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
- */
-export type Token = ClickToken | PosNegToken;
-
-/**
- * ClickToken defines a click token.  See [[TrackingType.Click]] for more details.
- * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
- */
-export type ClickToken = { click: string };
-
-/**
- * PosNegToken defines a pos/neg token pair. See [[TrackingType.PosNeg]] for more details.
- * @deprecated the modern tracking API, [[SearchIOAnalytics]], does not require tracking tokens
- */
-export type PosNegToken = { pos: string; neg: string };
-
-export type Aggregates = Record<
-  string,
-  Record<string, CountAggregate | MetricAggregate>
->;
-
-export interface CountAggregate {
-  count: Record<string, number>;
-}
-
-export type MetricAggregate = number;
-
-/**
- * A Redirect defines a search string which clients should handle by sending users to a specific location
- * instead of a standard search results screen. In a default setup, these are only returned by an autocomplete
- * pipeline. Web search clients handle redirects by sending the web browser to the `target` or `token` URL.
- * Other clients (mobile) may handle redirect forwarding differently.
- * See [[Redirects]] for redirect collection details.
- */
-export interface RedirectTarget {
-  id: string;
-  target: string;
-  token?: string;
-}
-
-/**
- * All redirects which match the current query substring are returned. An autocomplete query where `q` is "foo"
- * could result in a redirects collection containing `{"foobar": {…}, "foo qux": {…}}` being returned.
- * See [[RedirectTarget]] for shape of target object.
- */
-export interface Redirects {
-  [redirectQuery: string]: RedirectTarget;
-}
-
-/**
- * PromotionPin defines a promotion pin.
- */
-export interface PromotionPin {
-  key: {
-    field: string;
-    value: string;
-  };
-  position: number;
-}
-
-/**
- * PromotionExclusion defines a promotion exclusion.
- */
-export interface PromotionExclusion {
-  key: {
-    field: string;
-    value: string;
-  };
 }
 
 type FilterFunc = () => string;
