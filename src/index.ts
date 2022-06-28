@@ -23,32 +23,6 @@ export {
  */
 export class Client extends APIClient {
   /**
-   * Constructs an instance of Client for a specific account and collection.
-   *
-   * ```javascript
-   * const client = new Client("<account_id>", "<collection_id>");
-   * ```
-   *
-   * It is also possible to optionally set the API endpoint:
-   *
-   * ```javascript
-   * const client = new Client("<account_id>", "<collection_id>", "<endpoint>");
-   * ```
-   *
-   * @param account
-   * @param collection
-   * @param {string} [endpoint]
-   */
-  constructor(
-    account: string,
-    collection: string,
-    endpoint?: string,
-    credentials?: KeySecretCredentials
-  ) {
-    super(account, collection, endpoint, credentials);
-  }
-
-  /**
    * pipeline creates a new QueryPipeline instance that inherits configuration from the Client.
    * @param name pipeline name
    * @param {string} [version] pipeline version

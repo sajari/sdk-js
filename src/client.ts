@@ -8,11 +8,6 @@ export type KeySecretCredentials = { key: string; secret: string };
  * APIClient defines a client for interacting with the Search.io API.
  */
 export class APIClient {
-  private readonly account: string;
-  private readonly collection: string;
-  private readonly credentials?: KeySecretCredentials;
-  private readonly endpoint: string;
-
   /**
    * Constructs an instance of Client for a specific account and collection.
    *
@@ -31,16 +26,11 @@ export class APIClient {
    * @param {string} [endpoint]
    */
   constructor(
-    account: string,
-    collection: string,
-    endpoint: string = "api.search.io",
-    credentials?: KeySecretCredentials
+    private readonly account: string,
+    private readonly collection: string,
+    private readonly endpoint: string = "api.search.io",
+    private readonly credentials?: KeySecretCredentials
   ) {
-    this.account = account;
-    this.collection = collection;
-    this.endpoint = endpoint;
-    this.credentials = credentials;
-
     if (!isSSR() && this.credentials) {
       throw new Error(
         "Key/Secret credentials are only allowed in an SSR environment."
@@ -102,7 +92,7 @@ export class APIClient {
       body: JSON.stringify(req),
     });
 
-    if (resp.status !== 200) {
+    if (!resp.ok) {
       await handleErrorResponse(resp);
     }
 
@@ -134,11 +124,22 @@ function hasNetworkConnection() {
 }
 
 async function handleErrorResponse(resp: Response) {
-  const { message, code, details } = (await resp.json()) as {
-    code: number;
-    message: string;
-    details?: any[];
-  };
+  let message = "";
+  let code = 2; // Default to UNKNOWN error
+  let details = undefined;
+
+  try {
+    let respJSON = (await resp.json()) as {
+      code: number;
+      message: string;
+      details?: any[];
+    };
+    message = respJSON.message;
+    code = respJSON.code;
+    details = respJSON.details;
+  } catch (error) {
+    message = (error as Error).message;
+  }
 
   let errMessage = "Request failed due to an error.";
 
