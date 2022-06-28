@@ -106,9 +106,7 @@ describe("Client", () => {
     );
   });
 
-  // NOTE(bhinchley): not sure this test is needed, not sure why the api
-  // would return a non json response.
-  test.skip("works with non-JSON erroring response", async () => {
+  test("works with non-JSON erroring response", async () => {
     server.use(
       rest.post(
         "https://test-jsonapi.search.io/v4/collections/col1:query",
