@@ -1,3 +1,4 @@
+import "whatwg-fetch";
 import { server } from "./server";
 
 // Real backend server with stubbed responses.

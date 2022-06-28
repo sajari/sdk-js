@@ -1,11 +1,8 @@
 import { server, rest } from "./server";
 import { Client, RequestError, SearchResponse } from "../src";
+import { QueryResponse } from "../src/client";
 
 describe("Client", () => {
-  beforeAll(() => {
-    fetchMock.disableMocks();
-  });
-
   const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
   afterAll(() => {
     consoleErrorSpy.mockRestore();
@@ -14,34 +11,36 @@ describe("Client", () => {
   test("works with successful response", async () => {
     server.use(
       rest.post(
-        "https://test-jsonapi.search.io/sajari.api.pipeline.v1.Query/Search",
+        "https://test-jsonapi.search.io/v4/collections/col1:query",
         async (_, res, ctx) =>
           res(
             ctx.status(200),
-            ctx.json({
-              searchResponse: {
-                reads: "1",
-                totalResults: "1",
-                time: "0.000954s",
-                results: [
-                  {
-                    values: {
-                      _id: { single: "7de7b946-4283-6407-4a94-b05e822af666" },
-                      f1: { single: "v1" },
-                      f2: { single: "v2" },
-                    },
-                    indexScore: 0.0625,
+            ctx.json<QueryResponse>({
+              pipeline: { name: "test", version: "test" },
+              total_size: "1",
+              processing_time: "0.000954s",
+              results: [
+                {
+                  record: {
+                    _id: "7de7b946-4283-6407-4a94-b05e822af666",
+                    f1: "v1",
+                    f2: "v2",
                   },
-                ],
-                featureScoreWeight: 0.2,
-              },
+                  index_score: 0.0625,
+                  score: 0.0625,
+                  neural_score: 0.0625,
+                  feature_score: 0.0625,
+                  relevance_score: 0.0625,
+                },
+              ],
+              feature_score_weight: 0.2,
             })
           )
       )
     );
 
-    const client = new Client("acc1", "col1", "https://test-jsonapi.search.io");
-    const [resp] = await client.pipeline("my-query-pipeline", "1").search({
+    const client = new Client("acc1", "col1", "test-jsonapi.search.io");
+    const [resp] = await client.pipeline().search({
       q: "my search query",
     });
 
@@ -53,15 +52,15 @@ describe("Client", () => {
       results: [
         {
           indexScore: 0.0625,
-          // @ts-ignore - Types are wrong because backend can return undefined.
-          score: undefined,
+          featureScore: 0.0625,
+          neuralScore: 0.0625,
+          score: 0.0625,
           values: {
             _id: "7de7b946-4283-6407-4a94-b05e822af666",
             f1: "v1",
             f2: "v2",
           },
           promotionPinned: false,
-          token: undefined,
         },
       ],
       aggregateFilters: {},
@@ -76,7 +75,7 @@ describe("Client", () => {
   test("works with erroring response", async () => {
     server.use(
       rest.post(
-        "https://test-jsonapi.search.io/sajari.api.pipeline.v1.Query/Search",
+        "https://test-jsonapi.search.io/v4/collections/col1:query",
         async (_, res, ctx) =>
           res(
             ctx.status(500),
@@ -88,7 +87,7 @@ describe("Client", () => {
       )
     );
 
-    const client = new Client("acc1", "col1", "https://test-jsonapi.search.io");
+    const client = new Client("acc1", "col1", "test-jsonapi.search.io");
 
     await expect(
       client.pipeline("my-query-pipeline", "1").search({
@@ -110,13 +109,13 @@ describe("Client", () => {
   test("works with non-JSON erroring response", async () => {
     server.use(
       rest.post(
-        "https://test-jsonapi.search.io/sajari.api.pipeline.v1.Query/Search",
+        "https://test-jsonapi.search.io/v4/collections/col1:query",
         async (_, res, ctx) =>
           res(ctx.status(500), ctx.text("plain text error"))
       )
     );
 
-    const client = new Client("acc1", "col1", "https://test-jsonapi.search.io");
+    const client = new Client("acc1", "col1", "test-jsonapi.search.io");
 
     await expect(
       client.pipeline("my-query-pipeline", "1").search({
@@ -128,10 +127,7 @@ describe("Client", () => {
         q: "my search query",
       })
     ).rejects.toThrow(
-      expect.objectContaining({
-        statusCode: 500,
-        error: new Error("Internal Server Error"),
-      })
+      expect.objectContaining(new Error("Request failed due to error."))
     );
   });
 });

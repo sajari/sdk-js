@@ -1,4 +1,10 @@
-import { SearchIOAnalytics, STORAGE_KEY } from "../src/tracking";
+import { USER_AGENT } from "../src/user-agent";
+import {
+  SearchIOAnalytics,
+  STORAGE_KEY,
+  FUNNEL_ENTRY_TYPES,
+} from "../src/tracking";
+import { server, rest, waitForRequest } from "./server";
 
 expect.extend({
   toHaveBeenCalledBefore(spy1: jest.SpyInstance, spy2: jest.SpyInstance) {
@@ -43,7 +49,6 @@ const eventState = {
 
 describe("SearchIOAnalytics", () => {
   afterEach(() => {
-    fetchMock.resetMocks();
     jest.clearAllMocks();
     consoleErrorSpy.mockImplementation();
     localStorage.removeItem(STORAGE_KEY);
@@ -105,109 +110,121 @@ describe("SearchIOAnalytics", () => {
   });
 
   describe("sendEvent", () => {
-    it("formats the payload correctly", () => {
+    it("formats the payload correctly", async () => {
+      server.use(
+        rest.post(
+          "https://api.search.io/v4/collections/test_collection:trackEvent",
+          async (_, res, ctx) => res(ctx.status(200), ctx.json({}))
+        )
+      );
+
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection"
       );
 
-      fetchMock.mockResponseOnce("{}");
+      const pendingRequest = waitForRequest(
+        "POST",
+        "https://api.search.io/v4/collections/test_collection:trackEvent"
+      );
 
       analytics.sendEvent("abc123", "click", {
         result_id: "example_sku",
         metadata: { sessionId: 123 },
       });
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        "https://api.search.io/v4/collections/test_collection:trackEvent",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "text/plain",
-            "Account-Id": "test_account",
-          },
-          body: JSON.stringify({
-            query_id: "abc123",
-            type: "click",
-            result_id: "example_sku",
-            metadata: { sessionId: 123 },
-          }),
-        }
+      const request = await pendingRequest;
+
+      expect(request.headers.raw()).toMatchObject({
+        "account-id": "test_account",
+        "content-type": "text/plain",
+        accept: "application/json",
+        "grpc-metadata-useragent": USER_AGENT,
+      });
+      expect(request.body).toEqual(
+        JSON.stringify({
+          type: "click",
+          query_id: "abc123",
+          result_id: "example_sku",
+          metadata: { sessionId: 123 },
+        })
       );
     });
 
-    it("uses a custom endpoint when supplied", () => {
+    it("uses a custom endpoint when supplied", async () => {
+      server.use(
+        rest.post(
+          "https://test.com/v4/collections/test_collection:trackEvent",
+          async (_, res, ctx) => res(ctx.status(200), ctx.json({}))
+        )
+      );
+
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection",
-        "https://test.com"
+        "test.com"
       );
 
-      fetchMock.mockResponseOnce("{}");
+      const pendingRequest = waitForRequest(
+        "POST",
+        "https://test.com/v4/collections/test_collection:trackEvent"
+      );
 
       analytics.sendEvent("abc123", "click", {
         result_id: "example_sku",
         metadata: { sessionId: 123 },
       });
 
-      expect(fetchMock.mock.calls[0][0]).toEqual(
+      const request = await pendingRequest;
+
+      expect(request.url.toString()).toEqual(
         "https://test.com/v4/collections/test_collection:trackEvent"
       );
     });
 
-    it("handles messages in the status text", () => {
-      const analytics = new SearchIOAnalytics(
-        "test_account",
-        "test_collection"
-      );
-
-      fetchMock.mockResponseOnce("{}", {
-        status: 500,
-        statusText: "custom error",
-      });
-
-      expect.assertions(3);
-      return analytics
-        .sendEvent("abc123", "click", { result_id: "example_sku" })
-        .catch((err) => {
-          expect(err.statusCode).toEqual(500);
-          expect(err.message).toEqual(
-            "Request failed due to a configuration error."
-          );
-          expect(err.error.message).toEqual("custom error");
-        });
-    });
-
     it("handles messages in the errors response", () => {
+      server.use(
+        rest.post(
+          "https://api.search.io/v4/collections/test_collection:trackEvent",
+          async (_, res, ctx) =>
+            res(
+              ctx.status(500),
+              ctx.json({ code: 13, message: "custom error" })
+            )
+        )
+      );
+
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection"
       );
-
-      fetchMock.mockResponseOnce('{ "message": "custom error" }', {
-        status: 500,
-      });
 
       expect.assertions(3);
       return analytics
         .sendEvent("abc123", "click", { result_id: "example_sku" })
         .catch((err) => {
           expect(err.statusCode).toEqual(500);
-          expect(err.message).toEqual(
-            "Request failed due to a configuration error."
-          );
+          expect(err.message).toEqual("Request failed due to an error.");
           expect(err.error.message).toEqual("custom error");
         });
     });
 
     it("handles 403s", () => {
+      server.use(
+        rest.post(
+          "https://api.search.io/v4/collections/test_collection:trackEvent",
+          async (_, res, ctx) =>
+            res(
+              ctx.status(403),
+              ctx.json({ code: 7, message: "Permission denied" })
+            )
+        )
+      );
+
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection"
       );
-
-      fetchMock.mockResponseOnce("", { status: 403, statusText: "Forbidden" });
 
       expect.assertions(3);
       return analytics
@@ -217,7 +234,7 @@ describe("SearchIOAnalytics", () => {
           expect(err.message).toEqual(
             "This domain is not authorized to make this request."
           );
-          expect(err.error.message).toEqual("Forbidden");
+          expect(err.error.message).toEqual("Permission denied");
         });
     });
   });
@@ -378,17 +395,20 @@ describe("SearchIOAnalytics", () => {
   });
 
   describe("track", () => {
-    it("returns and logs an error if there is no current queryId", () => {
-      const analytics = new SearchIOAnalytics(
-        "test_account",
-        "test_collection"
-      );
+    it.each(FUNNEL_ENTRY_TYPES)(
+      "%s returns and logs an error if there is no current queryId",
+      (event_type) => {
+        const analytics = new SearchIOAnalytics(
+          "test_account",
+          "test_collection"
+        );
 
-      analytics.track("add_to_cart", "sku1");
+        analytics.track(event_type, "sku1");
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      expect(trackForQuerySpy).not.toHaveBeenCalled();
-    });
+        expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(trackForQuerySpy).not.toHaveBeenCalled();
+      }
+    );
 
     it("calls trackForQuery with current queryId", () => {
       const analytics = new SearchIOAnalytics(
@@ -541,6 +561,13 @@ describe("SearchIOAnalytics", () => {
     });
 
     it("marks events as submitted if sendEvent succeeds and calls save", async () => {
+      server.use(
+        rest.post(
+          "https://api.search.io/v4/collections/test_collection:trackEvent",
+          async (_, res, ctx) => res(ctx.status(200), ctx.json({}))
+        )
+      );
+
       const analytics = new SearchIOAnalytics(
         "test_account",
         "test_collection"
@@ -549,8 +576,6 @@ describe("SearchIOAnalytics", () => {
         { ...eventState, submitted: false },
         { ...eventState, type: "add_to_cart", submitted: false },
       ];
-
-      fetchMock.mockResponse("{}");
 
       await analytics.flush();
 

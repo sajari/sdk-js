@@ -1,8 +1,9 @@
-import { RequestError, setItem, getItem } from "./util";
+import { APIClient, TrackEventRequest } from "./client";
+import { setItem, getItem } from "./util";
 
 export const STORAGE_KEY = "searchio_events";
 const EXPIRY_DAYS = 30;
-const FUNNEL_ENTRY_TYPES = ["click", "redirect", "promotion_click"];
+export const FUNNEL_ENTRY_TYPES = ["click", "redirect", "promotion_click"];
 
 type Metadata = Record<string, boolean | number | string>;
 interface EventState {
@@ -20,21 +21,13 @@ type Identifier = "result_id" | "redirect_id" | "banner_id";
  * Event data is persisted to localStorage before being sent to track how users use
  * search results and/or move through an ecommerce purchase funnel.
  */
-export class SearchIOAnalytics {
-  account: string;
-  collection: string;
-  endpoint: string;
+export class SearchIOAnalytics extends APIClient {
   events: Record<Value, EventState[]>;
   queryId?: string;
 
-  constructor(
-    account: string,
-    collection: string,
-    endpoint: string = "https://api.search.io"
-  ) {
-    this.account = account;
-    this.collection = collection;
-    this.endpoint = endpoint;
+  constructor(account: string, collection: string, endpoint?: string) {
+    super(account, collection, endpoint);
+
     const storageContent = getItem(STORAGE_KEY);
     try {
       this.events = storageContent ? JSON.parse(storageContent) : {};
@@ -115,48 +108,11 @@ export class SearchIOAnalytics {
     type: string,
     data: Record<string, string | Metadata>
   ): Promise<void> {
-    const response = await fetch(
-      `${this.endpoint}/v4/collections/${this.collection}:trackEvent`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "text/plain",
-          "Account-Id": this.account,
-        },
-        body: JSON.stringify({
-          query_id: queryId,
-          type,
-          ...data,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      let message = response.statusText;
-      try {
-        let r = await response.json();
-        if (r.message) {
-          message = r.message;
-        }
-      } catch (_) {}
-
-      if (response.status === 403) {
-        throw new RequestError(
-          response.status,
-          "This domain is not authorized to make this request.",
-          new Error(message)
-        );
-      }
-
-      throw new RequestError(
-        response.status,
-        "Request failed due to a configuration error.",
-        new Error(message)
-      );
-    }
-
-    return response.json();
+    return this.trackEvent({
+      type,
+      query_id: queryId,
+      ...data,
+    } as unknown as TrackEventRequest);
   }
 
   private getExpiry() {
