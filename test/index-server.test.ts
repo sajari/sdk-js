@@ -127,10 +127,7 @@ describe("Client", () => {
         q: "my search query",
       })
     ).rejects.toThrow(
-      expect.objectContaining({
-        statusCode: 500,
-        error: new Error("Internal Server Error"),
-      })
+      expect.objectContaining(new Error("Request failed due to error."))
     );
   });
 });
