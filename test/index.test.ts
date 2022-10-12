@@ -458,6 +458,194 @@ describe("Pipeline", () => {
     );
   });
 
+  it("search with promotions that have active pins with key fields that aren't in the values", async () => {
+    const responseObj: SearchResponseProto = {
+      values: {
+        "Published Date": "",
+        autoUpdate: "true",
+        reinforcements: "",
+        reinforcementsDir1: "",
+        "url-boost": "",
+      },
+      searchResponse: {
+        totalResults: "3",
+        time: "0.000920s",
+        results: [
+          {
+            values: {
+              description: {
+                single:
+                  "Get energised this festive season by adding veggie powder to this deliciously sweet breakfast bowl of goodness.",
+              },
+              modified_time: { single: "2020-08-27T00:00:00Z" },
+              title: { single: "Beetroot smoothie bowl" },
+              url: {
+                single:
+                  "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/beetroot-smoothie-bowl",
+              },
+            },
+            score: 0.2873631800518135,
+            indexScore: 0.0625,
+            neuralScore: 0.627734375,
+            featureScore: 0.18134715025906734,
+          },
+          {
+            values: {
+              description: {
+                single:
+                  "Perfect for entertaining in a hurry, this recipe uses Labelle, a yoghurt cheese with a deliciously smooth texture.",
+              },
+              modified_time: { single: "2020-07-23T00:00:00Z" },
+              title: { single: "Entertaining Laballe" },
+              url: {
+                single:
+                  "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/entertaining-laballe",
+              },
+            },
+            score: 0.2790038050518135,
+            neuralScore: 0.6068359375,
+            featureScore: 0.18134715025906734,
+            indexScore: 0.30341796875,
+          },
+          {
+            values: {
+              description: {
+                single:
+                  "Use top drawer Australian Iron Bark honey in this recipe – it’s beautifully mellow and is a favourite flavour booster in baking.",
+              },
+              modified_time: { single: "2020-07-23T00:00:00Z" },
+              title: { single: "Superbee Honey banana bread" },
+              url: {
+                single:
+                  "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/superbee-honey-banana-bread",
+              },
+            },
+            score: 0.44248704663212435,
+            neuralScore: 0.678515625,
+            featureScore: 0.21243523316062174,
+            indexScore: 0.5,
+          },
+        ],
+        featureScoreWeight: 0.2,
+      },
+      activePromotions: [
+        {
+          promotionId: "2G0kdSJX8Jpht5Dv2545u12OlAw",
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "ef3e6ef2-b9e1-2393-9e38-4b424f099238",
+              },
+              position: 1,
+            },
+            {
+              key: {
+                field: "_id",
+                value: "7d0aa8a8-63cb-be92-bb32-9b9c655b4356",
+              },
+              position: 2,
+            },
+          ],
+        },
+      ],
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(responseObj));
+
+    const session = new DefaultSession(TrackingType.Click, "url");
+    const [response, values] = await client.pipeline("test", "test").search(
+      {
+        fields: "url,title,description,modified_time",
+        q: "banana",
+      },
+      session.next()
+    );
+
+    expect(values).toEqual(responseObj.values);
+    expect(response).toStrictEqual({
+      banners: undefined,
+      time: 0.00092,
+      totalResults: 3,
+      results: [
+        {
+          score: 0.2873631800518135,
+          indexScore: 0.0625,
+          neuralScore: 0.627734375,
+          featureScore: 0.18134715025906734,
+          token: undefined,
+          values: {
+            description:
+              "Get energised this festive season by adding veggie powder to this deliciously sweet breakfast bowl of goodness.",
+            modified_time: "2020-08-27T00:00:00Z",
+            title: "Beetroot smoothie bowl",
+            url: "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/beetroot-smoothie-bowl",
+          },
+          promotionPinned: false,
+        },
+        {
+          score: 0.2790038050518135,
+          neuralScore: 0.6068359375,
+          featureScore: 0.18134715025906734,
+          indexScore: 0.30341796875,
+          token: undefined,
+          values: {
+            description:
+              "Perfect for entertaining in a hurry, this recipe uses Labelle, a yoghurt cheese with a deliciously smooth texture.",
+            modified_time: "2020-07-23T00:00:00Z",
+            title: "Entertaining Laballe",
+            url: "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/entertaining-laballe",
+          },
+          promotionPinned: false,
+        },
+        {
+          score: 0.44248704663212435,
+          neuralScore: 0.678515625,
+          featureScore: 0.21243523316062174,
+          indexScore: 0.5,
+          token: undefined,
+          values: {
+            description:
+              "Use top drawer Australian Iron Bark honey in this recipe – it’s beautifully mellow and is a favourite flavour booster in baking.",
+            modified_time: "2020-07-23T00:00:00Z",
+            title: "Superbee Honey banana bread",
+            url: "https://www.nsw.gov.au/regional-nsw/buy-regional/flavours-from-bush/superbee-honey-banana-bread",
+          },
+          promotionPinned: false,
+        },
+      ],
+      aggregates: {},
+      aggregateFilters: {},
+      redirects: {},
+      featureScoreWeight: 0.2,
+      activePromotions: [
+        {
+          promotionId: "2G0kdSJX8Jpht5Dv2545u12OlAw",
+          activePins: [
+            {
+              key: {
+                field: "_id",
+                value: "ef3e6ef2-b9e1-2393-9e38-4b424f099238",
+              },
+              position: 1,
+            },
+            {
+              key: {
+                field: "_id",
+                value: "7d0aa8a8-63cb-be92-bb32-9b9c655b4356",
+              },
+              position: 2,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(fetchMock.mock.calls.length).toEqual(1);
+    expect(fetchMock.mock.calls[0][0]).toEqual(
+      "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+  });
+
   it("search with neural and feature scores", async () => {
     const responseObj: SearchResponseProto = {
       searchResponse: {

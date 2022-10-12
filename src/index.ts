@@ -378,10 +378,14 @@ class QueryPipeline extends EventEmitter {
         if (Object.keys(activePins).length > 0) {
           Object.entries(activePins).forEach(
             ([pinKeyFieldName, pinKeyFieldValues]) => {
-              const fieldValue = valueFromProto(
-                values[pinKeyFieldName]
-              ) as string;
-              if (pinKeyFieldValues.has(fieldValue)) {
+              const fieldValue =
+                (values[pinKeyFieldName] &&
+                  valueFromProto(values[pinKeyFieldName])) ??
+                null;
+              if (
+                typeof fieldValue === "string" &&
+                pinKeyFieldValues.has(fieldValue)
+              ) {
                 promotionPinned = true;
               }
             }
