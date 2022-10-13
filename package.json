@@ -1,7 +1,7 @@
 {
   "name": "@sajari/sdk-js",
   "description": "Search.io JavaScript SDK",
-  "version": "2.10.7",
+  "version": "2.10.8",
   "main": "./dist/index.js",
   "umd:main": "./dist/sajarisdk.umd.production.min.js",
   "module": "./dist/sajarisdk.esm.js",
