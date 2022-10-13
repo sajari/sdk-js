@@ -1,5 +1,11 @@
 # @sajari/sdk-js
 
+## 3.0.0
+
+### Major Changes
+
+- a24e63c: upgrade to latest api version
+
 ## 2.10.8
 
 ### Patch Changes
