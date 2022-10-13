@@ -1,5 +1,11 @@
 # @sajari/sdk-js
 
+## 2.10.8
+
+### Patch Changes
+
+- 61804ba: Fix for when promotions use keys that aren't selected in fields
+
 ## 2.10.7
 
 ### Patch Changes

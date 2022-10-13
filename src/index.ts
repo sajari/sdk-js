@@ -123,8 +123,18 @@ class QueryPipeline extends EventEmitter {
         if (Object.keys(activePins).length > 0) {
           Object.entries(activePins).forEach(
             ([pinKeyFieldName, pinKeyFieldValues]) => {
-              const fieldValue = record[pinKeyFieldName] as string;
-              if (pinKeyFieldValues.has(fieldValue)) {
+              if (!(pinKeyFieldName in record)) {
+                console.error(
+                  `Pin key field "${pinKeyFieldName}" not found in record.`,
+                  record
+                );
+                return;
+              }
+              const fieldValue = record[pinKeyFieldName];
+              if (
+                typeof fieldValue === "string" &&
+                pinKeyFieldValues.has(fieldValue)
+              ) {
                 promotionPinned = true;
               }
             }
