@@ -46,8 +46,8 @@ describe("Client", () => {
 });
 
 describe("setItem", () => {
-  afterAll(() => {
-    jest.restoreAllMocks();
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   it("catches exceptions", () => {
@@ -70,6 +70,9 @@ describe("setItem", () => {
 describe("Pipeline", () => {
   beforeEach(() => {
     fetchMock.resetMocks();
+  });
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   it("search", async () => {
@@ -459,6 +462,7 @@ describe("Pipeline", () => {
   });
 
   it("search with promotions that have active pins with key fields that aren't in the values", async () => {
+    consoleErrorSpy.mockImplementation();
     const responseObj: SearchResponseProto = {
       values: {
         "Published Date": "",
@@ -643,6 +647,12 @@ describe("Pipeline", () => {
     expect(fetchMock.mock.calls.length).toEqual(1);
     expect(fetchMock.mock.calls[0][0]).toEqual(
       "test.com/sajari.api.pipeline.v1.Query/Search"
+    );
+    responseObj.searchResponse?.results?.forEach(({ values }) =>
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Pin key field "_id" not found in values.',
+        values
+      )
     );
   });
 

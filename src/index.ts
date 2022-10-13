@@ -378,10 +378,14 @@ class QueryPipeline extends EventEmitter {
         if (Object.keys(activePins).length > 0) {
           Object.entries(activePins).forEach(
             ([pinKeyFieldName, pinKeyFieldValues]) => {
-              const fieldValue =
-                (values[pinKeyFieldName] &&
-                  valueFromProto(values[pinKeyFieldName])) ??
-                null;
+              if (!(pinKeyFieldName in values)) {
+                console.error(
+                  `Pin key field "${pinKeyFieldName}" not found in values.`,
+                  values
+                );
+                return;
+              }
+              const fieldValue = valueFromProto(values[pinKeyFieldName]);
               if (
                 typeof fieldValue === "string" &&
                 pinKeyFieldValues.has(fieldValue)
